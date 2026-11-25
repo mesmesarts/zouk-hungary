@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.9.5 -->
+<!-- Zouk Calendar v1.9.6 -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -28,17 +28,20 @@
   *{box-sizing:border-box}
   body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
   .wrap{max-width:820px;margin:0 auto;padding:0 16px}
-  header{position:relative;overflow:hidden;background:var(--head);color:#fff;padding:14px 0 12px}
-  header::after{content:"";position:absolute;right:40px;top:15px;width:120px;height:120px;border-radius:50%;background:#2a5fc4;opacity:.5}
-  header>*{position:relative;z-index:1}
-  header::before{content:"";position:absolute;right:-50px;top:-10px;width:300px;height:170px;background:var(--gold);opacity:.13;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
-  header .wrap{position:relative}
+  header{position:relative;background:var(--head);color:#fff;padding:14px 0 12px;z-index:30}
+  header .deco{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  header .deco::after{content:"";position:absolute;right:40px;top:15px;width:120px;height:120px;border-radius:50%;background:#2a5fc4;opacity:.5}
+  header .deco::before{content:"";position:absolute;right:-50px;top:-10px;width:300px;height:170px;background:var(--gold);opacity:.13;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+  header .wrap{position:relative;z-index:1}
   .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
   h1{margin:0 0 2px;font-size:1.5rem;letter-spacing:-.01em}
   header p{margin:0;opacity:.88}
   .tools{display:flex;gap:6px}
   .tools button{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:6px 12px;font:inherit;font-size:.9rem;cursor:pointer}
   .tools button[aria-pressed="true"]{background:var(--gold);color:#1c2a22;border-color:var(--gold)}
+  .lw{position:relative;display:flex;gap:6px}
+  .langs{display:flex;gap:6px}
+  .langbtn{display:none}
   button{font:inherit;color:var(--ink)}
   /* city banner */
   .banner{display:none;position:absolute;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);z-index:-1;overflow:hidden;pointer-events:none}
@@ -92,7 +95,7 @@
   .wkhead button:disabled{opacity:.35;cursor:default}
   .week .days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
   .week .days button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0 7px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:inherit;cursor:pointer}
-  .week .wd{font-size:.72rem;;color:var(--muted)}
+  .week .wd{font-size:.72rem;color:var(--muted)}
   .week .dn{font-weight:700;font-size:1.05rem}
   .week .dots{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;min-height:10px}
   .week .dots i{width:10px;height:10px;border-radius:50%;border:1px solid rgba(0,0,0,.25)}
@@ -157,21 +160,68 @@
   .cal{display:inline-flex;align-items:center;gap:5px}
   .cal svg{flex:none}
   .updated{font-size:.78rem;opacity:.75;margin-top:3px}
+
+  /* ---- v1.9.6: compact mobile layout ---- */
+  @media (max-width:520px){
+    /* header: title on the left, language menu + theme on the right (no extra row) */
+    .top{display:flex;align-items:flex-start;gap:10px}
+    .top .ttl{flex:1;min-width:0}
+    .tools{margin-top:0;flex:none;gap:6px}
+    .tools button{padding:5px 10px;font-size:.85rem}
+    .langbtn{display:inline-flex;align-items:center;gap:5px}
+    .langs{display:none;position:absolute;right:0;top:calc(100% + 6px);z-index:40;flex-direction:column;gap:2px;min-width:160px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.28)}
+    .langs.open{display:flex}
+    .tools .langs button{background:transparent;color:var(--ink);border:0;border-radius:10px;text-align:left;padding:9px 12px;font-size:.95rem}
+    .tools .langs button::after{content:" \00B7  " attr(data-full);color:var(--muted);font-weight:400}
+    .tools .langs button[aria-pressed="true"]{background:var(--chip);color:var(--chipInk);font-weight:700}
+    h1{font-size:1.35rem}
+    /* filters */
+    .controls{padding:17px 0 9px}
+    .what{gap:6px;margin-bottom:6px}
+    .what button{padding:5px 4px;border-radius:12px;border-width:1.5px;font-size:.88rem;line-height:1.15}
+    .filters{gap:6px;padding:0 0 4px}
+    .filters .grp{gap:6px}
+    .pill{padding:4px 11px;font-size:.88rem}
+    .dot{width:9px;height:9px;margin-right:5px}
+    /* week strip */
+    .week{margin:8px 0 0}
+    .wkhead{margin-bottom:4px}
+    .wkhead button{height:28px;width:32px}
+    .wkhead .lbl{height:28px;font-size:.88rem}
+    .week .days{gap:5px}
+    .week .days button{padding:3px 0 5px}
+    .week .dn{font-size:1rem}
+    .legend{margin-top:5px}
+    h2.day{margin:16px 0 6px}
+    /* cards: calendar button pinned top-right, details button as a narrow rotated column */
+    .ev{min-height:92px}
+    .content{position:relative;padding:9px 10px}
+    .toprow{padding-right:34px;margin-bottom:5px}
+    .cal{position:absolute;top:8px;right:8px;margin:0;padding:3px 7px}
+    .ev a.go{width:36px;padding:0;writing-mode:vertical-rl;font-size:.8rem;letter-spacing:.03em}
+    .ev a.go>span{text-align:center}
+    .ev a.go .arr{display:none}
+  }
 </style>
 </head>
 <body>
-<header><div class="wrap">
+<header><div class="deco" aria-hidden="true"></div><div class="wrap">
   <div class="top">
-    <div>
+    <div class="ttl">
       <h1>Zouk Calendar</h1>
       <p id="tagline"></p>
       <div class="updated"><span id="updLabel"></span> <span id="upd"></span></div>
     </div>
     <div class="tools">
-      <button id="langHU" data-lang="hu" aria-pressed="false">HU</button>
-      <button id="langEN" data-lang="en" aria-pressed="false">EN</button>
-      <button id="langES" data-lang="es" aria-pressed="false">ES</button>
-      <button id="langPT" data-lang="pt" aria-pressed="false">PT</button>
+      <div class="lw">
+        <button id="langBtn" class="langbtn" type="button" aria-haspopup="true" aria-expanded="false"></button>
+        <div class="langs" id="langs">
+          <button id="langHU" data-lang="hu" data-full="Magyar" aria-pressed="false">HU</button>
+          <button id="langEN" data-lang="en" data-full="English" aria-pressed="false">EN</button>
+          <button id="langES" data-lang="es" data-full="Español" aria-pressed="false">ES</button>
+          <button id="langPT" data-lang="pt" data-full="Português" aria-pressed="false">PT</button>
+        </div>
+      </div>
       <button id="theme" aria-label="Theme"></button>
     </div>
   </div>
@@ -214,7 +264,7 @@
       today:"Ma",week:"Ez a hét",allTime:"Összes",allCities:"Minden város",
       todayLabel:"Ma",weekly:"Hetente",mixed:"Vegyes",mixedTip:"A programban más táncok is vannak.",cal:"Naptárba",verify:"⚠ Ellenőrizd",verifyTip:"Az adat az oldal borítóképéről származik – ellenőrizd a Facebook-oldalon.",
       empty0:"Mára nem találtunk eseményt. Nézd meg az „Összes” nézetet, vagy lapozz a hét napjai között!",empty1:"Nincs a szűrőnek megfelelő esemény.",
-      by:"Szervező",detailsLead:"Részletek a ",details:"Facebookon →",submit:"Esemény beküldése",soon:"Esemény beküldése – hamarosan",
+      by:"Szervező",detailsLead:"Részletek a ",details:"Facebookon →",detailsOther:"Részletek",langLabel:"Nyelv",submit:"Esemény beküldése",soon:"Esemény beküldése – hamarosan",
       disc:"Az adatok a szervezők nyilvános Facebook-oldalairól származnak; a pontos időpontot és helyszínt mindig ellenőrizd az esemény oldalán. A fesztiválok és hétvégék városra való szűrésnél is látszanak.",
       upd:"Utolsó frissítés:",
       types:{party:"Buli",regular:"Rendszeres óra",course:"Rendszeres óra",workshop:"Workshop",weekender:"Weekender",festival:"Fesztivál",retreat:"Elvonulás"},
@@ -226,7 +276,7 @@
       today:"Today",week:"This week",allTime:"All upcoming",allCities:"All cities",
       todayLabel:"Today",weekly:"Weekly",mixed:"Mixed",mixedTip:"Other dances are on the programme too.",cal:"Add to calendar",verify:"⚠ Check",verifyTip:"Taken from the page's cover banner – please check the Facebook page.",
       empty0:"Nothing found for today. Try “All upcoming”, or pick another day in the week bar!",empty1:"No events match your filters.",
-      by:"Organizer",detailsLead:"Details on ",details:"Facebook →",submit:"Submit an event",soon:"Submit an event – coming soon",
+      by:"Organizer",detailsLead:"Details on ",details:"Facebook →",detailsOther:"Details",langLabel:"Language",submit:"Submit an event",soon:"Submit an event – coming soon",
       disc:"Data comes from the organizers' public Facebook pages; always check the exact time and venue on the event page. Festivals and weekenders stay visible when you filter by city.",
       upd:"Last updated:",
       types:{party:"Party",regular:"Regular class",course:"Regular class",workshop:"Workshop",weekender:"Weekender",festival:"Festival",retreat:"Retreat"},
@@ -238,7 +288,7 @@
       today:"Hoy",week:"Esta semana",allTime:"Todos",allCities:"Todas las ciudades",
       todayLabel:"Hoy",weekly:"Semanal",mixed:"Mixto",mixedTip:"El programa incluye también otros bailes.",cal:"Añadir al calendario",verify:"⚠ Comprueba",verifyTip:"Dato tomado de la portada de la página; comprueba la página de Facebook.",
       empty0:"No hay eventos para hoy. Prueba “Todos” o elige otro día en la barra semanal.",empty1:"No hay eventos que coincidan con los filtros.",
-      by:"Organiza",detailsLead:"Detalles en ",details:"Facebook →",submit:"Enviar un evento",soon:"Enviar un evento – próximamente",
+      by:"Organiza",detailsLead:"Detalles en ",details:"Facebook →",detailsOther:"Detalles",langLabel:"Idioma",submit:"Enviar un evento",soon:"Enviar un evento – próximamente",
       disc:"Los datos proceden de las páginas públicas de Facebook de los organizadores; comprueba siempre la hora y el lugar en la página del evento. Los festivales y weekenders se muestran también al filtrar por ciudad.",
       upd:"Última actualización:",
       types:{party:"Fiesta",regular:"Clase regular",course:"Clase regular",workshop:"Taller",weekender:"Weekender",festival:"Festival",retreat:"Retiro"},
@@ -250,7 +300,7 @@
       today:"Hoje",week:"Esta semana",allTime:"Todos",allCities:"Todas as cidades",
       todayLabel:"Hoje",weekly:"Semanal",mixed:"Misto",mixedTip:"A programação inclui também outras danças.",cal:"Adicionar ao calendário",verify:"⚠ Confira",verifyTip:"Dado tirado da capa da página; confira na página do Facebook.",
       empty0:"Não há eventos para hoje. Experimente “Todos” ou escolha outro dia na barra da semana.",empty1:"Nenhum evento corresponde aos filtros.",
-      by:"Organização",detailsLead:"Detalhes no ",details:"Facebook →",submit:"Enviar um evento",soon:"Enviar um evento – em breve",
+      by:"Organização",detailsLead:"Detalhes no ",details:"Facebook →",detailsOther:"Detalhes",langLabel:"Idioma",submit:"Enviar um evento",soon:"Enviar um evento – em breve",
       disc:"Os dados vêm das páginas públicas de Facebook dos organizadores; confira sempre o horário e o local na página do evento. Festivais e weekenders aparecem também ao filtrar por cidade.",
       upd:"Última atualização:",
       types:{party:"Festa",regular:"Aula regular",course:"Aula regular",workshop:"Workshop",weekender:"Weekender",festival:"Festival",retreat:"Retiro"},
@@ -354,6 +404,7 @@
   }
 
   var ICO_L='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',ICO_R='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>',ICO_D='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg>';
+  var FB_RE=/^https?:\/\/([^\/?#]*\.)?(facebook\.com|fb\.me)(?=[\/?#:]|$)/i;
   function gs(o){var a=[GROUP[o.type]||"class"];if(o.also&&a.indexOf(GROUP[o.also]||"class")<0)a.push(GROUP[o.also]||"class");return a;}
   var off=0,mexp=false,moff=0,animDir="",lastList=null,lastDay="",lastCity=null;
   function setList(el,html,an){var changed=lastList!==null&&html!==lastList;lastList=html;el.innerHTML=html;el.classList.remove("aR","aL","aD","st");if(changed){void el.offsetWidth;el.classList.add("st");}}
@@ -417,6 +468,9 @@
       var cc=cityColor(o.city);
       var mix=Array.isArray(o.mixed)?o.mixed.map(function(m){return '<span class="tag mixed">+ '+esc(m.charAt(0).toUpperCase()+m.slice(1))+'</span>';}).join(""):(o.mixed?'<span class="tag mixed" title="'+esc(t.mixedTip)+'">+ '+esc(t.mixed)+'</span>':'');
       var cal=calUrl(o);
+      var goLabel=FB_RE.test(o.url||"")
+        ?'<span class="lead">'+esc(t.detailsLead)+'</span>'+esc(t.details.replace(/\s*→$/,""))+'<span class="arr"> →</span>'
+        :esc(t.detailsOther)+'<span class="arr"> →</span>';
       html+='<article class="ev" style="--i:'+Math.min(ci++,8)+';border-left:6px solid '+cc+'"><div class="content">'+
         '<div class="toprow">'+
           (o.city?'<span class="city" style="background:'+cc+';color:'+cityInk(o.city)+'">'+ICO_PIN+esc(o.city)+'</span>':'')+
@@ -431,7 +485,7 @@
         (o.organizer&&o.organizer!==o.venue?'<div class="meta">'+esc(t.by)+': '+esc(o.organizer)+'</div>':'')+
         (o.note?'<div class="note">'+esc(L(o.note))+'</div>':'')+
         '</div>'+
-        (o.url?'<a class="go" href="'+esc(o.url)+'" target="_blank" rel="noopener"><span><span class="lead">'+esc(t.detailsLead)+'</span>'+esc(t.details)+'</span></a>':'')+
+        (o.url?'<a class="go" href="'+esc(o.url)+'" target="_blank" rel="noopener"><span>'+goLabel+'</span></a>':'')+
         '</article>';
     });
     setList(el,html,an);
@@ -448,6 +502,8 @@
     document.getElementById("disclaimer").textContent=t.disc;
     document.getElementById("updLabel").textContent=t.upd;
     document.getElementById("upd").textContent=window.ZC_UPDATED||"";
+    var lb=document.getElementById("langBtn");
+    lb.innerHTML=esc(S.lang.toUpperCase())+" "+ICO_D;lb.setAttribute("aria-label",t.langLabel);lb.title=t.langLabel;
     var link=document.getElementById("submitLink"),u=(window.ZC_CONFIG||{}).submitUrl;
     if(u){link.href=u;link.classList.remove("off");link.textContent=t.submit;}else{link.classList.add("off");link.removeAttribute("href");link.textContent=t.soon;}
     // city chips
@@ -523,7 +579,13 @@
   })();
   document.querySelectorAll("#when button").forEach(function(b){b.addEventListener("click",function(){if(b.dataset.v==="today"){off=0;S.day=(S.day===todayISO())?"":todayISO();}else S.day="";update();});});
   document.querySelectorAll("[data-style]").forEach(function(b){b.addEventListener("click",function(){S[b.dataset.style]=!S[b.dataset.style];update();});});
-  document.querySelectorAll("[data-lang]").forEach(function(b){b.addEventListener("click",function(){S.lang=b.dataset.lang;update();});});
+  // language: four buttons on wide screens, one dropdown button on phones
+  var langBtn=document.getElementById("langBtn"),langs=document.getElementById("langs");
+  function closeLang(){langs.classList.remove("open");langBtn.setAttribute("aria-expanded","false");}
+  langBtn.addEventListener("click",function(e){e.stopPropagation();var o=langs.classList.toggle("open");langBtn.setAttribute("aria-expanded",o?"true":"false");});
+  document.addEventListener("click",function(e){if(!langs.contains(e.target))closeLang();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeLang();});
+  document.querySelectorAll("[data-lang]").forEach(function(b){b.addEventListener("click",function(){S.lang=b.dataset.lang;closeLang();update();});});
   document.getElementById("theme").addEventListener("click",function(){S.theme={auto:"light",light:"dark",dark:"auto"}[S.theme];update();});
 
   // Recompute "today" when the day changes while the page stays open, and when the tab is shown again
