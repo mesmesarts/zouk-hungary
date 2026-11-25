@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.9.14 -->
+<!-- Zouk Calendar v1.10.0 -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -27,6 +27,7 @@
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+  .hide{display:none!important}
   .wrap{max-width:820px;margin:0 auto;padding:0 16px}
   header{position:relative;background:var(--head);color:#fff;padding:14px 0 12px;z-index:30}
   header .deco{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
@@ -100,21 +101,25 @@
   .week .dots{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;min-height:10px}
   .week .dots i{width:10px;height:10px;border-radius:50%;border:1px solid rgba(0,0,0,.25)}
   .week .days button.none{opacity:.6}
-  /* past days: flat and crossed off; weekend/holiday: tinted (darker in light theme, lighter in dark); today: ring */
-  .week .days button.past{opacity:1;cursor:default;background:transparent;border-color:transparent;color:var(--muted)}
-  .week .days button.past .dn{opacity:.5}
-  .week .days button.past .wd{opacity:.5}
+  /* past days: flat but clickable (last 12 months); older than that: disabled; weekend/holiday: tinted; today: ring */
+  .week .days button.past{opacity:1;cursor:pointer;background:transparent;border-color:transparent;color:var(--muted)}
+  .week .days button.past .dn{opacity:.55}
+  .week .days button.past .wd{opacity:.55}
+  .week .days button.past .dots{opacity:.75}
   .week .days button.m.out.past{opacity:.6}
+  .week .days button.old{opacity:.3;cursor:default}
   .week .days button.off:not(.past):not([aria-pressed="true"]){background:var(--off)}
   .week .days button.today{border-color:var(--chipInk);border-width:1.5px}
   .week .days button.today:not([aria-pressed="true"]) .dn{color:var(--chipInk)}
   .week .days button[aria-pressed="true"]{background:var(--pressed);color:var(--pressedInk);border-color:var(--pressed)}
+  .week .days button.past[aria-pressed="true"] .dn,.week .days button.past[aria-pressed="true"] .dots{opacity:1}
   .week .days button.today[aria-pressed="true"]{border-color:var(--chipInk);box-shadow:inset 0 0 0 1.5px var(--off)}
   .week .days button[aria-pressed="true"] .wd{color:inherit;opacity:.85}
   .week .days button[aria-pressed="true"] .dots i{border-color:#fff}
   .wkhead .lbl{flex:1;width:auto;height:32px;margin:0 8px;gap:8px;border:1px solid var(--pressed);background:var(--card);color:var(--pressed);font:inherit;font-weight:700;font-size:.92rem;}
   .wkhead .lbl .chev{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--pressed);color:var(--pressedInk)}
   .wkhead .lbl[aria-expanded="true"] .chev svg{transform:rotate(180deg)}
+  .wkhead .tdy{width:auto;padding:0 12px;margin:0 8px 0 0;border-color:var(--pressed);background:var(--pressed);color:var(--pressedInk);font-weight:700;font-size:.85rem}
   .week .days.month{gap:4px;grid-template-columns:20px repeat(7,1fr)}
   .week .wn{display:flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--muted);opacity:.85}
   .week .wdh{text-align:center;font-size:.72rem;color:var(--muted);}
@@ -156,6 +161,7 @@
   .content{flex:1;min-width:0;padding:11px 14px}
   .ev a.go{flex:none;display:flex;align-items:center;justify-content:center;text-align:center;width:92px;padding:0 10px;margin:0;border:0;border-left:1px solid var(--line);border-radius:0;box-shadow:none;font-size:.9rem;line-height:1.25}
   a.go .lead{display:none}
+  .ext{display:none}
   @media (min-width:700px){.ev a.go{width:150px;font-size:1rem}a.go .lead{display:inline}}
   .cal{margin-left:auto;font-size:.8rem;font-weight:600;color:var(--chipInk);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:2px 10px;white-space:nowrap}
   .cal:hover{background:var(--chip)}
@@ -169,6 +175,24 @@
   .cal{display:inline-flex;align-items:center;gap:5px}
   .cal svg{flex:none}
   .updated{font-size:.78rem;opacity:.75;margin-top:3px}
+  /* organizer links and organizer pages */
+  a.orglink{color:inherit;font-weight:600;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:2px}
+  a.orglink:hover{text-decoration-color:currentColor}
+  .backlink{display:inline-flex;align-items:center;margin-top:16px;padding:6px 0;color:var(--chipInk);font-weight:600;text-decoration:none}
+  .backlink:hover{text-decoration:underline}
+  .orghead{display:flex;gap:14px;align-items:center;margin:10px 0 12px}
+  .olg,.mono{flex:none;width:72px;height:72px;border-radius:50%}
+  .olg{object-fit:cover;background:var(--card);border:1px solid var(--line)}
+  .mono{display:flex;align-items:center;justify-content:center;background:var(--pressed);color:var(--pressedInk);font-weight:700;font-size:1.5rem;letter-spacing:.02em}
+  .orghead h2{margin:0;font-size:1.35rem;line-height:1.2}
+  .bio{margin:0 0 12px;font-size:.98rem}
+  h2.sec{font-size:1.1rem;margin:26px 0 0;color:var(--ink)}
+  details.pastbox{margin-top:26px}
+  details.pastbox>summary{cursor:pointer;font-weight:700;font-size:1.05rem;color:var(--chipInk);padding:6px 0}
+  /* organizer page: no filters, no week strip */
+  .org-mode .what,.org-mode .filters{display:none}
+  .org-mode .banner{display:none!important}
+  .org-mode .controls{padding:12px 0 0;border-bottom:0}
 
   /* ---- v1.9.6: compact mobile layout ---- */
   @media (max-width:520px){
@@ -196,20 +220,24 @@
     .week{margin:8px 0 0}
     .wkhead{margin-bottom:9px}
     .wkhead button{height:28px;width:32px}
-    .wkhead .lbl{height:28px;font-size:.88rem}
+    .wkhead .lbl{height:28px;font-size:.88rem;margin:0 6px}
+    .wkhead .tdy{width:auto;padding:0 10px;margin:0 6px 0 0;font-size:.8rem}
     .week .days{gap:5px}
     .week .days button{padding:3px 0 5px}
     .week .dn{font-size:1rem}
     .legend{margin-top:5px}
     h2.day{margin:16px 0 6px}
-    /* cards: calendar button pinned top-right, details button as a narrow rotated column */
-    .ev{min-height:92px}
+    /* cards: calendar button pinned top-right; details button = narrow column, label read bottom-to-top, external-link icon below it */
+    .ev{min-height:108px}
     .content{position:relative;padding:9px 10px}
     .toprow{padding-right:34px;margin-bottom:5px}
     .cal{position:absolute;top:8px;right:8px;margin:0;padding:3px 7px}
-    .ev a.go{width:36px;padding:0;writing-mode:vertical-rl;font-size:.8rem;letter-spacing:.03em}
-    .ev a.go>span{text-align:center}
+    .ev a.go{position:relative;width:36px;padding:0 0 26px;flex-direction:column;font-size:.8rem;letter-spacing:.03em}
+    .ev a.go>span{writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;white-space:nowrap}
     .ev a.go .arr{display:none}
+    .ev a.go .ext{display:block;position:absolute;bottom:9px;left:50%;margin-left:-7px}
+    .orghead{gap:10px}
+    .olg,.mono{width:60px;height:60px;font-size:1.25rem}
   }
 </style>
 </head>
@@ -245,11 +273,16 @@
       <button data-v="party"></button>
     </div>
     <div class="filters" role="group">
+      <span class="grp" id="view">
+        <button class="pill" data-v="up"></button>
+        <button class="pill" data-v="past"></button>
+      </span>
+      <span class="sep"></span>
       <span class="grp" id="when">
         <button class="pill" data-v="today"></button>
         <button class="pill" data-v="all"></button>
       </span>
-      <span class="sep"></span>
+      <span class="sep" id="sepWhen"></span>
       <span class="grp" id="cities"></span>
       <span style="flex:none;width:24px"></span>
     </div>
@@ -276,6 +309,8 @@
       by:"Szervező",detailsLead:"Részletek a ",details:"Facebookon →",detailsOther:"Részletek",langLabel:"Nyelv",submit:"Esemény beküldése",soon:"Esemény beküldése – hamarosan",
       disc:"Az adatok a szervezők nyilvános Facebook-oldalairól származnak; a pontos időpontot és helyszínt mindig ellenőrizd az esemény oldalán. A fesztiválok és hétvégék városra való szűrésnél is látszanak.",
       upd:"Utolsó frissítés:",wk:"Hét",weekWord:"hét",
+      vUp:"Közelgő",vPast:"Múltbeli",emptyPast:"Az elmúlt 12 hónapban nincs ilyen esemény.",
+      back:"← Vissza a naptárhoz",toSite:"Weboldal",toFb:"Facebook-oldal",orgUp:"Közelgő események",orgPast:"Múltbeli események (elmúlt 12 hónap)",orgNoUp:"Jelenleg nincs közelgő esemény.",loading:"Betöltés…",
       types:{party:"Buli",regular:"Rendszeres óra",course:"Rendszeres óra",workshop:"Workshop",weekender:"Weekender",festival:"Fesztivál",retreat:"Elvonulás"},
       every:["","hétfőnként","keddenként","szerdánként","csütörtökönként","péntekenként","szombatonként","vasárnaponként"],
       themes:{auto:"Téma: auto",light:"Téma: világos",dark:"Téma: sötét"}},
@@ -288,6 +323,8 @@
       by:"Organizer",detailsLead:"Details on ",details:"Facebook →",detailsOther:"Details",langLabel:"Language",submit:"Submit an event",soon:"Submit an event – coming soon",
       disc:"Data comes from the organizers' public Facebook pages; always check the exact time and venue on the event page. Festivals and weekenders stay visible when you filter by city.",
       upd:"Last updated:",wk:"Wk",weekWord:"Week",
+      vUp:"Upcoming",vPast:"Past",emptyPast:"No events in the last 12 months.",
+      back:"← Back to the calendar",toSite:"Website",toFb:"Facebook page",orgUp:"Upcoming events",orgPast:"Past events (last 12 months)",orgNoUp:"No upcoming events right now.",loading:"Loading…",
       types:{party:"Party",regular:"Regular class",course:"Regular class",workshop:"Workshop",weekender:"Weekender",festival:"Festival",retreat:"Retreat"},
       every:["","Every Monday","Every Tuesday","Every Wednesday","Every Thursday","Every Friday","Every Saturday","Every Sunday"],
       themes:{auto:"Theme: auto",light:"Theme: light",dark:"Theme: dark"}},
@@ -300,6 +337,8 @@
       by:"Organiza",detailsLead:"Detalles en ",details:"Facebook →",detailsOther:"Detalles",langLabel:"Idioma",submit:"Enviar un evento",soon:"Enviar un evento – próximamente",
       disc:"Los datos proceden de las páginas públicas de Facebook de los organizadores; comprueba siempre la hora y el lugar en la página del evento. Los festivales y weekenders se muestran también al filtrar por ciudad.",
       upd:"Última actualización:",wk:"Sem",weekWord:"Semana",
+      vUp:"Próximos",vPast:"Pasados",emptyPast:"No hay eventos en los últimos 12 meses.",
+      back:"← Volver al calendario",toSite:"Sitio web",toFb:"Página de Facebook",orgUp:"Próximos eventos",orgPast:"Eventos pasados (últimos 12 meses)",orgNoUp:"Ahora mismo no hay eventos próximos.",loading:"Cargando…",
       types:{party:"Fiesta",regular:"Clase regular",course:"Clase regular",workshop:"Taller",weekender:"Weekender",festival:"Festival",retreat:"Retiro"},
       every:["","Todos los lunes","Todos los martes","Todos los miércoles","Todos los jueves","Todos los viernes","Todos los sábados","Todos los domingos"],
       themes:{auto:"Tema: automático",light:"Tema: claro",dark:"Tema: oscuro"}},
@@ -312,6 +351,8 @@
       by:"Organização",detailsLead:"Detalhes no ",details:"Facebook →",detailsOther:"Detalhes",langLabel:"Idioma",submit:"Enviar um evento",soon:"Enviar um evento – em breve",
       disc:"Os dados vêm das páginas públicas de Facebook dos organizadores; confira sempre o horário e o local na página do evento. Festivais e weekenders aparecem também ao filtrar por cidade.",
       upd:"Última atualização:",wk:"Sem",weekWord:"Semana",
+      vUp:"Próximos",vPast:"Passados",emptyPast:"Nenhum evento nos últimos 12 meses.",
+      back:"← Voltar ao calendário",toSite:"Site",toFb:"Página do Facebook",orgUp:"Próximos eventos",orgPast:"Eventos passados (últimos 12 meses)",orgNoUp:"Nenhum evento próximo no momento.",loading:"Carregando…",
       types:{party:"Festa",regular:"Aula regular",course:"Aula regular",workshop:"Workshop",weekender:"Weekender",festival:"Festival",retreat:"Retiro"},
       every:["","Toda segunda","Toda terça","Toda quarta","Toda quinta","Toda sexta","Todo sábado","Todo domingo"],
       themes:{auto:"Tema: automático",light:"Tema: claro",dark:"Tema: escuro"}}
@@ -322,6 +363,9 @@
   var DEF={lang:(function(){var l=(navigator.language||"en").toLowerCase().slice(0,2);return {hu:1,es:1,pt:1}[l]?l:"en";})(),theme:"auto",what:"all",when:"all",city:"",zouk:false,lambada:false};
   var KEY="zc_prefs2";
   var S=load();
+  var view="up";                                   // "up" = upcoming, "past" = last 12 months
+  var ORGS=[],ORGS_BY_SLUG={},ORGS_BY_NAME={},ORGS_READY=!((window.ZC_CONFIG||{}).orgsCsvUrl),UPD="";
+  var TITLE="Zouk Calendar Hungary";
 
   // Simple original skyline illustrations (silhouettes), shown when a city is selected
   var ART={
@@ -362,6 +406,16 @@
   function cap(x){return x?x.charAt(0).toUpperCase()+x.slice(1):x;}
   function fmtDay(iso){return cap(toDate(iso).toLocaleDateString(loc(),{weekday:"long",month:"long",day:"numeric",timeZone:"UTC"}));}
   function fmtShort(iso){return toDate(iso).toLocaleDateString(loc(),{month:"short",day:"numeric",timeZone:"UTC"});}
+  function monthName(iso){return cap(toDate(iso).toLocaleDateString(loc(),{year:"numeric",month:"long",timeZone:"UTC"}));}
+  function monOf(iso){return addDays(iso,-((toDate(iso).getUTCDay()+6)%7));}
+  // past browsing window: the last 12 months
+  function minDay(today){return addDays(today,-365);}
+  function minOffFor(today){return Math.round((toDate(monOf(minDay(today)))-toDate(monOf(today)))/604800000);}
+  function minMoffFor(today){var a=today.split("-"),b=minDay(today).split("-");return ((+b[0])*12+(+b[1]))-((+a[0])*12+(+a[1]));}
+  // name matching for organizers: case and accent insensitive
+  function norm(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ").trim();}
+  function orgFor(name){var k=norm(name);return k?(ORGS_BY_NAME[k]||null):null;}
+  function hashSlug(){var h=location.hash.replace(/^#/,"");try{h=decodeURIComponent(h);}catch(e){}return slugId(h);}
 
   // Fixed colors for known cities (Budapest = red, Debrecen = yellow); others get a palette color
   var CITY_FIX={Budapest:{bg:"#c42f2a",ink:"#fff"},Debrecen:{bg:"#f2c200",ink:"#2a2000"}};
@@ -376,6 +430,7 @@
   // "Add to Google Calendar" link (weekly classes get a weekly recurrence)
   var ICO_PIN='<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-1px;margin-right:3px"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6" fill="#fff" stroke="none"/></svg>';
   var ICO_CAL='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M12 13v5M9.5 15.5h5"/></svg>';
+  var ICO_EXT='<svg class="ext" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>';
   function pad(n){return (n<10?"0":"")+n;}
   function d8(iso){return iso.replace(/-/g,"");}
   function hm(min){return pad(Math.floor(min/60))+pad(min%60)+"00";}
@@ -392,23 +447,35 @@
     if(o.weekly)q.push("recur="+encodeURIComponent("RRULE:FREQ=WEEKLY"));
     return "https://calendar.google.com/calendar/render?"+q.join("&");
   }
-  // One entry per event; weekly series show only their next occurrence
-  function occurrences(today,expand,we){
-    var out=[];
+  // last real day of a one-off event
+  function lastDayOf(e){
+    var end=e.end||e.start;
+    // an event that only runs a few hours past midnight (end clock 00:00–06:00) does not count that last day
+    var tm=/(?:[–-]\s*)(\d{1,2}):(\d{2})/.exec(e.time||""),ec=e.endTime?/(\d{1,2}):(\d{2})/.exec(e.endTime):tm;
+    if(end>e.start&&ec&&(((+ec[1])%24)*60+(+ec[2]))<=360)end=addDays(end,-1);
+    return end;
+  }
+  function mk(e,s,en){var o=Object.assign({},e);o.s=s;o.e=en;return o;}
+  // Upcoming/current events. expand=false: one entry per event (weekly series show only their next occurrence).
+  // expand=true: every occurrence overlapping [from, we] (from may be in the past: one-off events only; weekly series never show in the past).
+  function occurrences(today,expand,we,from){
+    var out=[],lo=from||today;
     (window.ZC_EVENTS||[]).forEach(function(e){
       if(e.weekly){
-        var start=today>(e.from||e.start)?today:(e.from||e.start);
-        for(var i=0;i<=(expand?6:7);i++){
-          var d=addDays(start,i),wd=toDate(d).getUTCDay()||7;if(expand&&d>we)break;
-          if(wd===e.weekly){out.push(mk(e,d,d));if(!expand)break;}
-        }
-      }else{var end=e.end||e.start;
-        // an event that only runs a few hours past midnight (end clock 00:00–06:00) does not count that last day
-        var tm=/(?:[–-]\s*)(\d{1,2}):(\d{2})/.exec(e.time||""),ec=e.endTime?/(\d{1,2}):(\d{2})/.exec(e.endTime):tm;
-        if(end>e.start&&ec&&(((+ec[1])%24)*60+(+ec[2]))<=360)end=addDays(end,-1);
-        if(end>=today)out.push(mk(e,e.start,end));}
+        var f=e.from||e.start,start=lo>f?lo:f;if(start<today)start=today;
+        if(!expand){for(var i=0;i<7;i++){var d=addDays(start,i);if((toDate(d).getUTCDay()||7)===e.weekly){out.push(mk(e,d,d));break;}}}
+        else{for(var d2=start,n=0;d2<=we&&n<62;d2=addDays(d2,1),n++){if((toDate(d2).getUTCDay()||7)===e.weekly)out.push(mk(e,d2,d2));}}
+      }else{var end=lastDayOf(e);if(end>=lo)out.push(mk(e,e.start,end));}
     });
-    function mk(e,s,en){var o=Object.assign({},e);o.s=s;o.e=en;return o;}
+    return out;
+  }
+  // One-off events that ended before today, within the last 12 months
+  function pastOccurrences(today){
+    var min=minDay(today),out=[];
+    (window.ZC_EVENTS||[]).forEach(function(e){
+      if(e.weekly)return;
+      var end=lastDayOf(e);if(end<today&&end>=min)out.push(mk(e,e.start,end));
+    });
     return out;
   }
 
@@ -419,24 +486,105 @@
   // weekend or public holiday (ZC_HOLIDAYS in events.js: off = weekday holidays, work = Saturdays that are working days)
   function isOff(iso){var H=window.ZC_HOLIDAYS||{},wd=toDate(iso).getUTCDay();if((H.work||[]).indexOf(iso)>-1)return false;return wd===0||wd===6||(H.off||[]).indexOf(iso)>-1;}
   function gs(o){var a=[GROUP[o.type]||"class"];if(o.also&&a.indexOf(GROUP[o.also]||"class")<0)a.push(GROUP[o.also]||"class");return a;}
+  function ok(o){
+    if(S.what!=="all"&&gs(o).indexOf(S.what)<0)return false;
+    if(S.city&&!FEST[o.type]&&o.city!==S.city)return false;
+    if((S.zouk||S.lambada)&&!((S.zouk&&(o.styles||[]).indexOf("zouk")>-1)||(S.lambada&&(o.styles||[]).indexOf("lambada")>-1)))return false;
+    return true;
+  }
   var off=0,mexp=false,moff=0,animDir="",lastList=null,lastDay="",lastCity=null;
   function setList(el,html,an){var changed=lastList!==null&&html!==lastList;lastList=html;el.innerHTML=html;el.classList.remove("aR","aL","aD","st");if(changed){void el.offsetWidth;el.classList.add("st");}}
+
+  // ---- event cards ----
+  // opt.date: show the date in the meta line (lists without day headings); opt.noOrg: no organizer link
+  function card(o,t,today,opt){
+    opt=opt||{};
+    var range=(o.e&&o.e!==o.s&&!o.weekly)?fmtShort(o.s)+" – "+fmtShort(o.e):"";
+    var dateTxt=opt.date?(range||fmtDay(o.s)):range;
+    var where=o.venue||"";
+    var every=o.weekly?t.every[o.weekly]:"";
+    var cc=cityColor(o.city);
+    var isPast=o.e<today;
+    var mix=Array.isArray(o.mixed)?o.mixed.map(function(m){return '<span class="tag mixed">+ '+esc(m.charAt(0).toUpperCase()+m.slice(1))+'</span>';}).join(""):(o.mixed?'<span class="tag mixed" title="'+esc(t.mixedTip)+'">+ '+esc(t.mixed)+'</span>':'');
+    var goLabel=FB_RE.test(o.url||"")
+      ?'<span class="lead">'+esc(t.detailsLead)+'</span>'+esc(t.details.replace(/\s*→$/,""))+'<span class="arr"> →</span>'
+      :esc(t.detailsOther)+'<span class="arr"> →</span>';
+    var org=opt.noOrg?null:orgFor(o.organizer);
+    var orgLine=(o.organizer&&o.organizer!==o.venue)
+      ?'<div class="meta">'+esc(t.by)+': '+(org?'<a class="orglink" href="#'+esc(org.slug)+'">'+esc(o.organizer)+'</a>':esc(o.organizer))+'</div>':'';
+    var cal=isPast?'':'<a class="cal" href="'+esc(calUrl(o))+'" target="_blank" rel="noopener" title="'+esc(t.cal)+'" aria-label="'+esc(t.cal)+'">'+ICO_CAL+'<span class="txt"> '+esc(t.cal)+'</span></a>';
+    return '<article class="ev" style="border-left:6px solid '+cc+'"><div class="content">'+
+      '<div class="toprow">'+
+        (o.city?'<span class="city" style="background:'+cc+';color:'+cityInk(o.city)+'">'+ICO_PIN+esc(o.city)+'</span>':'')+
+        '<span class="tag type">'+esc(t.types[o.type]||o.type)+'</span>'+(o.also?'<span class="tag type">'+esc(t.types[o.also]||o.also)+'</span>':'')+
+        (o.styles||[]).filter(function(s){return s!=="zouk";}).map(function(s){return '<span class="tag">'+esc(STYLES[s]||s)+'</span>';}).join("")+
+        mix+
+        (o.verify?'<span class="tag verify" title="'+esc(t.verifyTip)+'">'+esc(t.verify)+'</span>':'')+
+        cal+
+      '</div>'+
+      '<h3>'+esc(L(o.title))+'</h3>'+
+      '<div class="meta">'+[every,dateTxt,o.time,where].filter(Boolean).map(esc).join(" · ")+'</div>'+
+      orgLine+
+      (o.note?'<div class="note">'+esc(L(o.note))+'</div>':'')+
+      '</div>'+
+      (o.url?'<a class="go" href="'+esc(o.url)+'" target="_blank" rel="noopener"><span>'+goLabel+'</span>'+ICO_EXT+'</a>':'')+
+      '</article>';
+  }
+  // byMonth: month headings (past lists); otherwise day headings by o.key
+  function listHtml(items,t,today,byMonth,opt){
+    var html="",last="";
+    items.forEach(function(o){
+      var k=byMonth?o.s.slice(0,7):o.key;
+      if(k!==last){last=k;html+='<h2 class="day">'+esc(byMonth?monthName(o.s):(o.key===today?t.todayLabel+" – "+fmtDay(o.key):fmtDay(o.key)))+'</h2>';}
+      html+=card(o,t,today,opt);
+    });
+    return html;
+  }
+  function sortUp(items,today){
+    items.forEach(function(o){o.key=S.day||(o.s<today?today:o.s);});
+    items.sort(function(a,b){return a.key<b.key?-1:a.key>b.key?1:(a.time||"").localeCompare(b.time||"");});
+  }
+  function sortPast(items){items.sort(function(a,b){return a.s<b.s?1:a.s>b.s?-1:(b.time||"").localeCompare(a.time||"");});}
+
+  // ---- organizer page ----
+  function monoOf(name){return String(name).split(/\s+/).filter(Boolean).slice(0,2).map(function(w){return w.charAt(0);}).join("").toUpperCase();}
+  function orgPage(org,t,today){
+    var key=norm(org.name),mine=function(o){return norm(o.organizer)===key;};
+    var up=occurrences(today,false).filter(mine),past=pastOccurrences(today).filter(mine);
+    sortUp(up,today);sortPast(past);
+    var bio=S.lang==="hu"?(org.bio_hu||org.bio_en):(org.bio_en||org.bio_hu);
+    var mono=monoOf(org.name);
+    var logo=org.logo?'<img class="olg" src="logos/'+esc(org.slug)+'.png" width="72" height="72" alt="" data-mono="'+esc(mono)+'">':'<span class="mono" aria-hidden="true">'+esc(mono)+'</span>';
+    var h='<a class="backlink" href="#">'+esc(t.back)+'</a>'+
+      '<div class="orghead">'+logo+'<div><h2>'+esc(org.name)+'</h2>'+(org.city?'<div class="meta">'+esc(org.city)+'</div>':'')+'</div></div>'+
+      (bio?'<p class="bio">'+esc(bio).replace(/\r?\n/g,"<br>")+'</p>':'')+
+      (org.url?'<p><a class="submit" href="'+esc(org.url)+'" target="_blank" rel="noopener">'+esc(FB_RE.test(org.url)?t.toFb:t.toSite)+' →</a></p>':'')+
+      '<h2 class="sec">'+esc(t.orgUp)+'</h2>'+
+      (up.length?listHtml(up,t,today,false,{noOrg:true}):'<div class="empty">'+esc(t.orgNoUp)+'</div>');
+    if(past.length)h+='<details class="pastbox"><summary>'+esc(t.orgPast)+' ('+past.length+')</summary>'+listHtml(past,t,today,true,{date:true,noOrg:true})+'</details>';
+    return h;
+  }
+
   function render(){
     var t=T[S.lang],today=todayISO(),an=animDir;animDir="";
-    var wk=false;
-    var mon=addDays(today,-((toDate(today).getUTCDay()+6)%7)),wkS=addDays(mon,7*off),ws=wkS<today?today:wkS,we=addDays(wkS,6);
-    if(S.day&&(S.day<ws||S.day>we))S.day="";
-    function ok(o){
-      if(S.what!=="all"&&gs(o).indexOf(S.what)<0)return false;
-      if(S.city&&!FEST[o.type]&&o.city!==S.city)return false;
-      if((S.zouk||S.lambada)&&!((S.zouk&&(o.styles||[]).indexOf("zouk")>-1)||(S.lambada&&(o.styles||[]).indexOf("lambada")>-1)))return false;
-      return true;
+    var el=document.getElementById("list"),strip=document.getElementById("weekstrip");
+    // route: #slug = organizer page
+    var slug=hashSlug(),org=slug?ORGS_BY_SLUG[slug]:null;
+    if(slug&&!org&&ORGS_READY){try{history.replaceState(null,"",location.pathname+location.search);}catch(e){}slug="";}
+    document.body.classList.toggle("org-mode",!!slug);
+    document.title=org?org.name+" – "+TITLE:TITLE;
+    if(slug){strip.hidden=true;setList(el,org?orgPage(org,t,today):'<div class="empty">'+esc(t.loading)+'</div>',an);return;}
+    if(view==="past"){
+      strip.hidden=true;
+      var pl=pastOccurrences(today).filter(ok);sortPast(pl);
+      setList(el,pl.length?listHtml(pl,t,today,true,{date:true}):'<div class="empty">'+esc(t.emptyPast)+'</div>',an);
+      return;
     }
-    var src=occurrences(ws,true,we).filter(function(o){return ok(o)&&o.s<=we&&o.e>=ws;});
-    var base=wk?src:occurrences(today,false).filter(function(o){
-      return ok(o);
-    });
-    var strip=document.getElementById("weekstrip");
+    var minD=minDay(today),minOff=minOffFor(today),minMoff=minMoffFor(today);
+    var mon=monOf(today),wkS=addDays(mon,7*off),we=addDays(wkS,6);
+    if(S.day&&(S.day<wkS||S.day>we))S.day="";
+    var src=occurrences(today,true,we,wkS).filter(function(o){return ok(o)&&o.s<=we&&o.e>=wkS;});
+    var base=occurrences(today,false).filter(ok);
     function dotsFor(list,dd){var seen={},h="",n=0,ids={},md="";
       list.forEach(function(o){if(o.s<=dd&&o.e>=dd){var c=cityColor(o.city)||"var(--accent)";
         if(o.e>o.s){var id=(o.id||L(o.title))+"|"+o.s;if(!ids[id]){ids[id]=1;n++;md+='<i class="d'+(o.s===dd?' st':'')+(o.e===dd?' en':'')+'" style="background:'+c+'"></i>';}}
@@ -444,67 +592,57 @@
       ["c","s"].forEach(function(t){Object.keys(seen).forEach(function(k){if(k.slice(-1)===t)h+='<i class="'+t+'" style="background:'+k.slice(0,-1)+'"></i>';});});
       return {n:n,h:h+md,sp:""};}
     function wdName(dd){return cap(toDate(dd).toLocaleDateString(loc(),{weekday:"short",timeZone:"UTC"}).replace(".",""));}
-    var sh="",label,ttl="",prevOff,nextOff;
+    function dcls(past,old,n){return past?(old?" past old":" past"):(n?"":" none");}
+    var sh="",label,ttl="",prevOff,nextOff,notNow;
     if(mexp){
       var tp=today.split("-"),mm=(+tp[0])*12+(+tp[1]-1)+moff,fy=Math.floor(mm/12),fm=mm%12,first=fy+"-"+pad(fm+1)+"-01";
-      var gS=addDays(first,-((toDate(first).getUTCDay()+6)%7)),gE=addDays(gS,41);
-      var srcM=occurrences(gS<today?today:gS,true,gE).filter(function(o){return ok(o)&&o.s<=gE&&o.e>=gS;});
+      var gS=monOf(first),gE=addDays(gS,41);
+      var srcM=occurrences(today,true,gE,gS).filter(function(o){return ok(o)&&o.s<=gE&&o.e>=gS;});
       sh+='<span class="wdh wnh">'+esc(t.wk)+'</span>';
       for(var q=0;q<7;q++)sh+='<span class="wdh">'+esc(wdName(addDays(gS,q)))+'</span>';
       for(var k=0;k<42;k++){
-        var dd=addDays(gS,k),dt=toDate(dd),past=dd<today,inM=dt.getUTCMonth()===fm,dd2=past?{n:0,h:"",sp:""}:dotsFor(srcM,dd);
+        var dd=addDays(gS,k),dt=toDate(dd),past=dd<today,old=dd<minD,inM=dt.getUTCMonth()===fm,dd2=old?{n:0,h:"",sp:""}:dotsFor(srcM,dd);
         if(k>=35&&!inM&&k%7===0)break;
         if(k%7===0)sh+='<span class="wn">'+isoWeek(dd)+'</span>';
-        sh+='<button type="button" style="--r:'+Math.floor(k/7)+'" data-d="'+dd+'" aria-pressed="'+(S.day===dd)+'" class="m'+(inM?'':' out')+(past?' past':(dd2.n?'':' none'))+(isOff(dd)?' off':'')+(dd===today?' today':'')+'"'+(past?' disabled':'')+'><span class="dn">'+dt.getUTCDate()+'</span><span class="dots">'+dd2.h+'</span>'+(dd2.sp?'<span class="spans">'+dd2.sp+'</span>':'')+'</button>';
+        sh+='<button type="button" style="--r:'+Math.floor(k/7)+'" data-d="'+dd+'" aria-pressed="'+(S.day===dd)+'" class="m'+(inM?'':' out')+dcls(past,old,dd2.n)+(isOff(dd)?' off':'')+(dd===today?' today':'')+'"'+(old?' disabled':'')+'><span class="dn">'+dt.getUTCDate()+'</span><span class="dots">'+dd2.h+'</span></button>';
       }
-      label=cap(new Date(Date.UTC(fy,fm,1)).toLocaleDateString(loc(),{year:"numeric",month:"long",timeZone:"UTC"}));
-      prevOff=moff<=0;nextOff=moff>=12;
+      label=monthName(first);
+      prevOff=moff<=minMoff;nextOff=moff>=12;notNow=moff!==0;
     }else{
-      for(var k=0;k<7;k++){
-        var dd=addDays(wkS,k),dt=toDate(dd),past=dd<today,dd2=past?{n:0,h:"",sp:""}:dotsFor(src,dd);
-        sh+='<button type="button" data-d="'+dd+'" aria-pressed="'+(S.day===dd)+'"'+' class="'+(past?'past':(dd2.n?'':'none'))+(isOff(dd)?' off':'')+(dd===today?' today':'')+'"'+(past?' disabled':'')+'><span class="wd">'+esc(wdName(dd))+'</span><span class="dn">'+dt.getUTCDate()+'</span><span class="dots">'+dd2.h+'</span>'+(dd2.sp?'<span class="spans">'+dd2.sp+'</span>':'')+'</button>';
+      for(var k2=0;k2<7;k2++){
+        var de=addDays(wkS,k2),dte=toDate(de),pastE=de<today,oldE=de<minD,de2=oldE?{n:0,h:"",sp:""}:dotsFor(src,de);
+        sh+='<button type="button" data-d="'+de+'" aria-pressed="'+(S.day===de)+'" class="'+dcls(pastE,oldE,de2.n).trim()+(isOff(de)?' off':'')+(de===today?' today':'')+'"'+(oldE?' disabled':'')+'><span class="wd">'+esc(wdName(de))+'</span><span class="dn">'+dte.getUTCDate()+'</span><span class="dots">'+de2.h+'</span></button>';
       }
       var wn=isoWeek(wkS),mname=cap(toDate(addDays(wkS,3)).toLocaleDateString(loc(),{month:"long",timeZone:"UTC"}));
-      label=mname+" – "+(S.lang==="hu"?wn+". "+t.weekWord:t.weekWord+" "+wn);ttl=cap(fmtShort(wkS))+" – "+fmtShort(we);prevOff=off<=0;nextOff=off>=12;
+      label=mname+" – "+(S.lang==="hu"?wn+". "+t.weekWord:t.weekWord+" "+wn);ttl=cap(fmtShort(wkS))+" – "+fmtShort(we);prevOff=off<=minOff;nextOff=off>=12;notNow=off!==0;
     }
-    strip.innerHTML='<div class="wkhead"><button type="button" data-nav="-1"'+(prevOff?' disabled':'')+' aria-label="‹">'+ICO_L+'</button><button type="button" class="lbl" data-toggle="1" aria-expanded="'+mexp+'"'+(ttl?' title="'+esc(ttl)+'"':'')+'>'+esc(label)+'<span class="chev">'+ICO_D+'</span></button><button type="button" data-nav="1"'+(nextOff?' disabled':'')+' aria-label="›">'+ICO_R+'</button></div><div class="days'+(mexp?' month':'')+'">'+(mexp?'':'')+sh+'</div><div class="legend"><span><i class="c"></i> '+esc(t.lgClass)+'</span><span><i class="s"></i> '+esc(t.lgParty)+'</span><span><i class="d"></i> '+esc(t.lgMulti)+'</span></div>';strip.hidden=false;
+    strip.innerHTML='<div class="wkhead"><button type="button" data-nav="-1"'+(prevOff?' disabled':'')+' aria-label="‹">'+ICO_L+'</button><button type="button" class="lbl" data-toggle="1" aria-expanded="'+mexp+'"'+(ttl?' title="'+esc(ttl)+'"':'')+'>'+esc(label)+'<span class="chev">'+ICO_D+'</span></button>'+(notNow?'<button type="button" class="tdy" data-now="1">'+esc(t.today)+'</button>':'')+'<button type="button" data-nav="1"'+(nextOff?' disabled':'')+' aria-label="›">'+ICO_R+'</button></div><div class="days'+(mexp?' month':'')+'">'+sh+'</div><div class="legend"><span><i class="c"></i> '+esc(t.lgClass)+'</span><span><i class="s"></i> '+esc(t.lgParty)+'</span><span><i class="d"></i> '+esc(t.lgMulti)+'</span></div>';strip.hidden=false;
     if(an){var dz=strip.querySelector(".days");if(dz)dz.classList.add("a"+an);}
     if(S.day!==lastDay){var pb=strip.querySelector('[aria-pressed="true"]');if(pb&&S.day)pb.classList.add("pop");lastDay=S.day;}
     var items=S.day?src.filter(function(o){return o.s<=S.day&&o.e>=S.day;}):base;
-    items.forEach(function(o){o.key=S.day||(o.s<today?today:o.s);});
-    items.sort(function(a,b){return a.key<b.key?-1:a.key>b.key?1:(a.time||"").localeCompare(b.time||"");});
-    var el=document.getElementById("list");
+    sortUp(items,today);
     if(!items.length){setList(el,'<div class="empty">'+esc(S.day?t.empty0:t.empty1)+'</div>',an);return;}
-    var html="",last="",ci=0;
-    items.forEach(function(o){
-      if(o.key!==last){last=o.key;html+='<h2 class="day">'+esc(o.key===today?t.todayLabel+" – "+fmtDay(o.key):fmtDay(o.key))+'</h2>';}
-      var range=(o.e&&o.e!==o.s&&!o.weekly)?fmtShort(o.s)+" – "+fmtShort(o.e):"";
-      var where=o.venue||"";
-      var every=o.weekly?t.every[o.weekly]:"";
-      var cc=cityColor(o.city);
-      var mix=Array.isArray(o.mixed)?o.mixed.map(function(m){return '<span class="tag mixed">+ '+esc(m.charAt(0).toUpperCase()+m.slice(1))+'</span>';}).join(""):(o.mixed?'<span class="tag mixed" title="'+esc(t.mixedTip)+'">+ '+esc(t.mixed)+'</span>':'');
-      var cal=calUrl(o);
-      var goLabel=FB_RE.test(o.url||"")
-        ?'<span class="lead">'+esc(t.detailsLead)+'</span>'+esc(t.details.replace(/\s*→$/,""))+'<span class="arr"> →</span>'
-        :esc(t.detailsOther)+'<span class="arr"> →</span>';
-      html+='<article class="ev" style="--i:'+Math.min(ci++,8)+';border-left:6px solid '+cc+'"><div class="content">'+
-        '<div class="toprow">'+
-          (o.city?'<span class="city" style="background:'+cc+';color:'+cityInk(o.city)+'">'+ICO_PIN+esc(o.city)+'</span>':'')+
-          '<span class="tag type">'+esc(t.types[o.type]||o.type)+'</span>'+(o.also?'<span class="tag type">'+esc(t.types[o.also]||o.also)+'</span>':'')+
-          (o.styles||[]).filter(function(s){return s!=="zouk";}).map(function(s){return '<span class="tag">'+esc(STYLES[s]||s)+'</span>';}).join("")+
-          mix+
-          (o.verify?'<span class="tag verify" title="'+esc(t.verifyTip)+'">'+esc(t.verify)+'</span>':'')+
-          '<a class="cal" href="'+esc(cal)+'" target="_blank" rel="noopener" title="'+esc(t.cal)+'" aria-label="'+esc(t.cal)+'">'+ICO_CAL+'<span class="txt"> '+esc(t.cal)+'</span></a>'+
-        '</div>'+
-        '<h3>'+esc(L(o.title))+'</h3>'+
-        '<div class="meta">'+[every,range,o.time,where].filter(Boolean).map(esc).join(" · ")+'</div>'+
-        (o.organizer&&o.organizer!==o.venue?'<div class="meta">'+esc(t.by)+': '+esc(o.organizer)+'</div>':'')+
-        (o.note?'<div class="note">'+esc(L(o.note))+'</div>':'')+
-        '</div>'+
-        (o.url?'<a class="go" href="'+esc(o.url)+'" target="_blank" rel="noopener"><span>'+goLabel+'</span></a>':'')+
-        '</article>';
-    });
-    setList(el,html,an);
+    setList(el,listHtml(items,t,today,false,{}),an);
+  }
+
+  // "2026-11-25T16:20:00+01:00" -> "2026.11.25. 16:20" (Budapest time)
+  function fmtUpd(v){
+    v=String(v||"").trim();if(!v)return "";
+    if(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?(Z|[+-]\d{2}:?\d{2})$/.test(v)){
+      var d=new Date(v);
+      if(!isNaN(d)){
+        var p={};
+        new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/Budapest",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d).forEach(function(x){p[x.type]=x.value;});
+        return p.year+"."+p.month+"."+p.day+". "+p.hour+":"+p.minute;
+      }
+    }
+    var m=/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/.exec(v);   // no offset: taken as Budapest time as written
+    return m?m[1]+"."+m[2]+"."+m[3]+". "+m[4]+":"+m[5]:"";
+  }
+  function updText(){
+    var s=fmtUpd(UPD);if(s)return s;
+    var f=String(window.ZC_UPDATED||""),m=/^(\d{4})-(\d{2})-(\d{2})/.exec(f);
+    return m?m[1]+"."+m[2]+"."+m[3]+".":f;
   }
 
   function applyStatic(){
@@ -513,11 +651,16 @@
     document.getElementById("tagline").textContent=t.tag;
     var w=document.querySelectorAll("#what button");
     w[0].textContent=t.all;w[1].textContent=t.klass;w[2].textContent=t.party;
+    var vb=document.querySelectorAll("#view button");
+    vb[0].textContent=t.vUp;vb[1].textContent=t.vPast;
+    vb.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.v===view);});
     var n=document.querySelectorAll("#when button");
     n[0].textContent=t.today;n[1].textContent=t.allTime;
+    document.getElementById("when").classList.toggle("hide",view==="past");
+    document.getElementById("sepWhen").classList.toggle("hide",view==="past");
     document.getElementById("disclaimer").textContent=t.disc;
     document.getElementById("updLabel").textContent=t.upd;
-    document.getElementById("upd").textContent=window.ZC_UPDATED||"";
+    document.getElementById("upd").textContent=updText();
     var lb=document.getElementById("langBtn");
     lb.innerHTML=esc(S.lang.toUpperCase())+" "+ICO_D;lb.setAttribute("aria-label",t.langLabel);lb.title=t.langLabel;
     var link=document.getElementById("submitLink"),u=(window.ZC_CONFIG||{}).submitUrl;
@@ -554,14 +697,18 @@
   function update(){save();applyStatic();render();}
 
   document.querySelectorAll("#what button").forEach(function(b){b.addEventListener("click",function(){S.what=(b.dataset.v!=="all"&&S.what===b.dataset.v)?"all":b.dataset.v;update();});});
+  document.querySelectorAll("#view button").forEach(function(b){b.addEventListener("click",function(){if(view===b.dataset.v)return;view=b.dataset.v;S.day="";mexp=false;update();});});
   document.getElementById("weekstrip").addEventListener("click",function(ev){
+    var td0=todayISO();
     var tg=ev.target.closest("button[data-toggle]");
-    if(tg){animDir="D";mexp=!mexp;if(mexp){var td=todayISO().split("-"),wsd=addDays(addDays(todayISO(),-((toDate(todayISO()).getUTCDay()+6)%7)),7*off).split("-");moff=Math.max(0,((+wsd[0])*12+(+wsd[1]))-((+td[0])*12+(+td[1])));}render();return;}
+    if(tg){animDir="D";mexp=!mexp;if(mexp){var td=td0.split("-"),wsd=addDays(monOf(td0),7*off).split("-");moff=Math.max(minMoffFor(td0),((+wsd[0])*12+(+wsd[1]))-((+td[0])*12+(+td[1])));}render();return;}
+    var nw=ev.target.closest("button[data-now]");
+    if(nw){animDir=(mexp?moff:off)<0?"R":"L";off=0;moff=0;S.day="";update();return;}
     var n=ev.target.closest("button[data-nav]");
-    if(n&&!n.disabled){var dir=+n.dataset.nav;animDir=dir>0?"R":"L";if(mexp)moff=Math.max(0,Math.min(12,moff+dir));else off=Math.max(0,Math.min(12,off+dir));S.day="";update();return;}
+    if(n&&!n.disabled){var dir=+n.dataset.nav;animDir=dir>0?"R":"L";if(mexp)moff=Math.max(minMoffFor(td0),Math.min(12,moff+dir));else off=Math.max(minOffFor(td0),Math.min(12,off+dir));S.day="";update();return;}
     var b=ev.target.closest("button[data-d]");if(!b||b.disabled)return;
     var d=b.dataset.d;S.day=S.day===d?"":d;
-    if(S.day){var t0=todayISO(),m0=addDays(t0,-((toDate(t0).getUTCDay()+6)%7)),m1=addDays(d,-((toDate(d).getUTCDay()+6)%7));off=Math.round((toDate(m1)-toDate(m0))/604800000);mexp=false;}
+    if(S.day){off=Math.round((toDate(monOf(d))-toDate(monOf(td0)))/604800000);mexp=false;}
     update();
   });
   (function(){
@@ -581,20 +728,26 @@
     el.addEventListener("touchstart",function(e){if(e.touches.length!==1)return;on=true;x0=e.touches[0].clientX;y0=e.touches[0].clientY;},{passive:true});
     el.addEventListener("touchend",function(e){
       if(!on)return;on=false;var t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;
+      if(view==="past"||hashSlug())return;
       if(Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*1.6)return;
       var dir=dx<0?1:-1,td=todayISO();
       if(S.day&&!mexp){
         var d=addDays(S.day,dir);
-        if(d<td||d>addDays(td,7*13))return;
-        var m0=addDays(td,-((toDate(td).getUTCDay()+6)%7)),m1=addDays(d,-((toDate(d).getUTCDay()+6)%7));
-        S.day=d;off=Math.round((toDate(m1)-toDate(m0))/604800000);animDir=dir>0?"R":"L";update();
+        if(d<minDay(td)||d>addDays(td,7*13))return;
+        S.day=d;off=Math.round((toDate(monOf(d))-toDate(monOf(td)))/604800000);animDir=dir>0?"R":"L";update();
       }else{
         var b=document.querySelector('#weekstrip [data-nav="'+dir+'"]');if(b&&!b.disabled)b.click();
       }
     },{passive:true});
   })();
-  document.querySelectorAll("#when button").forEach(function(b){b.addEventListener("click",function(){if(b.dataset.v==="today"){off=0;S.day=(S.day===todayISO())?"":todayISO();}else S.day="";update();});});
+  document.querySelectorAll("#when button").forEach(function(b){b.addEventListener("click",function(){if(b.dataset.v==="today"){off=0;moff=0;S.day=(S.day===todayISO())?"":todayISO();}else S.day="";update();});});
   document.querySelectorAll("[data-style]").forEach(function(b){b.addEventListener("click",function(){S[b.dataset.style]=!S[b.dataset.style];update();});});
+  // organizer logo missing -> monogram
+  document.getElementById("list").addEventListener("error",function(e){
+    var im=e.target;
+    if(im&&im.classList&&im.classList.contains("olg")&&im.parentNode){var m=document.createElement("span");m.className="mono";m.setAttribute("aria-hidden","true");m.textContent=im.getAttribute("data-mono")||"";im.parentNode.replaceChild(m,im);}
+  },true);
+  window.addEventListener("hashchange",function(){window.scrollTo(0,0);update();});
   // language: four buttons on wide screens, one dropdown button on phones
   var langBtn=document.getElementById("langBtn"),langs=document.getElementById("langs");
   function closeLang(){langs.classList.remove("open");langBtn.setAttribute("aria-expanded","false");}
@@ -611,7 +764,9 @@
   document.addEventListener("visibilitychange",function(){if(!document.hidden)tick();});
 
   // ---- Live data: published Google Sheet (CSV), only approved rows; falls back to events.js ----
-  var CSV_KEY="zc_csv1",FALLBACK=window.ZC_EVENTS||[],FALLBACK_UPD=window.ZC_UPDATED,usedCache=false;
+  var CSV_KEY="zc_csv2",ORG_KEY="zc_orgs1",FALLBACK=window.ZC_EVENTS||[],usedCache=false;
+  var TRUEV=["true","igaz","1","yes","igen","jóváhagyva"];
+  function yes(v){return TRUEV.indexOf(String(v||"").trim().toLowerCase())>-1;}
   function parseCSV(txt){
     var rows=[],row=[],f="",q=false,c;txt=String(txt).replace(/^﻿/,"");
     for(var i=0;i<txt.length;i++){c=txt.charAt(i);
@@ -625,13 +780,14 @@
   }
   function validISO(s){if(!/^\d{4}-\d{2}-\d{2}$/.test(s))return false;var d=toDate(s);return !isNaN(d)&&d.toISOString().slice(0,10)===s;}
   function slugId(s){return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,80);}
-  function csvToEvents(txt){
-    var rows=parseCSV(txt);if(rows.length<2)return [];
-    var h=rows[0].map(function(x){return String(x).trim().toLowerCase();}),out=[];
+  function heads(rows){return rows[0].map(function(x){return String(x).trim().toLowerCase();});}
+  function csvField(rows,key){if(rows.length<2)return "";var i=heads(rows).indexOf(key);return i<0?"":String(rows[1][i]==null?"":rows[1][i]).trim();}
+  function csvToEvents(rows){
+    if(rows.length<2)return [];
+    var h=heads(rows),out=[];
     for(var r=1;r<rows.length;r++){
       var g=function(k){var i=h.indexOf(k);return i<0?"":String(rows[r][i]==null?"":rows[r][i]).trim();};
-      var ap=(g("jóváhagyva")||g("approved")).toLowerCase();
-      if(["true","igaz","1","yes","igen","jóváhagyva"].indexOf(ap)<0)continue;           // only approved rows
+      if(!yes(g("jóváhagyva")||g("approved")))continue;                              // only approved rows
       var type=g("type").toLowerCase(),start=g("start"),end=g("end"),url=g("url");
       if(!GROUP[type]||!validISO(start)||(end&&!validISO(end)))continue;     // skip malformed rows
       var th=g("title_hu"),te=g("title_en");if(!th&&!te)continue;
@@ -641,8 +797,8 @@
       var also=g("also").toLowerCase();if(GROUP[also])e.also=also;
       var st=g("styles").toLowerCase().split(/[,;]\s*/).filter(Boolean);e.styles=st.length?st:["zouk"];
       var mx=g("mixed").toLowerCase();
-      if(mx&&["false","hamis","0","no","nem"].indexOf(mx)<0){e.mixed=["true","igaz","1","yes","igen","jóváhagyva"].indexOf(mx)>-1?true:mx.split(/[,;]\s*/).filter(Boolean);}
-      if(["true","igaz","1","yes","igen","jóváhagyva"].indexOf(g("verify").toLowerCase())>-1)e.verify=true;
+      if(mx&&["false","hamis","0","no","nem"].indexOf(mx)<0){e.mixed=yes(mx)?true:mx.split(/[,;]\s*/).filter(Boolean);}
+      if(yes(g("verify")))e.verify=true;
       var nh=g("note_hu"),ne=g("note_en");if(nh||ne)e.note=nh&&ne&&nh!==ne?{hu:nh,en:ne}:(nh||ne);
       var wk=parseInt(g("weekly"),10);
       if(wk>=1&&wk<=7){var fr=g("from")||start;if(validISO(fr)){e.weekly=wk;e.from=fr;}}
@@ -650,29 +806,58 @@
     }
     return out;
   }
-  function useEvents(list,upd){window.ZC_EVENTS=list;window.ZC_UPDATED=upd;update();}
+  // organizers sheet: name, slug, url, city, bio_hu, bio_en, logo, active – only active rows; null = not an organizers CSV
+  function csvToOrgs(rows){
+    if(rows.length<1)return null;
+    var h=heads(rows);if(h.indexOf("name")<0||h.indexOf("active")<0)return null;
+    var out=[],seen={};
+    for(var r=1;r<rows.length;r++){
+      var g=function(k){var i=h.indexOf(k);return i<0?"":String(rows[r][i]==null?"":rows[r][i]).trim();};
+      if(!yes(g("active")))continue;
+      var name=g("name");if(!name)continue;
+      var slug=slugId(g("slug")||name);if(!slug||seen[slug])continue;seen[slug]=1;
+      var url=g("url");
+      out.push({name:name,slug:slug,url:/^https?:\/\//i.test(url)?url:"",city:g("city"),bio_hu:g("bio_hu"),bio_en:g("bio_en"),logo:yes(g("logo"))});
+    }
+    return out;
+  }
+  function setOrgs(list){ORGS=list;ORGS_BY_SLUG={};ORGS_BY_NAME={};list.forEach(function(o){ORGS_BY_SLUG[o.slug]=o;ORGS_BY_NAME[norm(o.name)]=o;});}
+  function useEvents(list,upd){window.ZC_EVENTS=list;UPD=upd||"";update();}
+  // fetch with a time limit (no AbortSignal): the slower of the two simply loses the race
+  function fetchText(u,ms){
+    var tm,timer=new Promise(function(_,rej){tm=setTimeout(function(){rej(new Error("timeout"));},ms);});
+    var req=fetch(u+(u.indexOf("?")>-1?"&":"?")+"_="+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.text();});
+    return Promise.race([req,timer]).then(function(v){clearTimeout(tm);return v;},function(e){clearTimeout(tm);throw e;});
+  }
   function loadLive(){
     var u=(window.ZC_CONFIG||{}).csvUrl;if(!u)return;
-    var ctl=window.AbortController?new AbortController():null,tm=setTimeout(function(){if(ctl)ctl.abort();},8000);
-    fetch(u+(u.indexOf("?")>-1?"&":"?")+"_="+Date.now(),{cache:"no-store",signal:ctl?ctl.signal:undefined})
-      .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.text();})
-      .then(function(txt){
-        clearTimeout(tm);var list=csvToEvents(txt),nr=Math.max(parseCSV(txt).length-1,0);
-        console.info("Zouk Calendar: CSV rows "+nr+", usable approved events "+list.length);
-        if(!list.length)throw new Error("no approved rows (CSV rows: "+nr+")");
-        var day=todayISO();
-        try{localStorage.setItem(CSV_KEY,JSON.stringify({at:day,events:list}));}catch(e){}
-        useEvents(list,day);
-      })
-      .catch(function(err){clearTimeout(tm);console.warn("Zouk Calendar: using the built-in list – "+(err&&err.message||err));if(usedCache)useEvents(FALLBACK,FALLBACK_UPD);});
+    fetchText(u,8000).then(function(txt){
+      var rows=parseCSV(txt),list=csvToEvents(rows),nr=Math.max(rows.length-1,0),upd=csvField(rows,"updated");
+      console.info("Zouk Calendar: CSV rows "+nr+", usable approved events "+list.length+", updated "+(upd||"–"));
+      if(!list.length)throw new Error("no approved rows (CSV rows: "+nr+")");
+      try{localStorage.setItem(CSV_KEY,JSON.stringify({at:todayISO(),upd:upd,events:list}));}catch(e){}
+      useEvents(list,upd);
+    }).catch(function(err){console.warn("Zouk Calendar: using the built-in list – "+(err&&err.message||err));if(usedCache)useEvents(FALLBACK,"");});
+  }
+  function loadOrgs(){
+    var u=(window.ZC_CONFIG||{}).orgsCsvUrl;if(!u){ORGS_READY=true;return;}
+    fetchText(u,8000).then(function(txt){
+      var list=csvToOrgs(parseCSV(txt));if(!list)throw new Error("not an organizers CSV");
+      try{localStorage.setItem(ORG_KEY,JSON.stringify({orgs:list}));}catch(e){}
+      setOrgs(list);ORGS_READY=true;update();
+    }).catch(function(err){console.warn("Zouk Calendar: organizer pages unavailable – "+(err&&err.message||err));ORGS_READY=true;update();});
   }
   // first paint: last good sheet data from this browser, otherwise events.js
   if((window.ZC_CONFIG||{}).csvUrl){
-    try{var cc=JSON.parse(localStorage.getItem(CSV_KEY)||"null");if(cc&&cc.events&&cc.events.length){window.ZC_EVENTS=cc.events;window.ZC_UPDATED=cc.at;usedCache=true;}}catch(e){}
+    try{var cc=JSON.parse(localStorage.getItem(CSV_KEY)||"null");if(cc&&cc.events&&cc.events.length){window.ZC_EVENTS=cc.events;UPD=cc.upd||"";usedCache=true;}}catch(e){}
+  }
+  if((window.ZC_CONFIG||{}).orgsCsvUrl){
+    try{var oc=JSON.parse(localStorage.getItem(ORG_KEY)||"null");if(oc&&oc.orgs)setOrgs(oc.orgs);}catch(e){}
   }
 
   update();
   loadLive();
+  loadOrgs();
 })();
 </script>
 </body>
