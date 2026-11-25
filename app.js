@@ -1,4 +1,4 @@
-/* Zouk Calendar app v1.0.4. Needs events.js (window.ZC_EVENTS, ZC_CONFIG, ZC_HOLIDAYS) loaded first. */
+/* Zouk Calendar app v1.0.5. Needs events.js (window.ZC_EVENTS, ZC_CONFIG, ZC_HOLIDAYS) loaded first. */
 (function(){
   var T={
     hu:{tag:"Hol zoukolhatsz? Brazilian zouk és lambada Magyarországon.",
@@ -10,7 +10,7 @@
       by:"Szervező",detailsLead:"Részletek a ",details:"Facebookon →",detailsOther:"Részletek",langLabel:"Nyelv",submit:"Esemény beküldése",soon:"Esemény beküldése – hamarosan",
       disc:"Az adatok a szervezők nyilvános Facebook-oldalairól származnak; a pontos időpontot és helyszínt mindig ellenőrizd az esemény oldalán. A fesztiválok és hétvégék városra való szűrésnél is látszanak.",
       upd:"Utolsó frissítés:",wk:"Hét",weekWord:"hét",
-      abroad:"Külföld",contact:"Kontakt",
+      abroad:"Külföld",contact:"Kontakt",music:"Zene",
       install:"Kezdőképernyőre",iosHelp:"iPhone-on: Megosztás → Főképernyőhöz adás.",
       vUp:"Közelgő",vPast:"Múltbeli",emptyPast:"Az elmúlt 12 hónapban nincs ilyen esemény.",
       back:"← Vissza a naptárhoz",toSite:"Weboldal",toFb:"Facebook-oldal",orgUp:"Közelgő események",orgPast:"Múltbeli események (elmúlt 12 hónap)",orgNoUp:"Jelenleg nincs közelgő esemény.",loading:"Betöltés…",
@@ -26,7 +26,7 @@
       by:"Organizer",detailsLead:"Details on ",details:"Facebook →",detailsOther:"Details",langLabel:"Language",submit:"Submit an event",soon:"Submit an event – coming soon",
       disc:"Data comes from the organizers' public Facebook pages; always check the exact time and venue on the event page. Festivals and weekenders stay visible when you filter by city.",
       upd:"Last updated:",wk:"Wk",weekWord:"Week",
-      abroad:"Abroad",contact:"Contact",
+      abroad:"Abroad",contact:"Contact",music:"Music",
       install:"Add to Home Screen",iosHelp:"On iPhone: Share → Add to Home Screen.",
       vUp:"Upcoming",vPast:"Past",emptyPast:"No events in the last 12 months.",
       back:"← Back to the calendar",toSite:"Website",toFb:"Facebook page",orgUp:"Upcoming events",orgPast:"Past events (last 12 months)",orgNoUp:"No upcoming events right now.",loading:"Loading…",
@@ -42,7 +42,7 @@
       by:"Organiza",detailsLead:"Detalles en ",details:"Facebook →",detailsOther:"Detalles",langLabel:"Idioma",submit:"Enviar un evento",soon:"Enviar un evento – próximamente",
       disc:"Los datos proceden de las páginas públicas de Facebook de los organizadores; comprueba siempre la hora y el lugar en la página del evento. Los festivales y weekenders se muestran también al filtrar por ciudad.",
       upd:"Última actualización:",wk:"Sem",weekWord:"Semana",
-      abroad:"Extranjero",contact:"Contacto",
+      abroad:"Extranjero",contact:"Contacto",music:"Música",
       install:"Añadir al inicio",iosHelp:"En iPhone: Compartir → Añadir a pantalla de inicio.",
       vUp:"Próximos",vPast:"Pasados",emptyPast:"No hay eventos en los últimos 12 meses.",
       back:"← Volver al calendario",toSite:"Sitio web",toFb:"Página de Facebook",orgUp:"Próximos eventos",orgPast:"Eventos pasados (últimos 12 meses)",orgNoUp:"Ahora mismo no hay eventos próximos.",loading:"Cargando…",
@@ -58,7 +58,7 @@
       by:"Organização",detailsLead:"Detalhes no ",details:"Facebook →",detailsOther:"Detalhes",langLabel:"Idioma",submit:"Enviar um evento",soon:"Enviar um evento – em breve",
       disc:"Os dados vêm das páginas públicas de Facebook dos organizadores; confira sempre o horário e o local na página do evento. Festivais e weekenders aparecem também ao filtrar por cidade.",
       upd:"Última atualização:",wk:"Sem",weekWord:"Semana",
-      abroad:"Exterior",contact:"Contato",
+      abroad:"Exterior",contact:"Contato",music:"Música",
       install:"Adicionar à tela inicial",iosHelp:"No iPhone: Compartilhar → Adicionar à Tela de Início.",
       vUp:"Próximos",vPast:"Passados",emptyPast:"Nenhum evento nos últimos 12 meses.",
       back:"← Voltar ao calendário",toSite:"Site",toFb:"Página do Facebook",orgUp:"Próximos eventos",orgPast:"Eventos passados (últimos 12 meses)",orgNoUp:"Nenhum evento próximo no momento.",loading:"Carregando…",
@@ -264,7 +264,7 @@
       '<div class="meta">'+[every,dateTxt,o.time,where].filter(Boolean).map(esc).join(" · ")+'</div>'+
       orgLine+
       (o.contact?'<div class="meta">'+esc(t.contact)+': '+esc(o.contact)+'</div>':'')+
-      (djHtml(o.djs)?'<div class="meta">DJ: '+djHtml(o.djs)+'</div>':'')+
+      (djHtml(o.djs)?'<div class="meta">'+esc(t.music)+': '+djHtml(o.djs)+'</div>':'')+
       (o.note?'<div class="note">'+esc(L(o.note))+'</div>':'')+
       '</div>'+
       (o.url?'<a class="go" href="'+esc(o.url)+'" target="_blank" rel="noopener"><span>'+goLabel+'</span>'+ICO_EXT+'</a>':'')+
