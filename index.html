@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.16.3 – single file: HTML + CSS (styles v1.2.3) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.17.24 – single file: HTML + CSS (styles v1.3.24) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -19,19 +19,19 @@
   :root{
     color-scheme:light;
     --bg:#fbf8ee; --card:#ffffff; --ink:#1c2a22; --muted:#5d695f; --line:#e3ddc9;
-    --head:#0b5a35; --pressed:#0b5a35; --pressedInk:#fff; --accent:#c42f2a; --chip:#e4f1e7; --chipInk:#0b5a35; --gold:#fcd116; --off:#f0ebd9;
+    --head:#0b5a35; --pressed:#cfeadb;--pb:#bfe1cf;--hb:#7fb898;--lblc:#2f8159;--arr:#747c73; --pressedInk:#0b3d24; --accent:#c42f2a; --chip:#e4f1e7; --chipInk:#0b5a35; --gold:#fcd116; --off:#f0ebd9;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       color-scheme:dark;
       --bg:#0e1612; --card:#16221b; --ink:#e9f1ec; --muted:#9bb0a2; --line:#284236;
-      --head:#0a3d26; --pressed:#14683f; --pressedInk:#fff; --accent:#ff8f78; --chip:#1e382b; --chipInk:#bfe9d0; --gold:#fcd116; --off:#2b3830;
+      --head:#0a3d26; --pressed:#14683f;--pb:#2b8a5c; --pressedInk:#fff; --accent:#ff8f78; --chip:#1e382b; --chipInk:#bfe9d0; --gold:#fcd116; --off:#2b3830;
     }
   }
   :root[data-theme="dark"]{
     color-scheme:dark;
     --bg:#0e1612; --card:#16221b; --ink:#e9f1ec; --muted:#9bb0a2; --line:#284236;
-    --head:#0a3d26; --pressed:#14683f; --pressedInk:#fff; --accent:#ff8f78; --chip:#1e382b; --chipInk:#bfe9d0; --gold:#fcd116; --off:#2b3830;
+    --head:#0a3d26; --pressed:#14683f;--pb:#2b8a5c; --pressedInk:#fff; --accent:#ff8f78; --chip:#1e382b; --chipInk:#bfe9d0; --gold:#fcd116; --off:#2b3830;
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
@@ -71,7 +71,7 @@
   .what{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
   .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:baseline}
   .what button{padding:8px 6px;border-radius:14px;border:2px solid var(--line);background:var(--card);cursor:pointer;font-weight:600}
-  .what button[aria-pressed="true"]{background:var(--pressed);color:var(--pressedInk);border-color:var(--pressed)}
+  .what button[aria-pressed="true"]{background:var(--pressed);color:var(--pressedInk);border-color:var(--pb,var(--pressed))}
   .what button:not([aria-pressed="true"]),.filters .pill:not([aria-pressed="true"]){background:color-mix(in srgb,var(--card) 58%,transparent)}
   .filters{display:flex;align-items:center;gap:8px;overflow-x:auto;white-space:nowrap;padding:2px 0 6px;scrollbar-width:none}
   .filters::-webkit-scrollbar{display:none}
@@ -88,7 +88,7 @@
   .body a.go{flex:none}
   .tag.mixed{background:transparent;color:var(--muted);border:1px solid var(--line);font-weight:500}
   .pill{border:1px solid var(--line);background:var(--card);padding:7px 14px;border-radius:999px;cursor:pointer}
-  .pill[aria-pressed="true"]{background:var(--pressed);color:var(--pressedInk);border-color:var(--pressed)}
+  .pill[aria-pressed="true"]{background:var(--pressed);color:var(--pressedInk);border-color:var(--pb,var(--pressed))}
   .week{margin:12px 0 0;padding-bottom:12px;border-bottom:1px solid var(--line)}
   @keyframes zcUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   @keyframes zcPop{0%{transform:scale(1)}45%{transform:scale(1.04)}100%{transform:scale(1)}}
@@ -110,7 +110,7 @@
   @media (prefers-reduced-motion:reduce){.aR,.aL,.aD{animation:none}}
   #weekstrip{touch-action:none}
   .wkhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;color:var(--chipInk);font-weight:600;font-size:.9rem}
-  .wkhead button{display:inline-flex;align-items:center;justify-content:center;width:40px;height:37px;padding:0;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+  .wkhead button{display:inline-flex;align-items:center;justify-content:center;width:40px;height:37px;padding:0;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--arr,var(--ink));cursor:pointer}
   .wkhead button svg{display:block}
   .wkhead button:disabled{opacity:.35;cursor:default}
   .week .days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
@@ -132,15 +132,16 @@
   .week .days button.off:not(.past):not([aria-pressed="true"]){background:var(--off)}
   .week .days button.today{border-color:var(--chipInk);border-width:1.5px}
   .week .days button.today:not([aria-pressed="true"]) .dn{color:var(--chipInk)}
-  .week .days button[aria-pressed="true"]{background:var(--pressed);color:var(--pressedInk);border-color:var(--pressed)}
+  .week .days button[aria-pressed="true"]{background:var(--pressed);color:var(--pressedInk);border-color:var(--pb,var(--pressed))}
   .week .days button.past[aria-pressed="true"] .dn,.week .days button.past[aria-pressed="true"] .dots{opacity:1}
   .week .days button.today[aria-pressed="true"]{border-color:var(--chipInk);box-shadow:inset 0 0 0 1.5px var(--off)}
   .week .days button[aria-pressed="true"] .wd{color:inherit;opacity:.85}
+  .week .days button.none[aria-pressed="true"]{opacity:1}
   .week .days button[aria-pressed="true"] .dots i{border-color:#fff}
-  .wkhead .lbl{flex:1;width:auto;height:37px;margin:0 8px;gap:8px;border:1px solid var(--pressed);background:var(--card);color:var(--pressed);font:inherit;font-weight:700;font-size:.92rem;}
+  .wkhead .lbl{flex:1;width:auto;height:37px;margin:0 8px;gap:8px;border:1px solid var(--line);background:var(--card);color:var(--lblc,var(--pressed));font:inherit;font-weight:700;font-size:.92rem;}
   .wkhead .lbl .chev{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--pressed);color:var(--pressedInk)}
   .wkhead .lbl[aria-expanded="true"] .chev svg{transform:rotate(180deg)}
-  .wkhead .tdy{width:auto;padding:0 14px;margin:0 8px 0 0;border-color:var(--pressed);background:var(--pressed);color:var(--pressedInk);font-weight:700;font-size:.85rem}
+  .wkhead .tdy{width:auto;padding:0 14px;margin:0 8px 0 0;border-color:var(--pb,var(--pressed));background:var(--pressed);color:var(--pressedInk);font-weight:700;font-size:.85rem}
   .wkhead .tdy.l{margin:0 0 0 8px}
   .week .days.month{gap:4px;grid-template-columns:20px repeat(7,1fr)}
   .week .wn{display:flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--muted);opacity:.85}
@@ -308,13 +309,13 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
 @media (prefers-reduced-motion:reduce){.what button,.pill,#list.st article,.week .days button.today,#theme.spin svg{animation:none!important;transition:none}}
 
 /* dark theme: city colours on the day dots are lightened (no outline needed) */
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--lift:34%;--bp:#d9544b}}
-:root[data-theme="dark"]{--lift:34%;--bp:#d9544b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--lift:34%;--bp:#d93a6c}}
+:root[data-theme="dark"]{--lift:34%;--bp:#d93a6c}
 
 /* v1.16.0: type buttons and city chips share height, border and radius */
 :root{--btnH:42px;--btnR:999px}
 .what button,.cityrow .pill{box-sizing:border-box;min-height:var(--btnH);padding-left:14px;padding-right:14px;border:2px solid var(--line);border-radius:var(--btnR);font-size:1rem;line-height:1.15;padding-top:0;padding-bottom:0;display:flex;align-items:center;justify-content:center;text-align:center}
-.what button[aria-pressed="true"],.cityrow .pill[aria-pressed="true"]{border-color:var(--pressed)}
+.what button[aria-pressed="true"],.cityrow .pill[aria-pressed="true"]{border-color:var(--pb,var(--pressed))}
 @media (max-width:520px){:root{--btnH:44px;--btnR:999px}.what button,.cityrow .pill{font-size:.88rem;border-width:1.5px}}
 </style>
 </head>
@@ -522,7 +523,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
   function isAbroad(c){var k=norm(c);return k==="kulfold"||k==="abroad";}
   function cityKey(c){return isAbroad(c)?"Külföld":c;}
   function cityName(c,t){return isAbroad(c)?t.abroad:c;}
-  var CITY_FIX={Budapest:{bg:"#c3453d",ink:"#fff"},Debrecen:{bg:"#e09a00",ink:"#241800"},"Külföld":{bg:"#0b5a9a",ink:"#fff"}};
+  var CITY_FIX={Budapest:{bg:"#bd1b4f",ink:"#fff"},Debrecen:{bg:"#e09a00",ink:"#241800"},"Külföld":{bg:"#1f57d6",ink:"#fff"}};
   var CITY_COLORS=["#0b5a9a","#7a3fb0","#c2410c","#0f766e","#be185d","#4d7c0f"];
   function cityInk(c){c=cityKey(c);return CITY_FIX[c]?CITY_FIX[c].ink:"#fff";}
   // dot colour: lightened in dark mode (--lift); Budapest keeps a true red there (--bp) instead of turning pink
@@ -807,10 +808,10 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     var link=document.getElementById("submitLink"),u=(window.ZC_CONFIG||{}).submitUrl;
     if(u){link.href=u;link.classList.remove("off");link.textContent=t.submit;}else{link.classList.add("off");link.removeAttribute("href");link.textContent=t.soon;}
     // city chips: Budapest | Debrecen | Külföld (abroad = group trips with a contact person); several can be on, none = all
-    var cs=document.getElementById("cities");cs.innerHTML="";
+    var cs=document.getElementById("cities"),wasOn=[].map.call(cs.querySelectorAll('[aria-pressed="true"]'),function(x){return x.dataset.city;});cs.innerHTML="";
     [["Budapest","Budapest"],["Debrecen","Debrecen"],["abroad",t.abroad]].forEach(function(p){
       var c=p[0],b=document.createElement("button");b.className="pill";b.dataset.city=c;
-      b.innerHTML='<span class="dot" style="background:'+dotBg(cityColor(c==="abroad"?"Külföld":c))+'"></span>'+esc(p[1]);b.setAttribute("aria-pressed",S.city.indexOf(c)>-1);
+      b.innerHTML='<span class="dot" style="background:'+dotBg(cityColor(c==="abroad"?"Külföld":c))+'"></span>'+esc(p[1]);b.setAttribute("aria-pressed",S.city.indexOf(c)>-1);if(S.city.indexOf(c)>-1&&wasOn.indexOf(c)>-1)b.style.animation="none"; // pop only when it turns active, not on every re-render
       b.addEventListener("click",function(){S.city=S.city.indexOf(c)>-1?S.city.filter(function(x){return x!==c;}):S.city.concat([c]);update();});
       cs.appendChild(b);
     });
