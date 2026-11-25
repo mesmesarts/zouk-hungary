@@ -1,4 +1,4 @@
-// Zouk Calendar – event data (v1.10.5) – FALLBACK data: the site reads the published Google Sheet first (csvUrl) and uses this list only when the sheet is unreachable
+// Zouk Calendar – event data (v1.10.6) – FALLBACK data: the site reads the published Google Sheet first (csvUrl) and uses this list only when the sheet is unreachable
 // Add or edit events here. Dates are YYYY-MM-DD. Only zouk/lambada-related events.
 // type: party | regular | workshop | weekender | festival | retreat   (a course with an end date is still "regular")
 //   party                      -> "Parties"
@@ -76,7 +76,7 @@ window.ZC_EVENTS = [
   {
     id: "all-stars-festival-2027-10-28",
     mixed: true,
-    title: "All Stars Festival - SBKZ",
+    title: "All Stars Festival",
     start: "2027-10-28", end: "", time: "20:00",
     city: "Budapest", venue: "",
     type: "festival", styles: ["zouk"],
