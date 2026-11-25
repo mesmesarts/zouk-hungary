@@ -1,8 +1,8 @@
-/* Zouk Calendar app v1.0.5. Needs events.js (window.ZC_EVENTS, ZC_CONFIG, ZC_HOLIDAYS) loaded first. */
+/* Zouk Calendar app v1.0.6. Needs events.js (window.ZC_EVENTS, ZC_CONFIG, ZC_HOLIDAYS) loaded first. */
 (function(){
   var T={
     hu:{tag:"Hol zoukolhatsz? Brazilian zouk és lambada Magyarországon.",
-      all:"Mind",klass:"Órák",party:"Bulik és minden más",
+      all:"Mind",klass:"Órák",party:"Bulik és\nminden más",
       lgClass:"rendszeres óra",lgParty:"egyéb egynapos",lgMulti:"többnapos",
       today:"Ma",week:"Ez a hét",allTime:"Összes",allCities:"Minden város",
       todayLabel:"Ma",weekly:"Hetente",mixed:"Vegyes",mixedTip:"A programban más táncok is vannak.",cal:"Naptárba",verify:"⚠ Ellenőrizd",verifyTip:"Az adat az oldal borítóképéről származik – ellenőrizd a Facebook-oldalon.",
