@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.18.0 – single file: HTML + CSS (styles v1.4.0) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.18.1 – single file: HTML + CSS (styles v1.4.1) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -68,7 +68,7 @@
   .controls{position:relative;background:var(--bg);padding:27px 0 10px;border-bottom:1px solid var(--line);z-index:5}
   .controls::before{content:"";position:absolute;top:0;left:50%;width:100vw;transform:translateX(-50%);height:9px;box-sizing:content-box;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(#ce2939 0 3px,#fff 3px 6px,#477050 6px 9px)}
   @media (min-width:700px){.controls{position:sticky;top:0}}
-  .what{display:grid;grid-template-columns:repeat(3,1fr) auto;gap:8px;margin-bottom:8px}
+  .what{display:grid;grid-template-columns:repeat(2,1fr) auto;gap:8px;margin-bottom:8px}
   .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:baseline}
   .what button{padding:8px 6px;border-radius:14px;border:2px solid var(--line);background:var(--card);cursor:pointer;font-weight:600}
   .what button[aria-pressed="true"]{background:var(--pressed);color:var(--pressedInk);border-color:var(--pb,var(--pressed))}
@@ -369,7 +369,6 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
   <div class="controls">
     <div class="banner" id="banner" aria-hidden="true"></div>
     <div class="what" id="what" role="group">
-      <button data-v="all"></button>
       <button data-v="class"></button>
       <button data-v="party"></button>
       <button type="button" id="favBtn" class="favbtn" aria-pressed="false"></button>
@@ -833,7 +832,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     document.documentElement.lang=S.lang;
     document.getElementById("tagline").textContent=t.tag;
     var w=document.querySelectorAll("#what button[data-v]");
-    w[0].textContent=t.all;w[1].textContent=t.klass;w[2].textContent=t.party;
+    w[0].textContent=t.klass;w[1].textContent=t.party;
     document.getElementById("disclaimer").textContent=t.disc;
     document.getElementById("updLabel").textContent=t.upd;
     document.getElementById("upd").textContent=updText();
