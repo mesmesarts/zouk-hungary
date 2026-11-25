@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "Zouk Calendar Hungary",
+  "short_name": "Zouk Calendar",
+  "description": "Brazilian zouk & lambada events, parties and classes in Hungary.",
+  "lang": "hu",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fbf8ee",
+  "theme_color": "#0b5a35",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
