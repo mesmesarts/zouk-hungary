@@ -1,8 +1,8 @@
-/* Zouk Calendar service worker v1.0.1 (PWA v1.13.0)
+/* Zouk Calendar service worker v1.0.2 (PWA v1.14.0)
  * Same-origin files: network first (always fresh), cached copy only when offline.
  * Cross-origin requests (the published Google Sheet CSV) are NOT handled here; the page keeps its own localStorage fallback. */
-var CACHE = 'zc-pwa-1.0.1';
-var SHELL = ['./', 'index.html', 'events.js', 'style.css', 'app.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
+var CACHE = 'zc-pwa-1.0.2';
+var SHELL = ['./', 'index.html', 'events.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) {

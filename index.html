@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.13.6 (index.html + style.css v1.0.3 + app.js v1.0.6). When style.css or app.js changes, bump its ?v= below. -->
+<!-- Zouk Calendar v1.14.0 – single file: HTML + CSS (styles v1.0.5) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -14,7 +14,268 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Zouk Calendar">
-<link rel="stylesheet" href="style.css?v=1.0.3">
+<style>
+/* Zouk Calendar styles v1.0.5 */
+  :root{
+    color-scheme:light;
+    --bg:#fbf8ee; --card:#ffffff; --ink:#1c2a22; --muted:#5d695f; --line:#e3ddc9;
+    --head:#0b5a35; --pressed:#0b5a35; --pressedInk:#fff; --accent:#c42f2a; --chip:#e4f1e7; --chipInk:#0b5a35; --gold:#fcd116; --off:#f0ebd9;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme:dark;
+      --bg:#0e1612; --card:#16221b; --ink:#e9f1ec; --muted:#9bb0a2; --line:#284236;
+      --head:#0a3d26; --pressed:#14683f; --pressedInk:#fff; --accent:#ff8f78; --chip:#1e382b; --chipInk:#bfe9d0; --gold:#fcd116; --off:#2b3830;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme:dark;
+    --bg:#0e1612; --card:#16221b; --ink:#e9f1ec; --muted:#9bb0a2; --line:#284236;
+    --head:#0a3d26; --pressed:#14683f; --pressedInk:#fff; --accent:#ff8f78; --chip:#1e382b; --chipInk:#bfe9d0; --gold:#fcd116; --off:#2b3830;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+  .hide{display:none!important}
+  .wrap{max-width:820px;margin:0 auto;padding:0 16px}
+  header{position:relative;background:var(--head);color:#fff;padding:14px 0 12px;z-index:30}
+  header .deco{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  header .deco::after{content:"";position:absolute;right:40px;top:15px;width:120px;height:120px;border-radius:50%;background:#2a5fc4;opacity:.5}
+  header .deco::before{content:"";position:absolute;right:-50px;top:-10px;width:300px;height:170px;background:var(--gold);opacity:.13;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+  header .wrap{position:relative;z-index:1}
+  .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  h1{margin:0 0 2px;font-size:1.5rem;letter-spacing:-.01em}
+  header p{margin:0;opacity:.88;font-size:.86rem;line-height:1.35}
+  .tools{display:flex;gap:6px}
+  .tools button{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:6px 12px;font:inherit;font-size:.9rem;cursor:pointer}
+  .tools button[aria-pressed="true"]{background:rgba(255,255,255,.26);color:#fff;border-color:rgba(255,255,255,.75);font-weight:700}
+  .tools #install{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+  .tools #install svg{flex:none;display:block}
+  .tip{position:fixed;left:12px;right:12px;bottom:16px;max-width:420px;margin:0 auto;z-index:60;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 8px 22px rgba(0,0,0,.28);font-size:.92rem;text-align:center}
+  .lw{position:relative;display:flex;gap:6px}
+  .langs{display:flex;gap:6px}
+  .langbtn{display:none}
+  button{font:inherit;color:var(--ink)}
+  /* city banner */
+  .banner{display:none;position:absolute;top:0;bottom:0;left:50%;width:100vw;transform:translateX(-50%);z-index:-1;overflow:hidden;pointer-events:none}
+  .banner svg *{fill:var(--head)!important}.banner svg{opacity:.5}
+  .banner.on{display:block}
+  .banner svg{position:absolute;inset:0;width:100%;height:100%}
+  .banner .cityname{position:absolute;left:max(16px,calc((100vw - 820px)/2 + 16px));bottom:10px;color:#fff;font-weight:700;font-size:1.1rem;text-shadow:0 1px 6px rgba(0,0,0,.4)}
+  .controls{position:relative;background:var(--bg);padding:24px 0 19px;border-bottom:1px solid var(--line);z-index:5}
+  .controls::before{content:"";position:absolute;top:0;left:50%;width:100vw;transform:translateX(-50%);height:9px;box-sizing:content-box;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(#ce2939 0 3px,#fff 3px 6px,#477050 6px 9px)}
+  @media (min-width:700px){.controls{position:sticky;top:0}}
+  .what{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;border:1px solid rgba(255,255,255,.6);vertical-align:baseline}
+  .what button{padding:8px 6px;border-radius:14px;border:2px solid var(--line);background:var(--card);cursor:pointer;font-weight:600}
+  .what button[aria-pressed="true"]{background:var(--pressed);color:var(--pressedInk);border-color:var(--pressed)}
+  .what button:not([aria-pressed="true"]),.filters .pill:not([aria-pressed="true"]){background:color-mix(in srgb,var(--card) 58%,transparent)}
+  .filters{display:flex;align-items:center;gap:8px;overflow-x:auto;white-space:nowrap;padding:2px 0 6px;scrollbar-width:none}
+  .filters::-webkit-scrollbar{display:none}
+  .filters .grp{display:flex;gap:8px;flex:none}
+  .filters .pill{flex:none}
+  .cityrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:2px 0 6px}
+  .cityrow .pill{display:flex;align-items:center;justify-content:center;min-width:0;padding:10px 8px;white-space:nowrap;line-height:1}
+  .cityrow .pill .dot{flex:none;vertical-align:middle;position:relative;top:1px}
+  .cityrow .pill:not([aria-pressed="true"]){background:color-mix(in srgb,var(--card) 58%,transparent)}
+  .sep{flex:none;width:1px;height:22px;background:var(--line)}
+  @media (max-width:700px){.filters{-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}}
+  .body{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+  .body .meta{flex:1;min-width:0}
+  .body a.go{flex:none}
+  .tag.mixed{background:transparent;color:var(--muted);border:1px solid var(--line);font-weight:500}
+  .pill{border:1px solid var(--line);background:var(--card);padding:7px 14px;border-radius:999px;cursor:pointer}
+  .pill[aria-pressed="true"]{background:var(--pressed);color:var(--pressedInk);border-color:var(--pressed)}
+  .week{margin:12px 0 0;padding-bottom:12px;border-bottom:1px solid var(--line)}
+  @keyframes zcUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes zcPop{0%{transform:scale(1)}45%{transform:scale(1.04)}100%{transform:scale(1)}}
+  @keyframes zcDot{from{opacity:0;scale:.2}to{opacity:1;scale:1}}
+  @keyframes zcF{from{opacity:0}to{opacity:1}}
+  #list.st{animation:zcF .32s ease-out}
+  .week .days button.pop{animation:zcPop .3s ease-out}
+  .week .days.aR .dots i,.week .days.aL .dots i{animation:zcDot .3s ease-out .1s backwards}
+  .week .days.month.aD button.m{animation:zcUp .26s ease-out both;animation-delay:calc(var(--r,0)*35ms)}
+  @keyframes zcBi{from{opacity:0}to{opacity:.5}}
+  @keyframes zcBo{from{opacity:.5}to{opacity:0}}
+  .banner.fade>svg{animation:zcBi .6s ease-in-out}
+  .banner .old{position:absolute;inset:0}.banner .old svg{animation:zcBo .6s ease-in-out forwards}
+  @media (prefers-reduced-motion:reduce){#list.st,.week .days button.pop,.week .days .dots i,.week .days.month.aD button.m,.banner.fade>svg,.banner .old svg{animation:none!important}}
+  @keyframes zcR{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+  @keyframes zcL{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
+  @keyframes zcD{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  .aR{animation:zcR .24s ease-out}.aL{animation:zcL .24s ease-out}.aD{animation:zcD .22s ease-out}
+  @media (prefers-reduced-motion:reduce){.aR,.aL,.aD{animation:none}}
+  #weekstrip{touch-action:none}
+  .wkhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;color:var(--chipInk);font-weight:600;font-size:.9rem}
+  .wkhead button{display:inline-flex;align-items:center;justify-content:center;width:40px;height:37px;padding:0;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+  .wkhead button svg{display:block}
+  .wkhead button:disabled{opacity:.35;cursor:default}
+  .week .days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .week .days button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0 7px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:inherit;cursor:pointer}
+  .week .wd{font-size:.72rem;color:var(--muted)}
+  .week .dn{font-weight:700;font-size:1.05rem}
+  .week .dots{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;min-height:10px}
+  .week .dots i{width:10px;height:10px;border-radius:50%;border:1px solid rgba(0,0,0,.25)}
+  .week .dots{align-items:center}
+  .week .dots i.c{width:7px;height:7px}   /* regular classes: smaller, so parties and multi-day events stand out */
+  .week .days button.none{opacity:.6}
+  /* past days: flat but clickable (last 12 months); older than that: disabled; weekend/holiday: tinted; today: ring */
+  .week .days button.past{opacity:1;cursor:pointer;background:transparent;border-color:transparent;color:var(--muted)}
+  .week .days button.past .dn{opacity:.55}
+  .week .days button.past .wd{opacity:.55}
+  .week .days button.past .dots{opacity:.75}
+  .week .days button.m.out.past{opacity:.6}
+  .week .days button.old{opacity:.3;cursor:default}
+  .week .days button.off:not(.past):not([aria-pressed="true"]){background:var(--off)}
+  .week .days button.today{border-color:var(--chipInk);border-width:1.5px}
+  .week .days button.today:not([aria-pressed="true"]) .dn{color:var(--chipInk)}
+  .week .days button[aria-pressed="true"]{background:var(--pressed);color:var(--pressedInk);border-color:var(--pressed)}
+  .week .days button.past[aria-pressed="true"] .dn,.week .days button.past[aria-pressed="true"] .dots{opacity:1}
+  .week .days button.today[aria-pressed="true"]{border-color:var(--chipInk);box-shadow:inset 0 0 0 1.5px var(--off)}
+  .week .days button[aria-pressed="true"] .wd{color:inherit;opacity:.85}
+  .week .days button[aria-pressed="true"] .dots i{border-color:#fff}
+  .wkhead .lbl{flex:1;width:auto;height:37px;margin:0 8px;gap:8px;border:1px solid var(--pressed);background:var(--card);color:var(--pressed);font:inherit;font-weight:700;font-size:.92rem;}
+  .wkhead .lbl .chev{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--pressed);color:var(--pressedInk)}
+  .wkhead .lbl[aria-expanded="true"] .chev svg{transform:rotate(180deg)}
+  .wkhead .tdy{width:auto;padding:0 14px;margin:0 8px 0 0;border-color:var(--pressed);background:var(--pressed);color:var(--pressedInk);font-weight:700;font-size:.85rem}
+  .wkhead .tdy.l{margin:0 0 0 8px}
+  .week .days.month{gap:4px;grid-template-columns:20px repeat(7,1fr)}
+  .week .wn{display:flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--muted);opacity:.85}
+  .week .wdh{text-align:center;font-size:.72rem;color:var(--muted);}
+  .week .days button.m{padding:4px 0 5px;border-radius:10px;border-width:1px}
+  .week .days button.m.out{opacity:.45}
+  .week .dots i.d{width:18px;border-radius:0}
+  .week .dots i.d.st{border-radius:999px 0 0 999px}
+  .week .dots i.d.en{border-radius:0 999px 999px 0}
+  .week .dots i.d.st.en{border-radius:999px}
+  .week .dots i.s{border-radius:1px;transform:rotate(45deg) scale(.82)}
+  .legend{display:flex;gap:14px;justify-content:center;margin-top:12px;line-height:1.2;font-size:.72rem;color:var(--muted)}
+  .legend i{display:inline-block;width:9px;height:9px;background:var(--muted);vertical-align:0;margin-right:3px;border-radius:50%}
+  .legend i.c{width:7px;height:7px;margin-right:4px}
+  .legend i.s{border-radius:1px;transform:rotate(45deg) scale(.82)}.legend i.d{width:16px;height:8px;border-radius:999px}
+  h2.day{font-size:1rem;margin:22px 0 8px;color:var(--chipInk);}
+  .ev{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 14px;margin-bottom:8px}
+  .ev h3{margin:0 0 2px;font-size:1.05rem}
+  .toprow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px}
+  .foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px}
+  .foot .meta{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.88rem}
+  .foot a.go{flex:none}
+  @media (max-width:520px){a.go .lead{display:none}}
+  .tag.verify{background:transparent;border:1px dashed var(--muted);color:var(--muted)}
+  .city{display:inline-flex;align-items:center;gap:4px;color:#fff;font-size:.8rem;font-weight:700;letter-spacing:.02em;line-height:1.45;border-radius:999px;padding:2px 10px}
+  .city svg{flex:none;display:block}
+  .meta{color:var(--muted);font-size:.93rem}
+  .tags{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+  .tag{background:var(--chip);color:var(--chipInk);border-radius:999px;padding:2px 10px;font-size:.8rem}
+  .tag.type{background:var(--pressed);color:var(--pressedInk)}
+  .note{margin-top:6px;font-size:.88rem;color:var(--muted)}
+  a.go{display:inline-block;margin:0;background:var(--pressed);color:var(--pressedInk);border:1px solid rgba(255,255,255,.22);font-weight:700;text-decoration:none;padding:7px 14px;border-radius:999px;box-shadow:0 2px 0 rgba(0,0,0,.18)}
+  a.go:hover{filter:brightness(1.08)}
+  a.go:active{transform:translateY(1px);box-shadow:none}
+  .empty{padding:32px 0;text-align:center;color:var(--muted)}
+  footer{max-width:820px;margin:32px auto;padding:0 16px 40px;color:var(--muted);font-size:.9rem}
+  footer .subp{text-align:center}
+  footer .copy{text-align:center;font-size:.8rem;opacity:.8;margin:18px 0 0}
+  footer .copy a{color:inherit;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:2px}
+  footer .copy a:hover{text-decoration-color:currentColor}
+  .submit{display:inline-block;background:var(--pressed);color:var(--pressedInk);border-radius:999px;padding:8px 16px;text-decoration:none;font-weight:600}
+  .submit.off{background:var(--line);color:var(--muted);pointer-events:none}
+  :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  /* card: content + full-height details button */
+  .ev{display:flex;align-items:stretch;padding:0;overflow:hidden}
+  .content{flex:1;min-width:0;padding:11px 14px}
+  .ev a.go{flex:none;display:flex;align-items:center;justify-content:center;text-align:center;width:92px;padding:0 10px;margin:0;border:0;border-left:1px solid var(--line);border-radius:0;box-shadow:none;font-size:.9rem;line-height:1.25}
+  a.go .lead{display:none}
+  .ext{display:none}
+  @media (min-width:700px){.ev a.go{width:150px;font-size:1rem}a.go .lead{display:inline}}
+  .cal{margin-left:auto;font-size:.8rem;font-weight:600;color:var(--chipInk);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:2px 10px;white-space:nowrap}
+  .cal:hover{background:var(--chip)}
+  @media (max-width:520px){
+    .cal .txt{display:none}.cal{padding:2px 8px;font-size:.9rem}
+    .ev a.go{width:88px;font-size:.8rem;padding:0 6px}
+    .top{display:block;position:relative}.tools{position:static;margin-top:10px}
+    .content{padding:10px 12px}
+    .wrap{padding:0 12px}
+  }
+  .cal{display:inline-flex;align-items:center;gap:5px}
+  .cal svg{flex:none}
+  .updated{font-size:.78rem;opacity:.75;margin-top:3px}
+  /* organizer links and organizer pages */
+  a.orglink{color:inherit;font-weight:600;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:2px}
+  a.orglink:hover{text-decoration-color:currentColor}
+  .backlink{display:inline-flex;align-items:center;margin-top:16px;padding:6px 0;color:var(--chipInk);font-weight:600;text-decoration:none}
+  .backlink:hover{text-decoration:underline}
+  .orghead{display:flex;gap:14px;align-items:center;margin:10px 0 12px}
+  .olg,.mono{flex:none;width:72px;height:72px;border-radius:50%}
+  .olg{object-fit:cover;background:var(--card);border:1px solid var(--line)}
+  .mono{display:flex;align-items:center;justify-content:center;background:var(--pressed);color:var(--pressedInk);font-weight:700;font-size:1.5rem;letter-spacing:.02em}
+  .orghead h2{margin:0;font-size:1.35rem;line-height:1.2}
+  .bio{margin:0 0 12px;font-size:.98rem}
+  h2.sec{font-size:1.1rem;margin:26px 0 0;color:var(--ink)}
+  details.pastbox{margin-top:26px}
+  details.pastbox>summary{cursor:pointer;font-weight:700;font-size:1.05rem;color:var(--chipInk);padding:6px 0}
+  /* organizer page: no filters, no week strip */
+  .org-mode .what,.org-mode .filters,.org-mode .cityrow{display:none}
+  .org-mode .banner{display:none!important}
+  .org-mode .controls{padding:12px 0 0;border-bottom:0}
+
+  /* ---- v1.9.6: compact mobile layout ---- */
+  @media (max-width:520px){
+    /* header: title on the left, language menu + theme on the right (no extra row) */
+    .top{display:flex;align-items:flex-start;gap:10px}
+    .top .ttl{flex:1;min-width:0}
+    .tools{margin-top:0;flex:none;gap:6px}
+    .tools button{padding:5px 10px;font-size:.85rem}
+    /* install button: own full-width row with its text, so it says what it does */
+    .top{flex-wrap:wrap}
+    .tools{display:contents}
+    .tools #install{order:3;flex:1 0 100%;justify-content:center;padding:8px 12px;font-size:.9rem}
+    .tools #install .txt{display:inline}
+    .langbtn{display:inline-flex;align-items:center;gap:5px}
+    .langs{display:none;position:absolute;right:0;top:calc(100% + 6px);z-index:40;flex-direction:column;gap:2px;min-width:160px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.28)}
+    .langs.open{display:flex}
+    .tools .langs button{background:transparent;color:var(--ink);border:0;border-radius:10px;text-align:left;padding:9px 12px;font-size:.95rem}
+    .tools .langs button::after{content:" \00B7  " attr(data-full);color:var(--muted);font-weight:400}
+    .tools .langs button[aria-pressed="true"]{background:var(--chip);color:var(--chipInk);font-weight:700}
+    h1{font-size:clamp(1.05rem,5vw,1.35rem);white-space:nowrap}
+    /* filters */
+    .controls{padding:17px 0 9px}
+    .what{gap:6px;margin-bottom:6px}
+    .what button{padding:5px 4px;border-radius:12px;border-width:1.5px;font-size:.88rem;line-height:1.15}
+    .filters{gap:6px;padding:0 0 4px}
+    .filters .grp{gap:6px}
+    .pill{padding:4px 11px;font-size:.88rem}
+    .cityrow{gap:6px;padding:0 0 4px}
+    .cityrow .pill{padding:8px 4px}
+    .dot{width:9px;height:9px;margin-right:5px}
+    /* week strip */
+    .week{margin:8px 0 0;padding-bottom:9px}
+    .wkhead{margin-bottom:9px}
+    .wkhead button{height:33px;width:36px}
+    .wkhead .lbl{height:33px;font-size:.88rem;margin:0 6px}
+    .wkhead .tdy{width:auto;padding:0 12px;margin:0 6px 0 0;font-size:.8rem}
+    .wkhead .tdy.l{margin:0 0 0 6px}
+    .week .days{gap:5px}
+    .week .days button{padding:3px 0 5px}
+    .week .dn{font-size:1rem}
+    .legend{margin-top:9px}
+    h2.day{margin:16px 0 6px}
+    /* cards: calendar button pinned top-right; details button = narrow column, label read bottom-to-top, external-link icon below it */
+    .ev{min-height:108px}
+    .content{position:relative;padding:9px 10px}
+    .toprow{padding-right:34px;margin-bottom:5px}
+    .cal{position:absolute;top:8px;right:8px;margin:0;padding:3px 7px}
+    .ev a.go{position:relative;width:36px;padding:0 0 26px;flex-direction:column;font-size:.8rem;letter-spacing:.03em}
+    .ev a.go>span{writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;white-space:nowrap}
+    .ev a.go .arr{display:none}
+    .ev a.go .ext{display:block;position:absolute;bottom:9px;left:50%;margin-left:-7px}
+    .orghead{gap:10px}
+    .olg,.mono{width:60px;height:60px;font-size:1.25rem}
+  }
+@media (max-width:760px){#what button{white-space:pre-line}}
+.tools #theme{width:34px;height:34px;padding:0;display:inline-flex;align-items:center;justify-content:center;line-height:1}
+@media (max-width:760px){.tools #theme{width:32px;height:32px}}
+.tools #theme svg{display:block;flex:none}
+</style>
 </head>
 <body>
 <header><div class="deco" aria-hidden="true"></div><div class="wrap">
@@ -62,6 +323,649 @@
 <div class="tip hide" id="tip" role="status"></div>
 
 <script src="events.js"></script>
-<script src="app.js?v=1.0.6"></script>
+<script>
+/* Zouk Calendar app v1.0.7. Needs events.js (window.ZC_EVENTS, ZC_CONFIG, ZC_HOLIDAYS) loaded first. */
+(function(){
+  var T={
+    hu:{tag:"Hol zoukolhatsz? Brazilian zouk és lambada Magyarországon.",
+      all:"Mind",klass:"Órák",party:"Bulik és\nminden más",
+      lgClass:"rendszeres óra",lgParty:"egyéb egynapos",lgMulti:"többnapos",
+      today:"Ma",week:"Ez a hét",allTime:"Összes",allCities:"Minden város",
+      todayLabel:"Ma",weekly:"Hetente",mixed:"Vegyes",mixedTip:"A programban más táncok is vannak.",cal:"Naptárba",verify:"⚠ Ellenőrizd",verifyTip:"Az adat az oldal borítóképéről származik – ellenőrizd a Facebook-oldalon.",
+      empty0:"Mára nem találtunk eseményt. Nézd meg az „Összes” nézetet, vagy lapozz a hét napjai között!",empty1:"Nincs a szűrőnek megfelelő esemény.",
+      by:"Szervező",detailsLead:"Részletek a ",details:"Facebookon →",detailsOther:"Részletek",langLabel:"Nyelv",submit:"Esemény beküldése",soon:"Esemény beküldése – hamarosan",
+      disc:"Az adatok a szervezők nyilvános Facebook-oldalairól származnak; a pontos időpontot és helyszínt mindig ellenőrizd az esemény oldalán. A fesztiválok és hétvégék városra való szűrésnél is látszanak.",
+      upd:"Utolsó frissítés:",wk:"Hét",weekWord:"hét",
+      abroad:"Külföld",contact:"Kontakt",music:"Zene",
+      install:"Kezdőképernyőre",iosHelp:"iPhone-on: Megosztás → Főképernyőhöz adás.",
+      vUp:"Közelgő",vPast:"Múltbeli",emptyPast:"Az elmúlt 12 hónapban nincs ilyen esemény.",
+      back:"← Vissza a naptárhoz",toSite:"Weboldal",toFb:"Facebook-oldal",orgUp:"Közelgő események",orgPast:"Múltbeli események (elmúlt 12 hónap)",orgNoUp:"Jelenleg nincs közelgő esemény.",loading:"Betöltés…",
+      types:{party:"Buli",regular:"Rendszeres óra",course:"Rendszeres óra",workshop:"Workshop",weekender:"Weekender",festival:"Fesztivál",retreat:"Elvonulás"},
+      every:["","hétfőnként","keddenként","szerdánként","csütörtökönként","péntekenként","szombatonként","vasárnaponként"],
+      themes:{auto:"Téma: auto",light:"Téma: világos",dark:"Téma: sötét"}},
+    en:{tag:"Where can you zouk? Brazilian zouk & lambada in Hungary.",
+      all:"All",klass:"Classes",party:"Parties & more",
+      lgClass:"regular class",lgParty:"other one-day",lgMulti:"multi-day",
+      today:"Today",week:"This week",allTime:"All upcoming",allCities:"All cities",
+      todayLabel:"Today",weekly:"Weekly",mixed:"Mixed",mixedTip:"Other dances are on the programme too.",cal:"Add to calendar",verify:"⚠ Check",verifyTip:"Taken from the page's cover banner – please check the Facebook page.",
+      empty0:"Nothing found for today. Try “All upcoming”, or pick another day in the week bar!",empty1:"No events match your filters.",
+      by:"Organizer",detailsLead:"Details on ",details:"Facebook →",detailsOther:"Details",langLabel:"Language",submit:"Submit an event",soon:"Submit an event – coming soon",
+      disc:"Data comes from the organizers' public Facebook pages; always check the exact time and venue on the event page. Festivals and weekenders stay visible when you filter by city.",
+      upd:"Last updated:",wk:"Wk",weekWord:"Week",
+      abroad:"Abroad",contact:"Contact",music:"Music",
+      install:"Add to Home Screen",iosHelp:"On iPhone: Share → Add to Home Screen.",
+      vUp:"Upcoming",vPast:"Past",emptyPast:"No events in the last 12 months.",
+      back:"← Back to the calendar",toSite:"Website",toFb:"Facebook page",orgUp:"Upcoming events",orgPast:"Past events (last 12 months)",orgNoUp:"No upcoming events right now.",loading:"Loading…",
+      types:{party:"Party",regular:"Regular class",course:"Regular class",workshop:"Workshop",weekender:"Weekender",festival:"Festival",retreat:"Retreat"},
+      every:["","Every Monday","Every Tuesday","Every Wednesday","Every Thursday","Every Friday","Every Saturday","Every Sunday"],
+      themes:{auto:"Theme: auto",light:"Theme: light",dark:"Theme: dark"}},
+    es:{tag:"¿Dónde puedes bailar zouk? Brazilian zouk y lambada en Hungría.",
+      all:"Todo",klass:"Clases",party:"Fiestas y más",
+      lgClass:"clase regular",lgParty:"otro de un día",lgMulti:"varios días",
+      today:"Hoy",week:"Esta semana",allTime:"Todos",allCities:"Todas las ciudades",
+      todayLabel:"Hoy",weekly:"Semanal",mixed:"Mixto",mixedTip:"El programa incluye también otros bailes.",cal:"Añadir al calendario",verify:"⚠ Comprueba",verifyTip:"Dato tomado de la portada de la página; comprueba la página de Facebook.",
+      empty0:"No hay eventos para hoy. Prueba “Todos” o elige otro día en la barra semanal.",empty1:"No hay eventos que coincidan con los filtros.",
+      by:"Organiza",detailsLead:"Detalles en ",details:"Facebook →",detailsOther:"Detalles",langLabel:"Idioma",submit:"Enviar un evento",soon:"Enviar un evento – próximamente",
+      disc:"Los datos proceden de las páginas públicas de Facebook de los organizadores; comprueba siempre la hora y el lugar en la página del evento. Los festivales y weekenders se muestran también al filtrar por ciudad.",
+      upd:"Última actualización:",wk:"Sem",weekWord:"Semana",
+      abroad:"Extranjero",contact:"Contacto",music:"Música",
+      install:"Añadir al inicio",iosHelp:"En iPhone: Compartir → Añadir a pantalla de inicio.",
+      vUp:"Próximos",vPast:"Pasados",emptyPast:"No hay eventos en los últimos 12 meses.",
+      back:"← Volver al calendario",toSite:"Sitio web",toFb:"Página de Facebook",orgUp:"Próximos eventos",orgPast:"Eventos pasados (últimos 12 meses)",orgNoUp:"Ahora mismo no hay eventos próximos.",loading:"Cargando…",
+      types:{party:"Fiesta",regular:"Clase regular",course:"Clase regular",workshop:"Taller",weekender:"Weekender",festival:"Festival",retreat:"Retiro"},
+      every:["","Todos los lunes","Todos los martes","Todos los miércoles","Todos los jueves","Todos los viernes","Todos los sábados","Todos los domingos"],
+      themes:{auto:"Tema: automático",light:"Tema: claro",dark:"Tema: oscuro"}},
+    pt:{tag:"Onde dá para dançar zouk? Brazilian zouk e lambada na Hungria.",
+      all:"Tudo",klass:"Aulas",party:"Festas e mais",
+      lgClass:"aula regular",lgParty:"outro de um dia",lgMulti:"vários dias",
+      today:"Hoje",week:"Esta semana",allTime:"Todos",allCities:"Todas as cidades",
+      todayLabel:"Hoje",weekly:"Semanal",mixed:"Misto",mixedTip:"A programação inclui também outras danças.",cal:"Adicionar ao calendário",verify:"⚠ Confira",verifyTip:"Dado tirado da capa da página; confira na página do Facebook.",
+      empty0:"Não há eventos para hoje. Experimente “Todos” ou escolha outro dia na barra da semana.",empty1:"Nenhum evento corresponde aos filtros.",
+      by:"Organização",detailsLead:"Detalhes no ",details:"Facebook →",detailsOther:"Detalhes",langLabel:"Idioma",submit:"Enviar um evento",soon:"Enviar um evento – em breve",
+      disc:"Os dados vêm das páginas públicas de Facebook dos organizadores; confira sempre o horário e o local na página do evento. Festivais e weekenders aparecem também ao filtrar por cidade.",
+      upd:"Última atualização:",wk:"Sem",weekWord:"Semana",
+      abroad:"Exterior",contact:"Contato",music:"Música",
+      install:"Adicionar à tela inicial",iosHelp:"No iPhone: Compartilhar → Adicionar à Tela de Início.",
+      vUp:"Próximos",vPast:"Passados",emptyPast:"Nenhum evento nos últimos 12 meses.",
+      back:"← Voltar ao calendário",toSite:"Site",toFb:"Página do Facebook",orgUp:"Próximos eventos",orgPast:"Eventos passados (últimos 12 meses)",orgNoUp:"Nenhum evento próximo no momento.",loading:"Carregando…",
+      types:{party:"Festa",regular:"Aula regular",course:"Aula regular",workshop:"Workshop",weekender:"Weekender",festival:"Festival",retreat:"Retiro"},
+      every:["","Toda segunda","Toda terça","Toda quarta","Toda quinta","Toda sexta","Todo sábado","Todo domingo"],
+      themes:{auto:"Tema: automático",light:"Tema: claro",dark:"Tema: escuro"}}
+  };
+  var STYLES={zouk:"Zouk",lambada:"Lambada"};
+  var GROUP={party:"party",regular:"class",course:"class",workshop:"class",weekender:"party",festival:"party",retreat:"party"};
+  var FEST={weekender:1,festival:1,retreat:1}; // visible whatever city is selected
+  var CITIES=["Budapest","Debrecen","abroad"];  // city filter chips; several can be on at once, none = everything
+  var DEF={lang:(function(){var l=(navigator.language||"en").toLowerCase().slice(0,2);return {hu:1,es:1,pt:1}[l]?l:"en";})(),theme:"auto",what:"all",when:"all",city:[],zouk:false,lambada:false};
+  var KEY="zc_prefs2";
+  var S=load();
+  var DJ_BY_NAME={};
+  var ORGS=[],ORGS_BY_SLUG={},ORGS_BY_NAME={},ORGS_READY=!((window.ZC_CONFIG||{}).orgsCsvUrl),UPD="";
+  var TITLE="Zouk Calendar Hungary";
+
+  // Simple original skyline illustrations (silhouettes), shown when a city is selected
+  var ART={
+    Budapest:'<svg viewBox="0 0 800 140" preserveAspectRatio="xMidYMax slice"><g fill="rgba(255,255,255,.22)">'+
+      '<rect x="100" y="100" width="600" height="36"/><rect x="140" y="90" width="520" height="10"/>'+
+      '<polygon points="168,90 172,68 176,90"/><polygon points="192,90 196,68 200,90"/><polygon points="216,90 220,68 224,90"/><polygon points="240,90 244,68 248,90"/><polygon points="264,90 268,68 272,90"/><polygon points="288,90 292,68 296,90"/><polygon points="312,90 316,68 320,90"/><polygon points="468,90 472,68 476,90"/><polygon points="492,90 496,68 500,90"/><polygon points="516,90 520,68 524,90"/><polygon points="540,90 544,68 548,90"/><polygon points="564,90 568,68 572,90"/><polygon points="588,90 592,68 596,90"/><polygon points="612,90 616,68 620,90"/>'+
+      '<rect x="100" y="78" width="50" height="22"/><polygon points="96,78 125,50 154,78"/><polygon points="121,50 125,30 129,50"/>'+
+      '<rect x="650" y="78" width="50" height="22"/><polygon points="646,78 675,50 704,78"/><polygon points="671,50 675,30 679,50"/>'+
+      '<rect x="292" y="60" width="30" height="40"/><polygon points="288,60 307,26 326,60"/><polygon points="303,26 307,10 311,26"/>'+
+      '<rect x="478" y="60" width="30" height="40"/><polygon points="474,60 493,26 512,60"/><polygon points="489,26 493,10 497,26"/>'+
+      '<rect x="364" y="70" width="72" height="30"/><path d="M366 70 C366 38 386 26 400 8 C414 26 434 38 434 70 Z"/><rect x="399" y="0" width="2" height="14"/>'+
+      '<polygon points="346,72 352,40 358,72"/><polygon points="442,72 448,40 454,72"/>'+
+      '</g><g fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2"><path d="M0 130 Q50 124 100 130 T200 130 T300 130 T400 130 T500 130 T600 130 T700 130 T800 130"/></g></svg>',
+    Debrecen:'<svg viewBox="0 0 800 140" preserveAspectRatio="xMidYMax slice"><g fill="rgba(255,255,255,.22)">'+
+      '<rect x="290" y="100" width="220" height="40"/>'+
+      '<path d="M350 100 Q350 56 400 56 Q450 56 450 100 Z"/><rect x="390" y="36" width="20" height="22"/><path d="M388 36 Q400 22 412 36 Z"/><rect x="399" y="10" width="2" height="16"/><rect x="394" y="15" width="12" height="2"/>'+
+      '<polygon points="336,100 400,78 464,100"/><rect x="340" y="100" width="120" height="6"/>'+
+      '<rect x="280" y="54" width="50" height="86"/><rect x="276" y="54" width="58" height="6"/><polygon points="284,54 305,6 326,54"/>'+
+      '<rect x="470" y="54" width="50" height="86"/><rect x="466" y="54" width="58" height="6"/><polygon points="474,54 495,6 516,54"/>'+
+      '</g></svg>'
+  };
+
+  function load(){
+    var o=Object.assign({},DEF);
+    try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);Object.keys(DEF).forEach(function(k){if(p&&p[k]!==undefined)o[k]=p[k];});}}catch(e){}
+    if(!T[o.lang])o.lang=DEF.lang;
+    if(o.what==="fest")o.what="party";o.when="all";
+    // city filter: older versions stored one city as a string
+    if(typeof o.city==="string")o.city=o.city?[o.city]:[];
+    if(!Array.isArray(o.city))o.city=[];
+    o.city=o.city.filter(function(c){return CITIES.indexOf(c)>-1;});
+    return o;
+  }
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+
+  function todayISO(){return new Intl.DateTimeFormat("sv-SE",{timeZone:"Europe/Budapest"}).format(new Date());}
+  function toDate(iso){var p=iso.split("-");return new Date(Date.UTC(+p[0],+p[1]-1,+p[2]));}
+  function addDays(iso,n){var d=toDate(iso);d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10);}
+  // DJs: "Name|https://link, Name2" (string) or array of such strings / {name,url}. Only http(s) links become anchors.
+  function djHtml(v){
+    var arr=Array.isArray(v)?v:String(v||"").split(",");
+    return arr.map(function(x){
+      var n,u="";
+      if(x&&typeof x==="object"){n=x.name;u=x.url||"";}
+      else{var i=String(x).indexOf("|");n=i<0?String(x):String(x).slice(0,i);u=i<0?"":String(x).slice(i+1);}
+      n=String(n||"").trim();u=String(u).trim();
+      if(!n)return "";
+      if(!u&&DJ_BY_NAME[norm(n)])u=DJ_BY_NAME[norm(n)];
+      return /^https?:\/\//i.test(u)?'<a class="orglink" href="'+esc(u)+'" target="_blank" rel="noopener">'+esc(n)+'</a>':esc(n);
+    }).filter(Boolean).join(", ");
+  }
+  var THEME_ICO={
+    auto:'<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg>',
+    light:'<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2" fill="currentColor"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg>',
+    dark:'<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" fill="currentColor"/></svg>'
+  };
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  function L(v){if(v&&typeof v==="object")return v[S.lang]||v.en||v.hu||"";return v||"";}
+  function loc(){return {hu:"hu-HU",en:"en-GB",es:"es-ES",pt:"pt-BR"}[S.lang]||"en-GB";}
+  function cap(x){return x?x.charAt(0).toUpperCase()+x.slice(1):x;}
+  function fmtDay(iso){return cap(toDate(iso).toLocaleDateString(loc(),{weekday:"long",month:"long",day:"numeric",timeZone:"UTC"}));}
+  function fmtShort(iso){return toDate(iso).toLocaleDateString(loc(),{month:"short",day:"numeric",timeZone:"UTC"});}
+  function monthName(iso){return cap(toDate(iso).toLocaleDateString(loc(),{year:"numeric",month:"long",timeZone:"UTC"}));}
+  function monOf(iso){return addDays(iso,-((toDate(iso).getUTCDay()+6)%7));}
+  // past browsing window: the last 12 months
+  function minDay(today){return addDays(today,-365);}
+  function minOffFor(today){return Math.round((toDate(monOf(minDay(today)))-toDate(monOf(today)))/604800000);}
+  function minMoffFor(today){var a=today.split("-"),b=minDay(today).split("-");return ((+b[0])*12+(+b[1]))-((+a[0])*12+(+a[1]));}
+  // name matching for organizers: case and accent insensitive
+  function norm(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ").trim();}
+  function orgFor(name){var k=norm(name);return k?(ORGS_BY_NAME[k]||null):null;}
+  function hashSlug(){var h=location.hash.replace(/^#/,"");try{h=decodeURIComponent(h);}catch(e){}return slugId(h);}
+
+  // Fixed colors for known cities (Budapest = red, Debrecen = yellow); others get a palette color
+  // "Külföld" (abroad) = group trips with a contact person; the sheet's city value is "Külföld" (or "Abroad")
+  function isAbroad(c){var k=norm(c);return k==="kulfold"||k==="abroad";}
+  function cityKey(c){return isAbroad(c)?"Külföld":c;}
+  function cityName(c,t){return isAbroad(c)?t.abroad:c;}
+  var CITY_FIX={Budapest:{bg:"#c42f2a",ink:"#fff"},Debrecen:{bg:"#f2c200",ink:"#2a2000"},"Külföld":{bg:"#0b5a9a",ink:"#fff"}};
+  var CITY_COLORS=["#0b5a9a","#7a3fb0","#c2410c","#0f766e","#be185d","#4d7c0f"];
+  function cityInk(c){c=cityKey(c);return CITY_FIX[c]?CITY_FIX[c].ink:"#fff";}
+  function cityColor(c){
+    c=cityKey(c);
+    if(CITY_FIX[c])return CITY_FIX[c].bg;
+    var list={};(window.ZC_EVENTS||[]).forEach(function(e){if(e.city)list[e.city]=1;});
+    var i=Object.keys(list).sort().indexOf(c);
+    return CITY_COLORS[(i<0?0:i)%CITY_COLORS.length];
+  }
+  // "Add to Google Calendar" link (weekly classes get a weekly recurrence)
+  var ICO_PIN='<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6" fill="#fff" stroke="none"/></svg>';
+  var ICO_CAL='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M12 13v5M9.5 15.5h5"/></svg>';
+  var ICO_EXT='<svg class="ext" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>';
+  var ICO_DL='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>';
+  function pad(n){return (n<10?"0":"")+n;}
+  function d8(iso){return iso.replace(/-/g,"");}
+  function hm(min){return pad(Math.floor(min/60))+pad(min%60)+"00";}
+  function calUrl(o){
+    var m=/(\d{1,2}):(\d{2})(?:\s*[–-]\s*(\d{1,2}):(\d{2}))?/.exec(o.time||""),dates;
+    if(m){
+      var st=(+m[1])*60+(+m[2]),en=m[3]?(+m[3])*60+(+m[4]):st+120;
+      if(en<=st)en+=1440;
+      dates=d8(o.s)+"T"+hm(st)+"/"+d8(addDays(o.s,Math.floor(en/1440)))+"T"+hm(en%1440);
+    }else{dates=d8(o.s)+"/"+d8(addDays(o.e||o.s,1));}
+    var q=["action=TEMPLATE","text="+encodeURIComponent(L(o.title)),"dates="+dates,
+      "details="+encodeURIComponent([o.organizer,o.url].filter(Boolean).join("\n")),
+      "location="+encodeURIComponent((isAbroad(o.city)?[o.venue]:[o.venue,o.city,"Hungary"]).filter(Boolean).join(", ")),"ctz=Europe/Budapest"];
+    if(o.weekly)q.push("recur="+encodeURIComponent("RRULE:FREQ=WEEKLY"));
+    return "https://calendar.google.com/calendar/render?"+q.join("&");
+  }
+  // last real day of a one-off event
+  function lastDayOf(e){
+    var end=e.end||e.start;
+    // an event that only runs a few hours past midnight (end clock 00:00–06:00) does not count that last day
+    var tm=/(?:[–-]\s*)(\d{1,2}):(\d{2})/.exec(e.time||""),ec=e.endTime?/(\d{1,2}):(\d{2})/.exec(e.endTime):tm;
+    if(end>e.start&&ec&&(((+ec[1])%24)*60+(+ec[2]))<=360)end=addDays(end,-1);
+    return end;
+  }
+  function mk(e,s,en){var o=Object.assign({},e);o.s=s;o.e=en;return o;}
+  // Upcoming/current events. expand=false: one entry per event (weekly series show only their next occurrence).
+  // expand=true: every occurrence overlapping [from, we] (from may be in the past: one-off events only; weekly series never show in the past).
+  function occurrences(today,expand,we,from){
+    var out=[],lo=from||today;
+    (window.ZC_EVENTS||[]).forEach(function(e){
+      if(e.weekly){
+        var f=e.from||e.start,start=lo>f?lo:f;if(start<today)start=today;
+        if(!expand){for(var i=0;i<7;i++){var d=addDays(start,i);if((toDate(d).getUTCDay()||7)===e.weekly){out.push(mk(e,d,d));break;}}}
+        else{for(var d2=start,n=0;d2<=we&&n<62;d2=addDays(d2,1),n++){if((toDate(d2).getUTCDay()||7)===e.weekly)out.push(mk(e,d2,d2));}}
+      }else{var end=lastDayOf(e);if(end>=lo)out.push(mk(e,e.start,end));}
+    });
+    return out;
+  }
+  // One-off events that ended before today, within the last 12 months
+  function pastOccurrences(today){
+    var min=minDay(today),out=[];
+    (window.ZC_EVENTS||[]).forEach(function(e){
+      if(e.weekly)return;
+      var end=lastDayOf(e);if(end<today&&end>=min)out.push(mk(e,e.start,end));
+    });
+    return out;
+  }
+
+  var ICO_L='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',ICO_R='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>',ICO_D='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg>';
+  var FB_RE=/^https?:\/\/([^\/?#]*\.)?(facebook\.com|fb\.me)(?=[\/?#:]|$)/i;
+  // ISO week number (Monday-first weeks; week 1 contains the first Thursday of the year)
+  function isoWeek(iso){var d=toDate(iso),wd=d.getUTCDay()||7;d.setUTCDate(d.getUTCDate()+4-wd);var y0=Date.UTC(d.getUTCFullYear(),0,1);return Math.ceil(((d-y0)/86400000+1)/7);}
+  // weekend or public holiday (ZC_HOLIDAYS in events.js: off = weekday holidays, work = Saturdays that are working days)
+  function isOff(iso){var H=window.ZC_HOLIDAYS||{},wd=toDate(iso).getUTCDay();if((H.work||[]).indexOf(iso)>-1)return false;return wd===0||wd===6||(H.off||[]).indexOf(iso)>-1;}
+  function gs(o){var a=[GROUP[o.type]||"class"];if(o.also&&a.indexOf(GROUP[o.also]||"class")<0)a.push(GROUP[o.also]||"class");return a;}
+  // city filter: nothing selected = every event; otherwise an event passes when its city (Budapest / Debrecen / abroad) is selected.
+  // Festivals and weekenders in Hungary stay visible whenever Budapest or Debrecen is selected.
+  function ok(o){
+    if(S.what!=="all"&&gs(o).indexOf(S.what)<0)return false;
+    if(S.city.length){
+      if(isAbroad(o.city)){if(S.city.indexOf("abroad")<0)return false;}
+      else if(FEST[o.type]){if(S.city.indexOf("Budapest")<0&&S.city.indexOf("Debrecen")<0)return false;}
+      else if(S.city.indexOf(o.city)<0)return false;
+    }
+    if((S.zouk||S.lambada)&&!((S.zouk&&(o.styles||[]).indexOf("zouk")>-1)||(S.lambada&&(o.styles||[]).indexOf("lambada")>-1)))return false;
+    return true;
+  }
+  var off=0,mexp=false,moff=0,animDir="",lastList=null,lastDay="",lastCity=null;
+  function setList(el,html,an){var changed=lastList!==null&&html!==lastList;lastList=html;el.innerHTML=html;el.classList.remove("aR","aL","aD","st");if(changed){void el.offsetWidth;el.classList.add("st");}}
+
+  // ---- event cards ----
+  // opt.date: show the date in the meta line (lists without day headings); opt.noOrg: no organizer link
+  function card(o,t,today,opt){
+    opt=opt||{};
+    var range=(o.e&&o.e!==o.s&&!o.weekly)?fmtShort(o.s)+" – "+fmtShort(o.e):"";
+    var dateTxt=opt.date?(range||fmtDay(o.s)):range;
+    var where=o.venue||"";
+    var every=o.weekly?t.every[o.weekly]:"";
+    var cc=cityColor(o.city);
+    var mix=Array.isArray(o.mixed)?o.mixed.map(function(m){return '<span class="tag mixed">+ '+esc(m.charAt(0).toUpperCase()+m.slice(1))+'</span>';}).join(""):(o.mixed?'<span class="tag mixed" title="'+esc(t.mixedTip)+'">+ '+esc(t.mixed)+'</span>':'');
+    var goLabel=FB_RE.test(o.url||"")
+      ?'<span class="lead">'+esc(t.detailsLead)+'</span>'+esc(t.details.replace(/\s*→$/,""))+'<span class="arr"> →</span>'
+      :esc(t.detailsOther)+'<span class="arr"> →</span>';
+    var org=opt.noOrg?null:orgFor(o.organizer);
+    var orgLine=(o.organizer&&o.organizer!==o.venue)
+      ?'<div class="meta">'+esc(t.by)+': '+(org?'<a class="orglink" href="#'+esc(org.slug)+'">'+esc(o.organizer)+'</a>':esc(o.organizer))+'</div>':'';
+    var cal='<a class="cal" href="'+esc(calUrl(o))+'" target="_blank" rel="noopener" title="'+esc(t.cal)+'" aria-label="'+esc(t.cal)+'">'+ICO_CAL+'<span class="txt"> '+esc(t.cal)+'</span></a>';
+    return '<article class="ev" style="border-left:6px solid '+cc+'"><div class="content">'+
+      '<div class="toprow">'+
+        (o.city?'<span class="city" style="background:'+cc+';color:'+cityInk(o.city)+'">'+ICO_PIN+'<span>'+esc(cityName(o.city,t))+'</span></span>':'')+
+        '<span class="tag type">'+esc(t.types[o.type]||o.type)+'</span>'+(o.also?'<span class="tag type">'+esc(t.types[o.also]||o.also)+'</span>':'')+
+        (o.styles||[]).filter(function(s){return s!=="zouk";}).map(function(s){return '<span class="tag">'+esc(STYLES[s]||s)+'</span>';}).join("")+
+        mix+
+        (o.verify?'<span class="tag verify" title="'+esc(t.verifyTip)+'">'+esc(t.verify)+'</span>':'')+
+        cal+
+      '</div>'+
+      '<h3>'+esc(L(o.title))+'</h3>'+
+      '<div class="meta">'+[every,dateTxt,o.time,where].filter(Boolean).map(esc).join(" · ")+'</div>'+
+      orgLine+
+      (o.contact?'<div class="meta">'+esc(t.contact)+': '+esc(o.contact)+'</div>':'')+
+      (djHtml(o.djs)?'<div class="meta">'+esc(t.music)+': '+djHtml(o.djs)+'</div>':'')+
+      (o.note?'<div class="note">'+esc(L(o.note))+'</div>':'')+
+      '</div>'+
+      (o.url?'<a class="go" href="'+esc(o.url)+'" target="_blank" rel="noopener"><span>'+goLabel+'</span>'+ICO_EXT+'</a>':'')+
+      '</article>';
+  }
+  // byMonth: month headings (past lists); otherwise day headings by o.key
+  function listHtml(items,t,today,byMonth,opt){
+    var html="",last="";
+    items.forEach(function(o){
+      var k=byMonth?o.s.slice(0,7):o.key;
+      if(k!==last){last=k;html+='<h2 class="day">'+esc(byMonth?monthName(o.s):(o.key===today?t.todayLabel+" – "+fmtDay(o.key):fmtDay(o.key)))+'</h2>';}
+      html+=card(o,t,today,opt);
+    });
+    return html;
+  }
+  function sortUp(items,today){
+    items.forEach(function(o){o.key=S.day||(o.s<today?today:o.s);});
+    items.sort(function(a,b){return a.key<b.key?-1:a.key>b.key?1:(a.time||"").localeCompare(b.time||"");});
+  }
+  function sortPast(items){items.sort(function(a,b){return a.s<b.s?1:a.s>b.s?-1:(b.time||"").localeCompare(a.time||"");});}
+
+  // ---- organizer page ----
+  function monoOf(name){return String(name).split(/\s+/).filter(Boolean).slice(0,2).map(function(w){return w.charAt(0);}).join("").toUpperCase();}
+  function orgPage(org,t,today){
+    var key=norm(org.name),mine=function(o){return norm(o.organizer)===key;};
+    var up=occurrences(today,false).filter(mine),past=pastOccurrences(today).filter(mine);
+    sortUp(up,today);sortPast(past);
+    var bio=S.lang==="hu"?(org.bio_hu||org.bio_en):(org.bio_en||org.bio_hu);
+    var mono=monoOf(org.name);
+    var logo=org.logo?'<img class="olg" src="logos/'+esc(org.slug)+'.png" width="72" height="72" alt="" data-mono="'+esc(mono)+'">':'<span class="mono" aria-hidden="true">'+esc(mono)+'</span>';
+    var h='<a class="backlink" href="#">'+esc(t.back)+'</a>'+
+      '<div class="orghead">'+logo+'<div><h2>'+esc(org.name)+'</h2>'+(org.city?'<div class="meta">'+esc(org.city)+'</div>':'')+'</div></div>'+
+      (bio?'<p class="bio">'+esc(bio).replace(/\r?\n/g,"<br>")+'</p>':'')+
+      (org.url?'<p><a class="submit" href="'+esc(org.url)+'" target="_blank" rel="noopener">'+esc(FB_RE.test(org.url)?t.toFb:t.toSite)+' →</a></p>':'')+
+      '<h2 class="sec">'+esc(t.orgUp)+'</h2>'+
+      (up.length?listHtml(up,t,today,false,{noOrg:true}):'<div class="empty">'+esc(t.orgNoUp)+'</div>');
+    if(past.length)h+='<details class="pastbox"><summary>'+esc(t.orgPast)+' ('+past.length+')</summary>'+listHtml(past,t,today,true,{date:true,noOrg:true})+'</details>';
+    return h;
+  }
+
+  function render(){
+    var t=T[S.lang],today=todayISO(),an=animDir;animDir="";
+    var el=document.getElementById("list"),strip=document.getElementById("weekstrip");
+    // route: #slug = organizer page
+    var slug=hashSlug(),org=slug?ORGS_BY_SLUG[slug]:null;
+    if(slug&&!org&&ORGS_READY){try{history.replaceState(null,"",location.pathname+location.search);}catch(e){}slug="";}
+    document.body.classList.toggle("org-mode",!!slug);
+    document.title=org?org.name+" – "+TITLE:TITLE;
+    if(slug){strip.hidden=true;setList(el,org?orgPage(org,t,today):'<div class="empty">'+esc(t.loading)+'</div>',an);return;}
+    var minD=minDay(today),minOff=minOffFor(today),minMoff=minMoffFor(today);
+    var mon=monOf(today),wkS=addDays(mon,7*off),we=addDays(wkS,6);
+    if(S.day&&(S.day<wkS||S.day>we))S.day="";
+    var src=occurrences(today,true,we,wkS).filter(function(o){return ok(o)&&o.s<=we&&o.e>=wkS;});
+    var base=occurrences(today,false).filter(ok);
+    function dotsFor(list,dd){var seen={},h="",n=0,ids={},md="";
+      list.forEach(function(o){if(o.s<=dd&&o.e>=dd){var c=cityColor(o.city)||"var(--accent)";
+        if(o.e>o.s){var id=(o.id||L(o.title))+"|"+o.s;if(!ids[id]){ids[id]=1;n++;md+='<i class="d'+(o.s===dd?' st':'')+(o.e===dd?' en':'')+'" style="background:'+c+'"></i>';}}
+        else{[o.type,o.also].filter(Boolean).forEach(function(ty){var t=(ty==="regular"||ty==="course")?"c":"s",k=c+t;if(!seen[k]){seen[k]=1;n++;}});}}});
+      ["c","s"].forEach(function(t){Object.keys(seen).forEach(function(k){if(k.slice(-1)===t)h+='<i class="'+t+'" style="background:'+k.slice(0,-1)+'"></i>';});});
+      return {n:n,h:h+md,sp:""};}
+    function wdName(dd){return cap(toDate(dd).toLocaleDateString(loc(),{weekday:"short",timeZone:"UTC"}).replace(".",""));}
+    function dcls(past,old,n){return past?(old?" past old":" past"):(n?"":" none");}
+    var sh="",label,ttl="",prevOff,nextOff,notNow,nowSide;
+    if(mexp){
+      var tp=today.split("-"),mm=(+tp[0])*12+(+tp[1]-1)+moff,fy=Math.floor(mm/12),fm=mm%12,first=fy+"-"+pad(fm+1)+"-01";
+      var gS=monOf(first),gE=addDays(gS,41);
+      var srcM=occurrences(today,true,gE,gS).filter(function(o){return ok(o)&&o.s<=gE&&o.e>=gS;});
+      sh+='<span class="wdh wnh">'+esc(t.wk)+'</span>';
+      for(var q=0;q<7;q++)sh+='<span class="wdh">'+esc(wdName(addDays(gS,q)))+'</span>';
+      for(var k=0;k<42;k++){
+        var dd=addDays(gS,k),dt=toDate(dd),past=dd<today,old=dd<minD,inM=dt.getUTCMonth()===fm,dd2=old?{n:0,h:"",sp:""}:dotsFor(srcM,dd);
+        if(k>=35&&!inM&&k%7===0)break;
+        if(k%7===0)sh+='<span class="wn">'+isoWeek(dd)+'</span>';
+        sh+='<button type="button" style="--r:'+Math.floor(k/7)+'" data-d="'+dd+'" aria-pressed="'+(S.day===dd)+'" class="m'+(inM?'':' out')+dcls(past,old,dd2.n)+(isOff(dd)?' off':'')+(dd===today?' today':'')+'"'+(old?' disabled':'')+'><span class="dn">'+dt.getUTCDate()+'</span><span class="dots">'+dd2.h+'</span></button>';
+      }
+      label=monthName(first);
+      prevOff=moff<=minMoff;nextOff=moff>=12;notNow=moff!==0;nowSide=moff>0;
+    }else{
+      for(var k2=0;k2<7;k2++){
+        var de=addDays(wkS,k2),dte=toDate(de),pastE=de<today,oldE=de<minD,de2=oldE?{n:0,h:"",sp:""}:dotsFor(src,de);
+        sh+='<button type="button" data-d="'+de+'" aria-pressed="'+(S.day===de)+'" class="'+dcls(pastE,oldE,de2.n).trim()+(isOff(de)?' off':'')+(de===today?' today':'')+'"'+(oldE?' disabled':'')+'><span class="wd">'+esc(wdName(de))+'</span><span class="dn">'+dte.getUTCDate()+'</span><span class="dots">'+de2.h+'</span></button>';
+      }
+      var wn=isoWeek(wkS),mname=cap(toDate(addDays(wkS,3)).toLocaleDateString(loc(),{month:"long",timeZone:"UTC"}));
+      label=mname+" – "+(S.lang==="hu"?wn+". "+t.weekWord:t.weekWord+" "+wn);ttl=cap(fmtShort(wkS))+" – "+fmtShort(we);prevOff=off<=minOff;nextOff=off>=12;notNow=off!==0;nowSide=off>0;
+    }
+    var nowBtn='<button type="button" class="tdy'+(nowSide?' l':'')+'" data-now="1">'+esc(t.today)+'</button>';
+    strip.innerHTML='<div class="wkhead"><button type="button" data-nav="-1"'+(prevOff?' disabled':'')+' aria-label="‹">'+ICO_L+'</button>'+(notNow&&nowSide?nowBtn:'')+'<button type="button" class="lbl" data-toggle="1" aria-expanded="'+mexp+'"'+(ttl?' title="'+esc(ttl)+'"':'')+'>'+esc(label)+'<span class="chev">'+ICO_D+'</span></button>'+(notNow&&!nowSide?nowBtn:'')+'<button type="button" data-nav="1"'+(nextOff?' disabled':'')+' aria-label="›">'+ICO_R+'</button></div><div class="days'+(mexp?' month':'')+'">'+sh+'</div><div class="legend"><span><i class="c"></i> '+esc(t.lgClass)+'</span><span><i class="s"></i> '+esc(t.lgParty)+'</span><span><i class="d"></i> '+esc(t.lgMulti)+'</span></div>';strip.hidden=false;
+    if(an){var dz=strip.querySelector(".days");if(dz)dz.classList.add("a"+an);}
+    if(S.day!==lastDay){var pb=strip.querySelector('[aria-pressed="true"]');if(pb&&S.day)pb.classList.add("pop");lastDay=S.day;}
+    var items=S.day?src.filter(function(o){return o.s<=S.day&&o.e>=S.day;}):base;
+    sortUp(items,today);
+    if(!items.length){setList(el,'<div class="empty">'+esc(S.day?t.empty0:t.empty1)+'</div>',an);return;}
+    setList(el,listHtml(items,t,today,false,{}),an);
+  }
+
+  // "2026-11-25T16:20:00+01:00" -> "2026.11.25. 16:20" (Budapest time)
+  function fmtUpd(v){
+    v=String(v||"").trim();if(!v)return "";
+    if(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?(Z|[+-]\d{2}:?\d{2})$/.test(v)){
+      var d=new Date(v);
+      if(!isNaN(d)){
+        var p={};
+        new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/Budapest",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d).forEach(function(x){p[x.type]=x.value;});
+        return p.year+"."+p.month+"."+p.day+". "+p.hour+":"+p.minute;
+      }
+    }
+    var m=/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/.exec(v);   // no offset: taken as Budapest time as written
+    return m?m[1]+"."+m[2]+"."+m[3]+". "+m[4]+":"+m[5]:"";
+  }
+  function updText(){
+    var s=fmtUpd(UPD);if(s)return s;
+    var f=String(window.ZC_UPDATED||""),m=/^(\d{4})-(\d{2})-(\d{2})/.exec(f);
+    return m?m[1]+"."+m[2]+"."+m[3]+".":f;
+  }
+
+  // ---- PWA: install button in the header (Chrome/Edge/Android: native prompt; iPhone/iPad: short help) ----
+  var deferredInstall=null,tipTimer=0;
+  function isStandalone(){return (window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||window.navigator.standalone===true;}
+  function isIOS(){return /iphone|ipad|ipod/i.test(navigator.userAgent||"")||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);}
+  function applyInstall(){
+    var b=document.getElementById("install"),t=T[S.lang];
+    var show=!isStandalone()&&(!!deferredInstall||isIOS());
+    b.classList.toggle("hide",!show);
+    if(show){b.innerHTML=ICO_DL+'<span class="txt">'+esc(t.install)+'</span>';b.setAttribute("aria-label",t.install);b.title=t.install;}
+  }
+  function hideTip(){clearTimeout(tipTimer);document.getElementById("tip").classList.add("hide");}
+  function showTip(msg){var tp=document.getElementById("tip");tp.textContent=msg;tp.classList.remove("hide");clearTimeout(tipTimer);tipTimer=setTimeout(hideTip,8000);}
+  window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();deferredInstall=e;applyInstall();});
+  window.addEventListener("appinstalled",function(){deferredInstall=null;hideTip();applyInstall();});
+  document.getElementById("install").addEventListener("click",function(){
+    if(deferredInstall){
+      var p=deferredInstall;deferredInstall=null;applyInstall();
+      try{p.prompt();}catch(e){}
+    }else if(isIOS()){showTip(T[S.lang].iosHelp);}
+  });
+  document.getElementById("tip").addEventListener("click",hideTip);
+  if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){
+    window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});
+  }
+
+  // footer: "© Mesmes Arts 2026" (Mesmes Arts links to mesmes.art), from 2027 on "© Mesmes Arts 2026–2027" (current year in Budapest time, updates by itself)
+  function setCopy(){var y=+todayISO().slice(0,4),el=document.getElementById("copy");if(el)el.innerHTML="© <a href=\"https://mesmes.art\" target=\"_blank\" rel=\"noopener\">Mesmes Arts</a> 2026"+(y>2026?"–"+y:"");}
+  function applyStatic(){
+    setCopy();
+    var t=T[S.lang];
+    document.documentElement.lang=S.lang;
+    document.getElementById("tagline").textContent=t.tag;
+    var w=document.querySelectorAll("#what button");
+    w[0].textContent=t.all;w[1].textContent=t.klass;w[2].textContent=t.party;
+    document.getElementById("disclaimer").textContent=t.disc;
+    document.getElementById("updLabel").textContent=t.upd;
+    document.getElementById("upd").textContent=updText();
+    var lb=document.getElementById("langBtn");
+    lb.innerHTML=esc(S.lang.toUpperCase())+" "+ICO_D;lb.setAttribute("aria-label",t.langLabel);lb.title=t.langLabel;
+    applyInstall();
+    var link=document.getElementById("submitLink"),u=(window.ZC_CONFIG||{}).submitUrl;
+    if(u){link.href=u;link.classList.remove("off");link.textContent=t.submit;}else{link.classList.add("off");link.removeAttribute("href");link.textContent=t.soon;}
+    // city chips: Budapest | Debrecen | Külföld (abroad = group trips with a contact person); several can be on, none = all
+    var cs=document.getElementById("cities");cs.innerHTML="";
+    [["Budapest","Budapest"],["Debrecen","Debrecen"],["abroad",t.abroad]].forEach(function(p){
+      var c=p[0],b=document.createElement("button");b.className="pill";b.dataset.city=c;
+      b.innerHTML='<span class="dot" style="background:'+cityColor(c==="abroad"?"Külföld":c)+'"></span>'+esc(p[1]);b.setAttribute("aria-pressed",S.city.indexOf(c)>-1);
+      b.addEventListener("click",function(){S.city=S.city.indexOf(c)>-1?S.city.filter(function(x){return x!==c;}):S.city.concat([c]);update();});
+      cs.appendChild(b);
+    });
+    // banner: only when exactly one city is selected and it has a skyline
+    var one=S.city.length===1?S.city[0]:"";
+    var bn=document.getElementById("banner");
+    if(one&&ART[one]){
+      var chg=lastCity!==null&&lastCity!==one,ps=bn.querySelector(":scope>svg"),prev=chg&&ps?ps.outerHTML:"";
+      bn.innerHTML=ART[one]+(prev?'<div class="old">'+prev+'</div>':'');bn.classList.add("on");
+      if(chg){bn.classList.remove("fade");void bn.offsetWidth;bn.classList.add("fade");if(prev)setTimeout(function(){var o=bn.querySelector(".old");if(o)o.remove();},650);}
+      bn.querySelectorAll("svg").forEach(function(sv){sv.setAttribute("preserveAspectRatio",window.innerWidth<640?"xMidYMax slice":"xMidYMax meet");});
+    }
+    else{bn.innerHTML="";bn.classList.remove("on");}
+    lastCity=one;
+    // theme
+    var th=document.getElementById("theme");
+    th.innerHTML=THEME_ICO[S.theme];th.title=t.themes[S.theme];th.setAttribute("aria-label",t.themes[S.theme]);
+    if(S.theme==="auto")document.documentElement.removeAttribute("data-theme");else document.documentElement.setAttribute("data-theme",S.theme);
+    document.querySelectorAll("[data-lang]").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.lang===S.lang);});
+    w.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.v===S.what);});
+    document.querySelectorAll("[data-style]").forEach(function(b){b.setAttribute("aria-pressed",!!S[b.dataset.style]);});
+  }
+  function update(){save();applyStatic();render();}
+
+  document.querySelectorAll("#what button").forEach(function(b){b.addEventListener("click",function(){S.what=(b.dataset.v!=="all"&&S.what===b.dataset.v)?"all":b.dataset.v;update();});});
+  document.getElementById("weekstrip").addEventListener("click",function(ev){
+    var td0=todayISO();
+    var tg=ev.target.closest("button[data-toggle]");
+    if(tg){animDir="D";mexp=!mexp;if(mexp){var td=td0.split("-"),wsd=addDays(monOf(td0),7*off).split("-");moff=Math.max(minMoffFor(td0),((+wsd[0])*12+(+wsd[1]))-((+td[0])*12+(+td[1])));}render();return;}
+    var nw=ev.target.closest("button[data-now]");
+    if(nw){animDir=(mexp?moff:off)<0?"R":"L";off=0;moff=0;S.day="";update();return;}
+    var n=ev.target.closest("button[data-nav]");
+    if(n&&!n.disabled){var dir=+n.dataset.nav;animDir=dir>0?"R":"L";if(mexp)moff=Math.max(minMoffFor(td0),Math.min(12,moff+dir));else off=Math.max(minOffFor(td0),Math.min(12,off+dir));S.day="";update();return;}
+    var b=ev.target.closest("button[data-d]");if(!b||b.disabled)return;
+    var d=b.dataset.d;S.day=S.day===d?"":d;
+    if(S.day){off=Math.round((toDate(monOf(d))-toDate(monOf(td0)))/604800000);mexp=false;}
+    update();
+  });
+  (function(){
+    var st=document.getElementById("weekstrip"),x0=0,y0=0,on=false;
+    st.addEventListener("touchstart",function(e){if(e.touches.length!==1)return;on=true;x0=e.touches[0].clientX;y0=e.touches[0].clientY;},{passive:true});
+    st.addEventListener("touchend",function(e){
+      if(!on)return;on=false;var t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0,ax=Math.abs(dx),ay=Math.abs(dy);
+      if(Math.max(ax,ay)<44)return;
+      var q=function(sel){var b=st.querySelector(sel);if(b&&!b.disabled)b.click();};
+      if(ay>ax){if(dy>0&&!mexp)q("[data-toggle]");else if(dy<0&&mexp)q("[data-toggle]");}
+      else q('[data-nav="'+(dx<0?1:-1)+'"]');
+    },{passive:true});
+  })();
+  // swipe left/right on the list: month change when the calendar is open, next/previous day when a day is selected, otherwise next/previous week
+  (function(){
+    var el=document.getElementById("list"),x0=0,y0=0,on=false;
+    el.addEventListener("touchstart",function(e){if(e.touches.length!==1)return;on=true;x0=e.touches[0].clientX;y0=e.touches[0].clientY;},{passive:true});
+    el.addEventListener("touchend",function(e){
+      if(!on)return;on=false;var t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;
+      if(hashSlug())return;
+      if(Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*1.6)return;
+      var dir=dx<0?1:-1,td=todayISO();
+      if(S.day&&!mexp){
+        var d=addDays(S.day,dir);
+        if(d<minDay(td)||d>addDays(td,7*13))return;
+        S.day=d;off=Math.round((toDate(monOf(d))-toDate(monOf(td)))/604800000);animDir=dir>0?"R":"L";update();
+      }else{
+        var b=document.querySelector('#weekstrip [data-nav="'+dir+'"]');if(b&&!b.disabled)b.click();
+      }
+    },{passive:true});
+  })();
+    document.querySelectorAll("[data-style]").forEach(function(b){b.addEventListener("click",function(){S[b.dataset.style]=!S[b.dataset.style];update();});});
+  // organizer logo missing -> monogram
+  document.getElementById("list").addEventListener("error",function(e){
+    var im=e.target;
+    if(im&&im.classList&&im.classList.contains("olg")&&im.parentNode){var m=document.createElement("span");m.className="mono";m.setAttribute("aria-hidden","true");m.textContent=im.getAttribute("data-mono")||"";im.parentNode.replaceChild(m,im);}
+  },true);
+  window.addEventListener("hashchange",function(){window.scrollTo(0,0);update();});
+  // language: four buttons on wide screens, one dropdown button on phones
+  var langBtn=document.getElementById("langBtn"),langs=document.getElementById("langs");
+  function closeLang(){langs.classList.remove("open");langBtn.setAttribute("aria-expanded","false");}
+  langBtn.addEventListener("click",function(e){e.stopPropagation();var o=langs.classList.toggle("open");langBtn.setAttribute("aria-expanded",o?"true":"false");});
+  document.addEventListener("click",function(e){if(!langs.contains(e.target))closeLang();});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeLang();});
+  document.querySelectorAll("[data-lang]").forEach(function(b){b.addEventListener("click",function(){S.lang=b.dataset.lang;closeLang();update();});});
+  document.getElementById("theme").addEventListener("click",function(){S.theme={auto:"light",light:"dark",dark:"auto"}[S.theme];update();});
+
+  // Recompute "today" when the day changes while the page stays open, and when the tab is shown again
+  var lastToday=todayISO();
+  function tick(){var d=todayISO();if(d!==lastToday){lastToday=d;setCopy();render();}}
+  setInterval(tick,60000);
+  document.addEventListener("visibilitychange",function(){if(!document.hidden)tick();});
+
+  // ---- Live data: published Google Sheet (CSV), only approved rows; falls back to events.js ----
+  var CSV_KEY="zc_csv2",ORG_KEY="zc_orgs1",DJ_KEY="zc_djs1",FALLBACK=window.ZC_EVENTS||[],usedCache=false;
+  var TRUEV=["true","igaz","1","yes","igen","jóváhagyva"];
+  function yes(v){return TRUEV.indexOf(String(v||"").trim().toLowerCase())>-1;}
+  function parseCSV(txt){
+    var rows=[],row=[],f="",q=false,c;txt=String(txt).replace(/^﻿/,"");
+    for(var i=0;i<txt.length;i++){c=txt.charAt(i);
+      if(q){if(c==='"'){if(txt.charAt(i+1)==='"'){f+='"';i++;}else q=false;}else f+=c;}
+      else if(c==='"')q=true;
+      else if(c===","){row.push(f);f="";}
+      else if(c==="\n"||c==="\r"){if(c==="\r"&&txt.charAt(i+1)==="\n")i++;row.push(f);f="";rows.push(row);row=[];}
+      else f+=c;}
+    if(f!==""||row.length){row.push(f);rows.push(row);}
+    return rows;
+  }
+  function validISO(s){if(!/^\d{4}-\d{2}-\d{2}$/.test(s))return false;var d=toDate(s);return !isNaN(d)&&d.toISOString().slice(0,10)===s;}
+  function slugId(s){return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,80);}
+  function heads(rows){return rows[0].map(function(x){return String(x).trim().toLowerCase();});}
+  function csvField(rows,key){if(rows.length<2)return "";var i=heads(rows).indexOf(key);return i<0?"":String(rows[1][i]==null?"":rows[1][i]).trim();}
+  function csvToEvents(rows){
+    if(rows.length<2)return [];
+    var h=heads(rows),out=[];
+    for(var r=1;r<rows.length;r++){
+      var g=function(k){var i=h.indexOf(k);return i<0?"":String(rows[r][i]==null?"":rows[r][i]).trim();};
+      if(!yes(g("jóváhagyva")||g("approved")))continue;                              // only approved rows
+      var type=g("type").toLowerCase(),start=g("start"),end=g("end"),url=g("url");
+      if(!GROUP[type]||!validISO(start)||(end&&!validISO(end)))continue;     // skip malformed rows
+      var th=g("title_hu"),te=g("title_en");if(!th&&!te)continue;
+      var e={id:g("id")||slugId(start+"-"+(th||te)),title:te&&th&&te!==th?{hu:th,en:te}:(th||te),
+        start:start,end:end,time:g("time"),endTime:g("endtime"),city:g("city"),venue:g("venue"),type:type,
+        organizer:g("organizer"),url:/^https?:\/\//i.test(url)?url:""};
+      var ct=g("contact");if(ct)e.contact=ct;
+      var dj=g("djs");if(dj)e.djs=dj;
+      var also=g("also").toLowerCase();if(GROUP[also])e.also=also;
+      var st=g("styles").toLowerCase().split(/[,;]\s*/).filter(Boolean);e.styles=st.length?st:["zouk"];
+      var mx=g("mixed").toLowerCase();
+      if(mx&&["false","hamis","0","no","nem"].indexOf(mx)<0){e.mixed=yes(mx)?true:mx.split(/[,;]\s*/).filter(Boolean);}
+      if(yes(g("verify")))e.verify=true;
+      var nh=g("note_hu"),ne=g("note_en");if(nh||ne)e.note=nh&&ne&&nh!==ne?{hu:nh,en:ne}:(nh||ne);
+      var wk=parseInt(g("weekly"),10);
+      if(wk>=1&&wk<=7){var fr=g("from")||start;if(validISO(fr)){e.weekly=wk;e.from=fr;}}
+      out.push(e);
+    }
+    return out;
+  }
+  // organizers sheet: name, slug, url, city, bio_hu, bio_en, logo, active – only active rows; null = not an organizers CSV
+  function csvToOrgs(rows){
+    if(rows.length<1)return null;
+    var h=heads(rows);if(h.indexOf("name")<0||h.indexOf("active")<0)return null;
+    var out=[],seen={};
+    for(var r=1;r<rows.length;r++){
+      var g=function(k){var i=h.indexOf(k);return i<0?"":String(rows[r][i]==null?"":rows[r][i]).trim();};
+      if(!yes(g("active")))continue;
+      var name=g("name");if(!name)continue;
+      var slug=slugId(g("slug")||name);if(!slug||seen[slug])continue;seen[slug]=1;
+      var url=g("url");
+      out.push({name:name,slug:slug,url:/^https?:\/\//i.test(url)?url:"",city:g("city"),bio_hu:g("bio_hu"),bio_en:g("bio_en"),logo:yes(g("logo"))});
+    }
+    return out;
+  }
+  // DJs sheet: name, url (header names, any order) – name -> link
+  function csvToDjs(rows){
+    if(rows.length<1)return null;
+    var h=heads(rows);if(h.indexOf("name")<0||h.indexOf("url")<0)return null;
+    var out={};
+    for(var r=1;r<rows.length;r++){
+      var n=String(rows[r][h.indexOf("name")]||"").trim(),u=String(rows[r][h.indexOf("url")]||"").trim();
+      if(n&&/^https?:\/\//i.test(u))out[norm(n)]=u;
+    }
+    return out;
+  }
+  function loadDjs(){
+    var u=(window.ZC_CONFIG||{}).djsCsvUrl;if(!u)return;
+    try{var dc=JSON.parse(localStorage.getItem(DJ_KEY)||"null");if(dc&&dc.djs){DJ_BY_NAME=dc.djs;update();}}catch(e){}
+    fetchText(u,8000).then(function(txt){
+      var m=csvToDjs(parseCSV(txt));if(!m)throw new Error("not a DJs CSV (needs name and url columns)");
+      try{localStorage.setItem(DJ_KEY,JSON.stringify({djs:m}));}catch(e){}
+      DJ_BY_NAME=m;update();
+    }).catch(function(err){console.warn("Zouk Calendar: DJ links unavailable – "+(err&&err.message||err));});
+  }
+  function setOrgs(list){ORGS=list;ORGS_BY_SLUG={};ORGS_BY_NAME={};list.forEach(function(o){ORGS_BY_SLUG[o.slug]=o;ORGS_BY_NAME[norm(o.name)]=o;});}
+  function useEvents(list,upd){window.ZC_EVENTS=list;UPD=upd||"";update();}
+  // fetch with a time limit (no AbortSignal): the slower of the two simply loses the race
+  function fetchText(u,ms){
+    var tm,timer=new Promise(function(_,rej){tm=setTimeout(function(){rej(new Error("timeout"));},ms);});
+    var req=fetch(u+(u.indexOf("?")>-1?"&":"?")+"_="+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.text();});
+    return Promise.race([req,timer]).then(function(v){clearTimeout(tm);return v;},function(e){clearTimeout(tm);throw e;});
+  }
+  function loadLive(){
+    var u=(window.ZC_CONFIG||{}).csvUrl;if(!u)return;
+    fetchText(u,8000).then(function(txt){
+      var rows=parseCSV(txt),list=csvToEvents(rows),nr=Math.max(rows.length-1,0),upd=csvField(rows,"updated");
+      console.info("Zouk Calendar: CSV rows "+nr+", usable approved events "+list.length+", updated "+(upd||"–"));
+      if(!list.length)throw new Error("no approved rows (CSV rows: "+nr+")");
+      try{localStorage.setItem(CSV_KEY,JSON.stringify({at:todayISO(),upd:upd,events:list}));}catch(e){}
+      useEvents(list,upd);
+    }).catch(function(err){console.warn("Zouk Calendar: using the built-in list – "+(err&&err.message||err));if(usedCache)useEvents(FALLBACK,"");});
+  }
+  function loadOrgs(){
+    var u=(window.ZC_CONFIG||{}).orgsCsvUrl;if(!u){ORGS_READY=true;return;}
+    fetchText(u,8000).then(function(txt){
+      var list=csvToOrgs(parseCSV(txt));if(!list)throw new Error("not an organizers CSV");
+      try{localStorage.setItem(ORG_KEY,JSON.stringify({orgs:list}));}catch(e){}
+      setOrgs(list);ORGS_READY=true;update();
+    }).catch(function(err){console.warn("Zouk Calendar: organizer pages unavailable – "+(err&&err.message||err));ORGS_READY=true;update();});
+  }
+  // first paint: last good sheet data from this browser, otherwise events.js
+  if((window.ZC_CONFIG||{}).csvUrl){
+    try{var cc=JSON.parse(localStorage.getItem(CSV_KEY)||"null");if(cc&&cc.events&&cc.events.length){window.ZC_EVENTS=cc.events;UPD=cc.upd||"";usedCache=true;}}catch(e){}
+  }
+  if((window.ZC_CONFIG||{}).orgsCsvUrl){
+    try{var oc=JSON.parse(localStorage.getItem(ORG_KEY)||"null");if(oc&&oc.orgs)setOrgs(oc.orgs);}catch(e){}
+  }
+
+  update();
+  loadLive();
+  loadOrgs();
+  loadDjs();
+})();
+</script>
 </body>
 </html>
