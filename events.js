@@ -1,4 +1,4 @@
-// Zouk Calendar – event data (v1.10.4) – FALLBACK data: the site reads the published Google Sheet first (csvUrl) and uses this list only when the sheet is unreachable
+// Zouk Calendar – event data (v1.10.5) – FALLBACK data: the site reads the published Google Sheet first (csvUrl) and uses this list only when the sheet is unreachable
 // Add or edit events here. Dates are YYYY-MM-DD. Only zouk/lambada-related events.
 // type: party | regular | workshop | weekender | festival | retreat   (a course with an end date is still "regular")
 //   party                      -> "Parties"
@@ -47,7 +47,7 @@ window.ZC_EVENTS = [
   {
     id: "connect-xmas-social-2026-12-18",
     mixed: ["bachata", "salsa"],
-    title: "Connect Xmas Social Night – Bachata, Zouk & Salsa",
+    title: "Connect Xmas Social Night - BZS",
     start: "2026-12-18", end: "", time: "21:00",
     city: "Budapest", venue: "Quality Dance Club",
     type: "party", styles: ["zouk"],
@@ -57,7 +57,7 @@ window.ZC_EVENTS = [
   },
   {
     id: "bruno-fae-weekender-2027-02-05",
-    title: "Bruno & Fae Zouk Weekender in Budapest",
+    title: "Bruno & Fae Zouk Weekender",
     start: "2027-02-05", end: "2027-02-07", time: "",
     city: "Budapest", venue: "",
     type: "weekender", styles: ["zouk"],
@@ -66,7 +66,7 @@ window.ZC_EVENTS = [
   },
   {
     id: "zouk-lambada-fever-2027",
-    title: "12th Zouk Lambada Fever Budapest 2027",
+    title: "Zouk Lambada Fever",
     start: "2027-04-30", end: "2027-05-03", time: "",
     city: "Budapest", venue: "Kerepesi út 26",
     type: "festival", styles: ["zouk", "lambada"],
@@ -76,7 +76,7 @@ window.ZC_EVENTS = [
   {
     id: "all-stars-festival-2027-10-28",
     mixed: true,
-    title: "All Stars Festival 2027 – 14th edition (All in 1)",
+    title: "All Stars Festival - SBKZ",
     start: "2027-10-28", end: "", time: "20:00",
     city: "Budapest", venue: "",
     type: "festival", styles: ["zouk"],
