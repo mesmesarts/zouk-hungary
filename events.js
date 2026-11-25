@@ -1,4 +1,4 @@
-// Zouk Calendar – event data (v1.9.5) – FALLBACK data: the site reads the published Google Sheet first (csvUrl) and uses this list only when the sheet is unreachable
+// Zouk Calendar – event data (v1.10.0) – FALLBACK data: the site reads the published Google Sheet first (csvUrl) and uses this list only when the sheet is unreachable
 // Add or edit events here. Dates are YYYY-MM-DD. Only zouk/lambada-related events.
 // type: party | regular | workshop | weekender | festival | retreat   (a course with an end date is still "regular")
 //   party                      -> "Parties"
@@ -10,10 +10,12 @@
 // mixed: true | ["bachata","salsa"] -> "Mixed" chip, or one chip per other dance when listed
 // also: "party" (optional) -> a second type, for events that are both (e.g. workshop + party); shows both tags and counts in both groups
 // verify: true -> shows a small "check" badge (data taken from a cover banner, not an event page)
-window.ZC_UPDATED = "2026-11-25";
+// The organizer name links to an organizer page (#slug) when the "Szervezők" sheet has an active row with the same name (case and accent insensitive).
+window.ZC_UPDATED = "2026-11-25"; // fallback only: the site shows the `updated` timestamp of the published CSV when it has one
 window.ZC_CONFIG = {
   submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLSdHwYUnaeKkjjUn_PRhC-hFeR8eO37LanShNTLnEGGkBbjqfQ/viewform", // the Google Form link ("Esemény beküldése" button)
   csvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRADk7y7goAewdHhpi4mWsxT7tq8VPbOxmBHYaJoS2nnV_UOuVoUJunk6aLWYm0kJ_gAb-10yhrac8q/pub?gid=1840318514&single=true&output=csv", // Google Sheet -> Publish to web -> "Publikus" tab -> CSV link; empty = use the list below
+  orgsCsvUrl: "", // Google Sheet -> Publish to web -> "Szervezők" tab -> CSV link; empty = no organizer pages
 };
 // Hungarian public holidays and working Saturdays – UPDATE EVERY YEAR (the NGM decree on the working schedule around public holidays is published in spring or autumn).
 //   off  = weekday public holidays and moved rest days (Saturdays and Sundays are always shown as days off)
