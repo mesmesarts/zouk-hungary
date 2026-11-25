@@ -1,4 +1,4 @@
-// Zouk Calendar – event data (v1.9.4) – FALLBACK data: the site reads the published Google Sheet first (csvUrl) and uses this list only when the sheet is unreachable
+// Zouk Calendar – event data (v1.9.5) – FALLBACK data: the site reads the published Google Sheet first (csvUrl) and uses this list only when the sheet is unreachable
 // Add or edit events here. Dates are YYYY-MM-DD. Only zouk/lambada-related events.
 // type: party | regular | workshop | weekender | festival | retreat   (a course with an end date is still "regular")
 //   party                      -> "Parties"
@@ -14,6 +14,19 @@ window.ZC_UPDATED = "2026-11-25";
 window.ZC_CONFIG = {
   submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLSdHwYUnaeKkjjUn_PRhC-hFeR8eO37LanShNTLnEGGkBbjqfQ/viewform", // the Google Form link ("Esemény beküldése" button)
   csvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRADk7y7goAewdHhpi4mWsxT7tq8VPbOxmBHYaJoS2nnV_UOuVoUJunk6aLWYm0kJ_gAb-10yhrac8q/pub?gid=1840318514&single=true&output=csv", // Google Sheet -> Publish to web -> "Publikus" tab -> CSV link; empty = use the list below
+};
+// Hungarian public holidays and working Saturdays – UPDATE EVERY YEAR (the NGM decree on the working schedule around public holidays is published in spring or autumn).
+//   off  = weekday public holidays and moved rest days (Saturdays and Sundays are always shown as days off)
+//   work = Saturdays that are working days (shown as normal days)
+// Checked 2026-11-25: Dec 24 became a permanent public holiday (law of 2026-11-13) and the working Saturday of 2026-12-12 was repealed.
+// The 2027 decree on moved working days had not been published yet; none expected. If it appears, add the Saturday to `work` and the moved rest day to `off`.
+window.ZC_HOLIDAYS = {
+  off: [
+    "2026-12-24", "2026-12-25", "2026-12-26",
+    "2027-01-01", "2027-03-15", "2027-03-26", "2027-03-29", "2027-05-01", "2027-05-17",
+    "2027-08-20", "2027-10-23", "2027-11-01", "2027-12-24", "2027-12-25", "2027-12-26"
+  ],
+  work: []
 };
 window.ZC_EVENTS = [
   {
