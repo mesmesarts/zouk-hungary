@@ -1,4 +1,4 @@
-// Zouk Calendar – event data (v1.10.2) – FALLBACK data: the site reads the published Google Sheet first (csvUrl) and uses this list only when the sheet is unreachable
+// Zouk Calendar – event data (v1.10.3) – FALLBACK data: the site reads the published Google Sheet first (csvUrl) and uses this list only when the sheet is unreachable
 // Add or edit events here. Dates are YYYY-MM-DD. Only zouk/lambada-related events.
 // type: party | regular | workshop | weekender | festival | retreat   (a course with an end date is still "regular")
 //   party                      -> "Parties"
@@ -12,12 +12,14 @@
 // verify: true -> shows a small "check" badge (data taken from a cover banner, not an event page)
 // city: "Budapest", "Debrecen" or "Külföld" (abroad: group trips with a contact person; the venue/place text shows on the card, the city chip reads "Külföld"). Other city names show only when no city filter is selected.
 // contact: "Name" or "Name, Name" (optional, any event, one or more people) -> shows a "Contact: ..." line on the card (the promoter(s) from our group; typical for "Külföld" trips)
+// djs: "Name, Name2" or "Name|https://link, Name2" (optional) -> shows a "DJ: ..." line on the card; links come from the "DJ-k" sheet (by name, case and accent insensitive) unless given with | in the cell
 // The organizer name links to an organizer page (#slug) when the "Szervezők" sheet has an active row with the same name (case and accent insensitive).
 window.ZC_UPDATED = "2026-11-25"; // fallback only: the site shows the `updated` timestamp of the published CSV when it has one
 window.ZC_CONFIG = {
   submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLSdHwYUnaeKkjjUn_PRhC-hFeR8eO37LanShNTLnEGGkBbjqfQ/viewform", // the Google Form link ("Esemény beküldése" button)
   csvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRADk7y7goAewdHhpi4mWsxT7tq8VPbOxmBHYaJoS2nnV_UOuVoUJunk6aLWYm0kJ_gAb-10yhrac8q/pub?gid=1840318514&single=true&output=csv", // Google Sheet -> Publish to web -> "Publikus" tab -> CSV link; empty = use the list below
-  orgsCsvUrl: "", // Google Sheet -> Publish to web -> "Szervezők" tab -> CSV link; empty = no organizer pages
+  djsCsvUrl: "", // Google Sheet -> Publish to web -> "DJ-k" tab -> CSV link; empty = links only from the "Name|https://..." text in the djs column
+  orgsCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRADk7y7goAewdHhpi4mWsxT7tq8VPbOxmBHYaJoS2nnV_UOuVoUJunk6aLWYm0kJ_gAb-10yhrac8q/pub?gid=1556018248&single=true&output=csv", // Google Sheet -> Publish to web -> "Szervezők" tab -> CSV link; empty = no organizer pages
 };
 // Hungarian public holidays and working Saturdays – UPDATE EVERY YEAR (the NGM decree on the working schedule around public holidays is published in spring or autumn).
 //   off  = weekday public holidays and moved rest days (Saturdays and Sundays are always shown as days off)

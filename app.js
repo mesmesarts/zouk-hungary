@@ -1,4 +1,4 @@
-/* Zouk Calendar app v1.0.1. Needs events.js (window.ZC_EVENTS, ZC_CONFIG, ZC_HOLIDAYS) loaded first. */
+/* Zouk Calendar app v1.0.4. Needs events.js (window.ZC_EVENTS, ZC_CONFIG, ZC_HOLIDAYS) loaded first. */
 (function(){
   var T={
     hu:{tag:"Hol zoukolhatsz? Brazilian zouk és lambada Magyarországon.",
@@ -73,6 +73,7 @@
   var DEF={lang:(function(){var l=(navigator.language||"en").toLowerCase().slice(0,2);return {hu:1,es:1,pt:1}[l]?l:"en";})(),theme:"auto",what:"all",when:"all",city:[],zouk:false,lambada:false};
   var KEY="zc_prefs2";
   var S=load();
+  var DJ_BY_NAME={};
   var ORGS=[],ORGS_BY_SLUG={},ORGS_BY_NAME={},ORGS_READY=!((window.ZC_CONFIG||{}).orgsCsvUrl),UPD="";
   var TITLE="Zouk Calendar Hungary";
 
@@ -113,6 +114,19 @@
   function todayISO(){return new Intl.DateTimeFormat("sv-SE",{timeZone:"Europe/Budapest"}).format(new Date());}
   function toDate(iso){var p=iso.split("-");return new Date(Date.UTC(+p[0],+p[1]-1,+p[2]));}
   function addDays(iso,n){var d=toDate(iso);d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10);}
+  // DJs: "Name|https://link, Name2" (string) or array of such strings / {name,url}. Only http(s) links become anchors.
+  function djHtml(v){
+    var arr=Array.isArray(v)?v:String(v||"").split(",");
+    return arr.map(function(x){
+      var n,u="";
+      if(x&&typeof x==="object"){n=x.name;u=x.url||"";}
+      else{var i=String(x).indexOf("|");n=i<0?String(x):String(x).slice(0,i);u=i<0?"":String(x).slice(i+1);}
+      n=String(n||"").trim();u=String(u).trim();
+      if(!n)return "";
+      if(!u&&DJ_BY_NAME[norm(n)])u=DJ_BY_NAME[norm(n)];
+      return /^https?:\/\//i.test(u)?'<a class="orglink" href="'+esc(u)+'" target="_blank" rel="noopener">'+esc(n)+'</a>':esc(n);
+    }).filter(Boolean).join(", ");
+  }
   function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
   function L(v){if(v&&typeof v==="object")return v[S.lang]||v.en||v.hu||"";return v||"";}
   function loc(){return {hu:"hu-HU",en:"en-GB",es:"es-ES",pt:"pt-BR"}[S.lang]||"en-GB";}
@@ -250,6 +264,7 @@
       '<div class="meta">'+[every,dateTxt,o.time,where].filter(Boolean).map(esc).join(" · ")+'</div>'+
       orgLine+
       (o.contact?'<div class="meta">'+esc(t.contact)+': '+esc(o.contact)+'</div>':'')+
+      (djHtml(o.djs)?'<div class="meta">DJ: '+djHtml(o.djs)+'</div>':'')+
       (o.note?'<div class="note">'+esc(L(o.note))+'</div>':'')+
       '</div>'+
       (o.url?'<a class="go" href="'+esc(o.url)+'" target="_blank" rel="noopener"><span>'+goLabel+'</span>'+ICO_EXT+'</a>':'')+
@@ -390,8 +405,8 @@
     window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});
   }
 
-  // footer: "© Mesmes 2026", from 2027 on "© Mesmes 2026–2027" (current year in Budapest time, updates by itself)
-  function setCopy(){var y=+todayISO().slice(0,4),el=document.getElementById("copy");if(el)el.textContent="© Mesmes 2026"+(y>2026?"–"+y:"");}
+  // footer: "© Mesmes Arts 2026" (Mesmes Arts links to mesmes.art), from 2027 on "© Mesmes Arts 2026–2027" (current year in Budapest time, updates by itself)
+  function setCopy(){var y=+todayISO().slice(0,4),el=document.getElementById("copy");if(el)el.innerHTML="© <a href=\"https://mesmes.art\" target=\"_blank\" rel=\"noopener\">Mesmes Arts</a> 2026"+(y>2026?"–"+y:"");}
   function applyStatic(){
     setCopy();
     var t=T[S.lang];
@@ -502,7 +517,7 @@
   document.addEventListener("visibilitychange",function(){if(!document.hidden)tick();});
 
   // ---- Live data: published Google Sheet (CSV), only approved rows; falls back to events.js ----
-  var CSV_KEY="zc_csv2",ORG_KEY="zc_orgs1",FALLBACK=window.ZC_EVENTS||[],usedCache=false;
+  var CSV_KEY="zc_csv2",ORG_KEY="zc_orgs1",DJ_KEY="zc_djs1",FALLBACK=window.ZC_EVENTS||[],usedCache=false;
   var TRUEV=["true","igaz","1","yes","igen","jóváhagyva"];
   function yes(v){return TRUEV.indexOf(String(v||"").trim().toLowerCase())>-1;}
   function parseCSV(txt){
@@ -533,6 +548,7 @@
         start:start,end:end,time:g("time"),endTime:g("endtime"),city:g("city"),venue:g("venue"),type:type,
         organizer:g("organizer"),url:/^https?:\/\//i.test(url)?url:""};
       var ct=g("contact");if(ct)e.contact=ct;
+      var dj=g("djs");if(dj)e.djs=dj;
       var also=g("also").toLowerCase();if(GROUP[also])e.also=also;
       var st=g("styles").toLowerCase().split(/[,;]\s*/).filter(Boolean);e.styles=st.length?st:["zouk"];
       var mx=g("mixed").toLowerCase();
@@ -559,6 +575,26 @@
       out.push({name:name,slug:slug,url:/^https?:\/\//i.test(url)?url:"",city:g("city"),bio_hu:g("bio_hu"),bio_en:g("bio_en"),logo:yes(g("logo"))});
     }
     return out;
+  }
+  // DJs sheet: name, url (header names, any order) – name -> link
+  function csvToDjs(rows){
+    if(rows.length<1)return null;
+    var h=heads(rows);if(h.indexOf("name")<0||h.indexOf("url")<0)return null;
+    var out={};
+    for(var r=1;r<rows.length;r++){
+      var n=String(rows[r][h.indexOf("name")]||"").trim(),u=String(rows[r][h.indexOf("url")]||"").trim();
+      if(n&&/^https?:\/\//i.test(u))out[norm(n)]=u;
+    }
+    return out;
+  }
+  function loadDjs(){
+    var u=(window.ZC_CONFIG||{}).djsCsvUrl;if(!u)return;
+    try{var dc=JSON.parse(localStorage.getItem(DJ_KEY)||"null");if(dc&&dc.djs){DJ_BY_NAME=dc.djs;update();}}catch(e){}
+    fetchText(u,8000).then(function(txt){
+      var m=csvToDjs(parseCSV(txt));if(!m)throw new Error("not a DJs CSV (needs name and url columns)");
+      try{localStorage.setItem(DJ_KEY,JSON.stringify({djs:m}));}catch(e){}
+      DJ_BY_NAME=m;update();
+    }).catch(function(err){console.warn("Zouk Calendar: DJ links unavailable – "+(err&&err.message||err));});
   }
   function setOrgs(list){ORGS=list;ORGS_BY_SLUG={};ORGS_BY_NAME={};list.forEach(function(o){ORGS_BY_SLUG[o.slug]=o;ORGS_BY_NAME[norm(o.name)]=o;});}
   function useEvents(list,upd){window.ZC_EVENTS=list;UPD=upd||"";update();}
@@ -597,4 +633,5 @@
   update();
   loadLive();
   loadOrgs();
+  loadDjs();
 })();
