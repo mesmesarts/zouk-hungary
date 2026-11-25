@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.17.35 – single file: HTML + CSS (styles v1.3.35) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.17.36 – single file: HTML + CSS (styles v1.3.36) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -311,12 +311,12 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
 .what button,.pill{transition:transform .12s ease,background-color .18s ease,border-color .18s ease,color .18s ease}
 .what button:active,.pill:active{transform:scale(.96)}
 .what button[aria-pressed="true"],.pill[aria-pressed="true"]{animation:zcPop .3s ease-out}
-#list.st article{animation:zcUp .32s ease-out both;animation-delay:calc(var(--i,0)*45ms)}
+#list.st article,#list.st h2.day{animation:zcUp .32s ease-out both;animation-delay:calc(var(--i,0)*45ms)}
 @keyframes zcToday{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--chipInk) 38%,transparent)}70%,100%{box-shadow:0 0 0 6px transparent}}
 .week .days button.today:not([aria-pressed="true"]){animation:zcToday 3s ease-out infinite}
 @keyframes zcSpin{from{transform:rotate(-120deg) scale(.5);opacity:.2}to{transform:none;opacity:1}}
 #theme.spin svg{animation:zcSpin .4s cubic-bezier(.2,.8,.2,1)}
-@media (prefers-reduced-motion:reduce){.what button,.pill,#list.st article,.week .days button.today,#theme.spin svg{animation:none!important;transition:none}}
+@media (prefers-reduced-motion:reduce){.what button,.pill,#list.st article,#list.st h2.day,.week .days button.today,#theme.spin svg{animation:none!important;transition:none}}
 
 /* dark theme: city colours on the day dots are lightened (no outline needed) */
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--lift:34%;--bp:#d93a6c}}
@@ -619,7 +619,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     return true;
   }
   var off=0,mexp=false,moff=0,animDir="",lastList=null,lastDay="",lastCity=null;
-  function setList(el,html,an){var changed=lastList!==null&&html!==lastList;lastList=html;el.innerHTML=html;el.querySelectorAll("article").forEach(function(a,i){a.style.setProperty("--i",Math.min(i,9));});el.classList.remove("aR","aL","aD","st");if(changed){void el.offsetWidth;el.classList.add("st");}}
+  function setList(el,html,an){var changed=lastList!==null&&html!==lastList;lastList=html;el.innerHTML=html;el.querySelectorAll("article,h2.day").forEach(function(a,i){a.style.setProperty("--i",Math.min(i,9));});el.classList.remove("aR","aL","aD","st");if(changed){void el.offsetWidth;el.classList.add("st");}}
 
   // ---- event cards ----
   // opt.date: show the date in the meta line (lists without day headings); opt.noOrg: no organizer link
