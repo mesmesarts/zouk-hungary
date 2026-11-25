@@ -63,8 +63,9 @@
   .filters .grp{display:flex;gap:8px;flex:none}
   .filters .pill{flex:none}
   .cityrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:2px 0 6px}
-  .cityrow .pill{display:flex;align-items:center;justify-content:center;min-width:0;padding:7px 6px;white-space:nowrap}
+  .cityrow .pill{display:flex;align-items:center;justify-content:center;min-width:0;padding:7px 6px;white-space:nowrap;line-height:1}
   .cityrow .pill:not([aria-pressed="true"]){background:color-mix(in srgb,var(--card) 58%,transparent)}
+  .cityrow .pill .dot{flex:none;margin-right:7px;vertical-align:middle;position:relative;top:1px}
   .sep{flex:none;width:1px;height:22px;background:var(--line)}
   @media (max-width:700px){.filters{-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}}
   .body{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
