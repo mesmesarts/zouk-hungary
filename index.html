@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.15.3 – single file: HTML + CSS (styles v1.1.3) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.15.4 – single file: HTML + CSS (styles v1.1.4) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -300,6 +300,10 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
 @keyframes zcSpin{from{transform:rotate(-120deg) scale(.5);opacity:.2}to{transform:none;opacity:1}}
 #theme.spin svg{animation:zcSpin .4s cubic-bezier(.2,.8,.2,1)}
 @media (prefers-reduced-motion:reduce){.what button,.pill,#list.st article,.week .days button.today,#theme.spin svg{animation:none!important;transition:none}}
+
+/* dark theme: light outline so dark city colours (blue, purple, green) stay visible on the dark cards */
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .week .dots i{border-color:rgba(255,255,255,.65)}}
+:root[data-theme="dark"] .week .dots i{border-color:rgba(255,255,255,.65)}
 </style>
 </head>
 <body>
