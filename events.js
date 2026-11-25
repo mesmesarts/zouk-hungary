@@ -1,4 +1,4 @@
-// Zouk Calendar – event data (v1.10.0) – FALLBACK data: the site reads the published Google Sheet first (csvUrl) and uses this list only when the sheet is unreachable
+// Zouk Calendar – event data (v1.10.2) – FALLBACK data: the site reads the published Google Sheet first (csvUrl) and uses this list only when the sheet is unreachable
 // Add or edit events here. Dates are YYYY-MM-DD. Only zouk/lambada-related events.
 // type: party | regular | workshop | weekender | festival | retreat   (a course with an end date is still "regular")
 //   party                      -> "Parties"
@@ -10,6 +10,8 @@
 // mixed: true | ["bachata","salsa"] -> "Mixed" chip, or one chip per other dance when listed
 // also: "party" (optional) -> a second type, for events that are both (e.g. workshop + party); shows both tags and counts in both groups
 // verify: true -> shows a small "check" badge (data taken from a cover banner, not an event page)
+// city: "Budapest", "Debrecen" or "Külföld" (abroad: group trips with a contact person; the venue/place text shows on the card, the city chip reads "Külföld"). Other city names show only when no city filter is selected.
+// contact: "Name" or "Name, Name" (optional, any event, one or more people) -> shows a "Contact: ..." line on the card (the promoter(s) from our group; typical for "Külföld" trips)
 // The organizer name links to an organizer page (#slug) when the "Szervezők" sheet has an active row with the same name (case and accent insensitive).
 window.ZC_UPDATED = "2026-11-25"; // fallback only: the site shows the `updated` timestamp of the published CSV when it has one
 window.ZC_CONFIG = {
