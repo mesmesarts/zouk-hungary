@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.17.36 – single file: HTML + CSS (styles v1.3.36) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.18.0 – single file: HTML + CSS (styles v1.4.0) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -68,7 +68,7 @@
   .controls{position:relative;background:var(--bg);padding:27px 0 10px;border-bottom:1px solid var(--line);z-index:5}
   .controls::before{content:"";position:absolute;top:0;left:50%;width:100vw;transform:translateX(-50%);height:9px;box-sizing:content-box;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(#ce2939 0 3px,#fff 3px 6px,#477050 6px 9px)}
   @media (min-width:700px){.controls{position:sticky;top:0}}
-  .what{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+  .what{display:grid;grid-template-columns:repeat(3,1fr) auto;gap:8px;margin-bottom:8px}
   .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:baseline}
   .what button{padding:8px 6px;border-radius:14px;border:2px solid var(--line);background:var(--card);cursor:pointer;font-weight:600}
   .what button[aria-pressed="true"]{background:var(--pressed);color:var(--pressedInk);border-color:var(--pb,var(--pressed))}
@@ -91,7 +91,19 @@
   .pill[aria-pressed="true"]{background:var(--pressed);color:var(--pressedInk);border-color:var(--pb,var(--pressed))}
   .week{margin:12px 0 0;padding-bottom:12px;border-bottom:1px solid var(--line)}
   @keyframes zcUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-  @keyframes zcPop{0%{transform:scale(1)}45%{transform:scale(1.04)}100%{transform:scale(1)}}
+  /* favourites: heart on the card, "favorites only" toggle in the filter row */
+.what .favbtn{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:44px}
+.what .favbtn svg{flex:none;fill:none}
+.what .favbtn[aria-pressed="true"] svg{fill:currentColor}
+.what .favbtn .n{font-size:.85em;font-weight:700}
+.content{position:relative}
+.toprow{padding-right:34px}
+.fav{position:absolute;top:6px;right:6px;display:inline-flex;align-items:center;justify-content:center;width:30px;height:26px;padding:0;border:0;background:none;color:var(--muted);cursor:pointer;border-radius:999px;flex:none}
+.fav svg{fill:none;transition:fill .15s ease,transform .15s ease}
+.fav:hover{color:var(--accent)}
+.fav[aria-pressed="true"]{color:var(--accent)}
+.fav[aria-pressed="true"] svg{fill:currentColor;animation:zcPop .3s ease-out}
+@keyframes zcPop{0%{transform:scale(1)}45%{transform:scale(1.04)}100%{transform:scale(1)}}
   @keyframes zcDot{from{opacity:0;scale:.2}to{opacity:1;scale:1}}
   @keyframes zcF{from{opacity:0}to{opacity:1}}
   #list.st{animation:zcF .32s ease-out}
@@ -360,6 +372,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
       <button data-v="all"></button>
       <button data-v="class"></button>
       <button data-v="party"></button>
+      <button type="button" id="favBtn" class="favbtn" aria-pressed="false"></button>
     </div>
     <div class="cityrow" id="cities" role="group"></div>
   </div>
@@ -384,7 +397,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
       all:"Mind",klass:"Órák",party:"Bulik és\nminden más",
       lgClass:"rendszeres óra",lgParty:"egyéb egynapos",lgMulti:"többnapos",
       today:"Ma",week:"Ez a hét",allTime:"Összes",allCities:"Minden város",
-      todayLabel:"Ma",weekly:"Hetente",mixed:"Vegyes",mixedTip:"A programban más táncok is vannak.",cal:"Naptárba",verify:"⚠ Ellenőrizd",verifyTip:"Az adat az oldal borítóképéről származik – ellenőrizd a Facebook-oldalon.",
+      todayLabel:"Ma",fav:"Kedvenc",favs:"Kedvencek",emptyFav:"Még nincs kedvenc. Jelölj meg eseményeket a szívecskével.",weekly:"Hetente",mixed:"Vegyes",mixedTip:"A programban más táncok is vannak.",cal:"Naptárba",verify:"⚠ Ellenőrizd",verifyTip:"Az adat az oldal borítóképéről származik – ellenőrizd a Facebook-oldalon.",
       empty0:"Mára nem találtunk eseményt. Nézd meg az „Összes” nézetet, vagy lapozz a hét napjai között!",empty1:"Nincs a szűrőnek megfelelő esemény.",
       by:"Szervező",detailsLead:"Részletek a ",details:"Facebookon →",detailsOther:"Részletek",langLabel:"Nyelv",submit:"Esemény beküldése",soon:"Esemény beküldése – hamarosan",
       disc:"Az adatok a szervezők nyilvános Facebook-oldalairól származnak; a pontos időpontot és helyszínt mindig ellenőrizd az esemény oldalán. A fesztiválok és hétvégék városra való szűrésnél is látszanak.",
@@ -400,7 +413,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
       all:"All",klass:"Classes",party:"Parties & more",
       lgClass:"regular class",lgParty:"other one-day",lgMulti:"multi-day",
       today:"Today",week:"This week",allTime:"All upcoming",allCities:"All cities",
-      todayLabel:"Today",weekly:"Weekly",mixed:"Mixed",mixedTip:"Other dances are on the programme too.",cal:"Add to calendar",verify:"⚠ Check",verifyTip:"Taken from the page's cover banner – please check the Facebook page.",
+      todayLabel:"Today",fav:"Favorite",favs:"Favorites",emptyFav:"No favorites yet. Tap the heart on an event to add it.",weekly:"Weekly",mixed:"Mixed",mixedTip:"Other dances are on the programme too.",cal:"Add to calendar",verify:"⚠ Check",verifyTip:"Taken from the page's cover banner – please check the Facebook page.",
       empty0:"Nothing found for today. Try “All upcoming”, or pick another day in the week bar!",empty1:"No events match your filters.",
       by:"Organizer",detailsLead:"Details on ",details:"Facebook →",detailsOther:"Details",langLabel:"Language",submit:"Submit an event",soon:"Submit an event – coming soon",
       disc:"Data comes from the organizers' public Facebook pages; always check the exact time and venue on the event page. Festivals and weekenders stay visible when you filter by city.",
@@ -416,7 +429,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
       all:"Todo",klass:"Clases",party:"Fiestas y más",
       lgClass:"clase regular",lgParty:"otro de un día",lgMulti:"varios días",
       today:"Hoy",week:"Esta semana",allTime:"Todos",allCities:"Todas las ciudades",
-      todayLabel:"Hoy",weekly:"Semanal",mixed:"Mixto",mixedTip:"El programa incluye también otros bailes.",cal:"Añadir al calendario",verify:"⚠ Comprueba",verifyTip:"Dato tomado de la portada de la página; comprueba la página de Facebook.",
+      todayLabel:"Hoy",fav:"Favorito",favs:"Favoritos",emptyFav:"Aún no hay favoritos. Toca el corazón de un evento para añadirlo.",weekly:"Semanal",mixed:"Mixto",mixedTip:"El programa incluye también otros bailes.",cal:"Añadir al calendario",verify:"⚠ Comprueba",verifyTip:"Dato tomado de la portada de la página; comprueba la página de Facebook.",
       empty0:"No hay eventos para hoy. Prueba “Todos” o elige otro día en la barra semanal.",empty1:"No hay eventos que coincidan con los filtros.",
       by:"Organiza",detailsLead:"Detalles en ",details:"Facebook →",detailsOther:"Detalles",langLabel:"Idioma",submit:"Enviar un evento",soon:"Enviar un evento – próximamente",
       disc:"Los datos proceden de las páginas públicas de Facebook de los organizadores; comprueba siempre la hora y el lugar en la página del evento. Los festivales y weekenders se muestran también al filtrar por ciudad.",
@@ -432,7 +445,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
       all:"Tudo",klass:"Aulas",party:"Festas e mais",
       lgClass:"aula regular",lgParty:"outro de um dia",lgMulti:"vários dias",
       today:"Hoje",week:"Esta semana",allTime:"Todos",allCities:"Todas as cidades",
-      todayLabel:"Hoje",weekly:"Semanal",mixed:"Misto",mixedTip:"A programação inclui também outras danças.",cal:"Adicionar ao calendário",verify:"⚠ Confira",verifyTip:"Dado tirado da capa da página; confira na página do Facebook.",
+      todayLabel:"Hoje",fav:"Favorito",favs:"Favoritos",emptyFav:"Ainda não há favoritos. Toque no coração de um evento para adicioná-lo.",weekly:"Semanal",mixed:"Misto",mixedTip:"A programação inclui também outras danças.",cal:"Adicionar ao calendário",verify:"⚠ Confira",verifyTip:"Dado tirado da capa da página; confira na página do Facebook.",
       empty0:"Não há eventos para hoje. Experimente “Todos” ou escolha outro dia na barra da semana.",empty1:"Nenhum evento corresponde aos filtros.",
       by:"Organização",detailsLead:"Detalhes no ",details:"Facebook →",detailsOther:"Detalhes",langLabel:"Idioma",submit:"Enviar um evento",soon:"Enviar um evento – em breve",
       disc:"Os dados vêm das páginas públicas de Facebook dos organizadores; confira sempre o horário e o local na página do evento. Festivais e weekenders aparecem também ao filtrar por cidade.",
@@ -449,7 +462,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
   var GROUP={party:"party",regular:"class",course:"class",workshop:"class",weekender:"party",festival:"party",retreat:"party"};
   var FEST={weekender:1,festival:1,retreat:1}; // visible whatever city is selected
   var CITIES=["Budapest","Debrecen","abroad"];  // city filter chips; several can be on at once, none = everything
-  var DEF={lang:(function(){var l=(navigator.language||"en").toLowerCase().slice(0,2);return {hu:1,es:1,pt:1}[l]?l:"en";})(),theme:"auto",what:"all",when:"all",city:[],zouk:false,lambada:false};
+  var DEF={lang:(function(){var l=(navigator.language||"en").toLowerCase().slice(0,2);return {hu:1,es:1,pt:1}[l]?l:"en";})(),theme:"auto",what:"all",when:"all",city:[],zouk:false,lambada:false,favOnly:false};
   var KEY="zc_prefs2";
   var S=load();
   var DJ_BY_NAME={};
@@ -489,6 +502,11 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     return o;
   }
   function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+  // favourites: hearted events (a weekly class is hearted as a whole), kept on this device only
+  var FAV_KEY="zc_favs1",FAVS=(function(){try{var a=JSON.parse(localStorage.getItem(FAV_KEY)||"[]");return Array.isArray(a)?a:[];}catch(e){return [];}})();
+  function favKey(o){return String(o.id||L(o.title));}
+  function isFav(o){return FAVS.indexOf(favKey(o))>-1;}
+  function saveFavs(){try{localStorage.setItem(FAV_KEY,JSON.stringify(FAVS));}catch(e){}}
 
   function todayISO(){return new Intl.DateTimeFormat("sv-SE",{timeZone:"Europe/Budapest"}).format(new Date());}
   function toDate(iso){var p=iso.split("-");return new Date(Date.UTC(+p[0],+p[1]-1,+p[2]));}
@@ -547,6 +565,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     return CITY_COLORS[(i<0?0:i)%CITY_COLORS.length];
   }
   // "Add to Google Calendar" link (weekly classes get a weekly recurrence)
+  var ICO_HEART='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20.5s-7.5-4.7-9.5-9.6C1.2 7.6 3.1 4.5 6.4 4.5c2 0 3.6 1.1 5.6 3.2 2-2.1 3.6-3.2 5.6-3.2 3.3 0 5.2 3.1 3.9 6.4C19.5 15.8 12 20.5 12 20.5z"/></svg>';
   var ICO_PIN='<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6" fill="#fff" stroke="none"/></svg>';
   var ICO_CAL='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M12 13v5M9.5 15.5h5"/></svg>';
   var ICO_EXT='<svg class="ext" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>';
@@ -609,6 +628,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
   // city filter: nothing selected = every event; otherwise an event passes when its city (Budapest / Debrecen / abroad) is selected.
   // Festivals and weekenders in Hungary stay visible whenever Budapest or Debrecen is selected.
   function ok(o){
+    if(S.favOnly&&!isFav(o))return false;
     if(S.what!=="all"&&gs(o).indexOf(S.what)<0)return false;
     if(S.city.length){
       if(isAbroad(o.city)){if(S.city.indexOf("abroad")<0)return false;}
@@ -649,6 +669,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
         (o.styles||[]).filter(function(s){return s!=="zouk";}).map(function(s){return '<span class="tag">'+esc(STYLES[s]||s)+'</span>';}).join("")+
         mix+
         (o.verify?'<span class="tag verify" title="'+esc(t.verifyTip)+'">'+esc(t.verify)+'</span>':'')+
+        '<button type="button" class="fav" data-fav="'+esc(favKey(o))+'" aria-pressed="'+isFav(o)+'" title="'+esc(t.fav)+'" aria-label="'+esc(t.fav)+'">'+ICO_HEART+'</button>'+
       '</div>'+
       '<h3>'+esc(L(o.title))+'</h3>'+
       '<div class="meta">'+[every,dateTxt,o.time,where].filter(Boolean).map(esc).join(" · ")+'</div>'+
@@ -746,7 +767,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     if(S.day!==lastDay){var pb=strip.querySelector('[aria-pressed="true"]');if(pb&&S.day)pb.classList.add("pop");lastDay=S.day;}
     var items=S.day?src.filter(function(o){return o.s<=S.day&&o.e>=S.day;}):base;
     sortUp(items,today);
-    if(!items.length){setList(el,'<div class="empty">'+esc(S.day?t.empty0:t.empty1)+'</div>',an);return;}
+    if(!items.length){setList(el,'<div class="empty">'+esc(S.favOnly?t.emptyFav:(S.day?t.empty0:t.empty1))+'</div>',an);return;}
     setList(el,listHtml(items,t,today,false,{}),an);
   }
 
@@ -811,7 +832,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     var t=T[S.lang];
     document.documentElement.lang=S.lang;
     document.getElementById("tagline").textContent=t.tag;
-    var w=document.querySelectorAll("#what button");
+    var w=document.querySelectorAll("#what button[data-v]");
     w[0].textContent=t.all;w[1].textContent=t.klass;w[2].textContent=t.party;
     document.getElementById("disclaimer").textContent=t.disc;
     document.getElementById("updLabel").textContent=t.upd;
@@ -846,11 +867,24 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     if(S.theme==="auto")document.documentElement.removeAttribute("data-theme");else document.documentElement.setAttribute("data-theme",S.theme);
     document.querySelectorAll("[data-lang]").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.lang===S.lang);});
     w.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.v===S.what);});
+    var fb=document.getElementById("favBtn");fb.setAttribute("aria-pressed",!!S.favOnly);fb.title=t.favs;fb.setAttribute("aria-label",t.favs);
+    fb.innerHTML=ICO_HEART+(FAVS.length?'<span class="n">'+FAVS.length+'</span>':'');
     document.querySelectorAll("[data-style]").forEach(function(b){b.setAttribute("aria-pressed",!!S[b.dataset.style]);});
   }
   function update(){save();applyStatic();render();}
 
-  document.querySelectorAll("#what button").forEach(function(b){b.addEventListener("click",function(){S.what=(b.dataset.v!=="all"&&S.what===b.dataset.v)?"all":b.dataset.v;update();});});
+  document.querySelectorAll("#what button[data-v]").forEach(function(b){b.addEventListener("click",function(){S.what=(b.dataset.v!=="all"&&S.what===b.dataset.v)?"all":b.dataset.v;update();});});
+  document.getElementById("favBtn").addEventListener("click",function(){S.favOnly=!S.favOnly;update();});
+  // heart on a card: toggled in place (no re-render, so the list does not animate again); in "favorites only" mode the card leaves the list
+  document.getElementById("list").addEventListener("click",function(ev){
+    var b=ev.target.closest("button.fav");if(!b)return;
+    var k=b.getAttribute("data-fav"),i=FAVS.indexOf(k);
+    if(i>-1)FAVS.splice(i,1);else FAVS.push(k);
+    saveFavs();
+    if(S.favOnly){applyStatic();render();return;}
+    document.querySelectorAll('button.fav').forEach(function(x){if(x.getAttribute("data-fav")===k)x.setAttribute("aria-pressed",i<0);});
+    applyStatic();
+  });
   document.getElementById("weekstrip").addEventListener("click",function(ev){
     var td0=todayISO();
     var tg=ev.target.closest("button[data-toggle]");
