@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.17.30 – single file: HTML + CSS (styles v1.3.30) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.17.31 – single file: HTML + CSS (styles v1.3.31) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -195,6 +195,14 @@
   a.go .lead{display:none}
   .ext{display:none}
   @media (min-width:700px){.ev a.go{width:150px;font-size:1rem}a.go .lead{display:inline}}
+  /* desktop: "to calendar" sits above the details button, in the same right-hand column */
+  .side{display:contents}
+  @media (min-width:521px){
+    .side{display:flex;flex-direction:column;flex:none;width:92px;border-left:1px solid var(--line)}
+    .ev .side .cal{margin:8px auto;align-self:center}
+    .ev .side a.go{width:auto;flex:1;border-left:0}
+  }
+  @media (min-width:700px){.side{width:150px}}
   .cal{margin-left:auto;font-size:.8rem;font-weight:600;color:var(--chipInk);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:2px 10px;white-space:nowrap}
   .cal:hover{background:var(--chip)}
   @media (max-width:520px){
@@ -273,7 +281,8 @@
     .ev{min-height:108px}
     .content{position:relative;padding:9px 10px}
     .toprow{padding-right:34px;margin-bottom:5px}
-    .cal{position:absolute;top:8px;right:8px;margin:0;padding:3px 7px}
+    .ev{position:relative}
+    .cal{position:absolute;top:8px;right:44px;margin:0;padding:3px 7px}
     .ev a.go{position:relative;width:36px;padding:0 0 26px;flex-direction:column;font-size:.8rem;letter-spacing:.03em}
     .ev a.go>span{writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;white-space:nowrap}
     .ev a.go .arr{display:none}
@@ -641,7 +650,6 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
         (o.styles||[]).filter(function(s){return s!=="zouk";}).map(function(s){return '<span class="tag">'+esc(STYLES[s]||s)+'</span>';}).join("")+
         mix+
         (o.verify?'<span class="tag verify" title="'+esc(t.verifyTip)+'">'+esc(t.verify)+'</span>':'')+
-        cal+
       '</div>'+
       '<h3>'+esc(L(o.title))+'</h3>'+
       '<div class="meta">'+[every,dateTxt,o.time,where].filter(Boolean).map(esc).join(" · ")+'</div>'+
@@ -650,7 +658,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
       (djHtml(o.djs)?'<div class="meta">'+esc(t.music)+': '+djHtml(o.djs)+'</div>':'')+
       (o.note?'<div class="note">'+esc(L(o.note))+'</div>':'')+
       '</div>'+
-      (o.url?'<a class="go" href="'+esc(o.url)+'" target="_blank" rel="noopener"><span>'+goLabel+'</span>'+ICO_EXT+'</a>':'')+
+      '<div class="side">'+cal+(o.url?'<a class="go" href="'+esc(o.url)+'" target="_blank" rel="noopener"><span>'+goLabel+'</span>'+ICO_EXT+'</a>':'')+'</div>'+
       '</article>';
   }
   // byMonth: month headings (past lists); otherwise day headings by o.key
