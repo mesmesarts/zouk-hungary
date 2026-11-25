@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.15.11 – single file: HTML + CSS (styles v1.1.11) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.16.2 – single file: HTML + CSS (styles v1.2.2) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -48,8 +48,10 @@
   .tools{display:flex;gap:6px}
   .tools button{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:6px 12px;font:inherit;font-size:.9rem;cursor:pointer}
   .tools button[aria-pressed="true"]{background:rgba(255,255,255,.26);color:#fff;border-color:rgba(255,255,255,.75);font-weight:700}
-  .instw{display:inline-flex;align-items:center;gap:4px}
-  .tools .instx{width:26px;height:26px;padding:0;display:inline-flex;align-items:center;justify-content:center;flex:none}
+  .instw{display:inline-flex;align-items:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:999px;overflow:hidden}
+  .tools .instw #install{background:none;border:0;border-radius:0;padding:6px 8px 6px 12px}
+  .tools .instx{align-self:stretch;width:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;flex:none;background:none;border:0;border-left:1px solid rgba(255,255,255,.25);border-radius:0}
+  .tools .instx:hover{background:rgba(255,255,255,.16)}
   .tools #install{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
   .tools #install svg{flex:none;display:block}
   .tip{position:fixed;left:12px;right:12px;bottom:16px;max-width:420px;margin:0 auto;z-index:60;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 8px 22px rgba(0,0,0,.28);font-size:.92rem;text-align:center}
@@ -63,7 +65,7 @@
   .banner.on{display:block}
   .banner svg{position:absolute;inset:0;width:100%;height:100%}
   .banner .cityname{position:absolute;left:max(16px,calc((100vw - 820px)/2 + 16px));bottom:10px;color:#fff;font-weight:700;font-size:1.1rem;text-shadow:0 1px 6px rgba(0,0,0,.4)}
-  .controls{position:relative;background:var(--bg);padding:24px 0 19px;border-bottom:1px solid var(--line);z-index:5}
+  .controls{position:relative;background:var(--bg);padding:27px 0 10px;border-bottom:1px solid var(--line);z-index:5}
   .controls::before{content:"";position:absolute;top:0;left:50%;width:100vw;transform:translateX(-50%);height:9px;box-sizing:content-box;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(#ce2939 0 3px,#fff 3px 6px,#477050 6px 9px)}
   @media (min-width:700px){.controls{position:sticky;top:0}}
   .what{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
@@ -231,9 +233,9 @@
     /* install button: own full-width row with its text, so it says what it does */
     .top{flex-wrap:wrap}
     .tools{display:contents}
-    .instw{order:3;flex:1 0 100%;gap:6px}
-    .tools #install{flex:1;justify-content:center;padding:8px 12px;font-size:.9rem}
-    .tools .instx{width:34px;height:34px}
+    .instw{order:3;flex:1 0 100%}
+    .tools .instw #install{flex:1;justify-content:center;padding:8px 12px;font-size:.9rem}
+    .tools .instx{width:42px}
     .tools #install .txt{display:inline}
     .langbtn{display:inline-flex;align-items:center;gap:5px}
     .langs{display:none;position:absolute;right:0;top:calc(100% + 6px);z-index:40;flex-direction:column;gap:2px;min-width:160px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.28)}
@@ -243,7 +245,7 @@
     .tools .langs button[aria-pressed="true"]{background:var(--chip);color:var(--chipInk);font-weight:700}
     h1{font-size:clamp(1.05rem,5vw,1.35rem);white-space:nowrap}
     /* filters */
-    .controls{padding:17px 0 9px}
+    .controls{padding:21px 0 6px}
     .what{gap:6px;margin-bottom:6px}
     .what button{padding:5px 4px;border-radius:12px;border-width:1.5px;font-size:.88rem;line-height:1.15}
     .filters{gap:6px;padding:0 0 4px}
@@ -286,11 +288,10 @@
 @keyframes zcBob{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(3px)}45%{transform:translateY(-1px)}}
 @keyframes zcIn{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
 @keyframes zcRow{from{opacity:0;max-height:0;padding-top:0;padding-bottom:0;margin-top:-10px;overflow:hidden}to{opacity:1;max-height:56px;margin-top:0}}
-.instw:not(.hide){animation:zcIn .6s cubic-bezier(.2,.8,.2,1) both}
-.tools #install:not(.hide){animation:zcPulse 2.4s ease-out .9s infinite}
-@media (max-width:520px){.instw:not(.hide){animation:zcRow .7s cubic-bezier(.2,.8,.2,1) both}}
+.instw:not(.hide){animation:zcIn .6s cubic-bezier(.2,.8,.2,1) both,zcPulse 2.4s ease-out .9s infinite}
+@media (max-width:520px){.instw:not(.hide){animation:zcRow .7s cubic-bezier(.2,.8,.2,1) both,zcPulse 2.4s ease-out 1s infinite}}
 .tools #install:not(.hide) svg{animation:zcBob 2.4s ease-in-out infinite}
-.tools #install:hover,.tools #install:focus-visible{animation:none}
+.instw:hover,.instw:focus-within{animation:none}
 @media (prefers-reduced-motion:reduce){.instw,.tools #install,.tools #install svg{animation:none!important}}
 
 /* v1.15.0: no blue tap flash + press feedback; chip pop; staggered cards; today pulse; theme icon spin */
@@ -309,6 +310,12 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
 /* dark theme: city colours on the day dots are lightened (no outline needed) */
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--lift:34%}}
 :root[data-theme="dark"]{--lift:34%}
+
+/* v1.16.0: type buttons and city chips share height, border and radius */
+:root{--btnH:42px;--btnR:999px}
+.what button,.cityrow .pill{box-sizing:border-box;min-height:var(--btnH);padding-left:14px;padding-right:14px;border:2px solid var(--line);border-radius:var(--btnR);font-size:1rem;line-height:1.15;padding-top:0;padding-bottom:0;display:flex;align-items:center;justify-content:center;text-align:center}
+.what button[aria-pressed="true"],.cityrow .pill[aria-pressed="true"]{border-color:var(--pressed)}
+@media (max-width:520px){:root{--btnH:44px;--btnR:999px}.what button,.cityrow .pill{font-size:.88rem;border-width:1.5px}}
 </style>
 </head>
 <body>
