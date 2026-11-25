@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.19.118 – single file: HTML + CSS (styles v1.4.3) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.19.119 – single file: HTML + CSS (styles v1.4.3) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -149,7 +149,7 @@
   @media (prefers-reduced-motion:reduce){.aR,.aL,.aD{animation:none}}
   #weekstrip{touch-action:none}
   .wkhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;color:var(--chipInk);font-weight:600;font-size:.9rem}
-  .wkhead button{display:inline-flex;align-items:center;justify-content:center;width:40px;height:37px;padding:0;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--arr,var(--ink));cursor:pointer}
+  .wkhead button{display:inline-flex;align-items:center;justify-content:center;width:40px;height:37px;padding:0;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--arr,var(--lblc,var(--pressed)));cursor:pointer}
   .wkhead button svg{display:block}
   .wkhead button:disabled{opacity:.35;cursor:default}
   .week .days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
@@ -178,7 +178,8 @@
   .week .days button.none[aria-pressed="true"]{opacity:1}
   .week .days button[aria-pressed="true"] .dots i{border-color:#fff}
   .wkhead .lbl{flex:1;width:auto;height:37px;margin:0 8px;gap:8px;border:1px solid var(--line);background:var(--card);color:var(--lblc,var(--pressed));font:inherit;font-weight:700;font-size:.92rem;}
-  .wkhead .lbl .chev{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--pressed);color:var(--pressedInk)}
+  .wkhead .lbl .chev{display:inline-flex;align-items:center;justify-content:center;color:var(--arr,currentColor)}
+  .wkhead .lbl .chev svg{width:18px;height:18px;stroke-width:2.6}
   .wkhead .lbl[aria-expanded="true"] .chev svg{transform:rotate(180deg)}
   .wkhead .tdy{width:auto;padding:0 14px;margin:0 8px 0 0;border-color:var(--pb,var(--pressed));background:var(--pressed);color:var(--pressedInk);font-weight:700;font-size:.85rem}
   .wkhead .tdy.l{margin:0 0 0 8px}
