@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.19.107 – single file: HTML + CSS (styles v1.4.3) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.19.108 – single file: HTML + CSS (styles v1.4.3) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -745,7 +745,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     var orgLine=(o.organizer&&o.organizer!==o.venue)
       ?'<div class="meta">'+esc(t.by)+': '+(org?'<a class="orglink" href="#'+esc(org.slug)+'">'+esc(o.organizer)+'</a>':esc(o.organizer))+'</div>':'';
     var cal='<a class="cal" href="'+esc(calUrl(o))+'" target="_blank" rel="noopener" title="'+esc(t.cal)+'" aria-label="'+esc(t.cal)+'">'+ICO_CAL+'<span class="txt"> '+esc(t.cal)+'</span></a>';
-    return '<article class="ev" style="border-left:6px solid '+cc+'"><div class="content">'+
+    return '<article class="ev" style="border-left:4px solid '+cc+'"><div class="content">'+
       '<div class="toprow">'+
         (o.city&&!hideCity?'<span class="city" style="--cc:'+dotBg(cc)+'">'+ICO_PIN+'<span>'+esc(cityName(o.city,t))+'</span></span>':'')+
         '<span class="tag type">'+esc(t.types[o.type]||o.type)+'</span>'+(o.also?'<span class="tag type">'+esc(t.types[o.also]||o.also)+'</span>':'')+
