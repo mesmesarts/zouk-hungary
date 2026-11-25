@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.9.6 -->
+<!-- Zouk Calendar v1.9.9 -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -11,19 +11,19 @@
   :root{
     color-scheme:light;
     --bg:#fbf8ee; --card:#ffffff; --ink:#1c2a22; --muted:#5d695f; --line:#e3ddc9;
-    --head:#0b5a35; --pressed:#0b5a35; --pressedInk:#fff; --accent:#c42f2a; --chip:#e4f1e7; --chipInk:#0b5a35; --gold:#fcd116;
+    --head:#0b5a35; --pressed:#0b5a35; --pressedInk:#fff; --accent:#c42f2a; --chip:#e4f1e7; --chipInk:#0b5a35; --gold:#fcd116; --off:#f0ebd9;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       color-scheme:dark;
       --bg:#0e1612; --card:#16221b; --ink:#e9f1ec; --muted:#9bb0a2; --line:#284236;
-      --head:#0a3d26; --pressed:#14683f; --pressedInk:#fff; --accent:#ff8f78; --chip:#1e382b; --chipInk:#bfe9d0; --gold:#fcd116;
+      --head:#0a3d26; --pressed:#14683f; --pressedInk:#fff; --accent:#ff8f78; --chip:#1e382b; --chipInk:#bfe9d0; --gold:#fcd116; --off:#2b3830;
     }
   }
   :root[data-theme="dark"]{
     color-scheme:dark;
     --bg:#0e1612; --card:#16221b; --ink:#e9f1ec; --muted:#9bb0a2; --line:#284236;
-    --head:#0a3d26; --pressed:#14683f; --pressedInk:#fff; --accent:#ff8f78; --chip:#1e382b; --chipInk:#bfe9d0; --gold:#fcd116;
+    --head:#0a3d26; --pressed:#14683f; --pressedInk:#fff; --accent:#ff8f78; --chip:#1e382b; --chipInk:#bfe9d0; --gold:#fcd116; --off:#2b3830;
   }
   *{box-sizing:border-box}
   body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
@@ -100,14 +100,22 @@
   .week .dots{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;min-height:10px}
   .week .dots i{width:10px;height:10px;border-radius:50%;border:1px solid rgba(0,0,0,.25)}
   .week .days button.none{opacity:.6}
-  .week .days button.past{opacity:.3;cursor:default}
+  /* past days: flat and crossed off; weekend/holiday: tinted (darker in light theme, lighter in dark); today: ring */
+  .week .days button.past{opacity:1;cursor:default;background:transparent;border-color:transparent;color:var(--muted)}
+  .week .days button.past .dn{opacity:.5}
+  .week .days button.past .wd{opacity:.5}
+  .week .days button.m.out.past{opacity:.6}
+  .week .days button.off:not(.past):not([aria-pressed="true"]){background:var(--off)}
+  .week .days button.today{border-color:var(--chipInk);border-width:1.5px}
+  .week .days button.today:not([aria-pressed="true"]) .dn{color:var(--chipInk)}
   .week .days button[aria-pressed="true"]{background:var(--pressed);color:var(--pressedInk);border-color:var(--pressed)}
   .week .days button[aria-pressed="true"] .wd{color:inherit;opacity:.85}
   .week .days button[aria-pressed="true"] .dots i{border-color:#fff}
   .wkhead .lbl{flex:1;width:auto;height:32px;margin:0 8px;gap:8px;border:1px solid var(--pressed);background:var(--card);color:var(--pressed);font:inherit;font-weight:700;font-size:.92rem;}
   .wkhead .lbl .chev{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--pressed);color:var(--pressedInk)}
   .wkhead .lbl[aria-expanded="true"] .chev svg{transform:rotate(180deg)}
-  .week .days.month{gap:4px}
+  .week .days.month{gap:4px;grid-template-columns:20px repeat(7,1fr)}
+  .week .wn{display:flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--muted);opacity:.85}
   .week .wdh{text-align:center;font-size:.72rem;color:var(--muted);}
   .week .days button.m{padding:4px 0 5px;border-radius:10px;border-width:1px}
   .week .days button.m.out{opacity:.45}
@@ -266,7 +274,7 @@
       empty0:"Mára nem találtunk eseményt. Nézd meg az „Összes” nézetet, vagy lapozz a hét napjai között!",empty1:"Nincs a szűrőnek megfelelő esemény.",
       by:"Szervező",detailsLead:"Részletek a ",details:"Facebookon →",detailsOther:"Részletek",langLabel:"Nyelv",submit:"Esemény beküldése",soon:"Esemény beküldése – hamarosan",
       disc:"Az adatok a szervezők nyilvános Facebook-oldalairól származnak; a pontos időpontot és helyszínt mindig ellenőrizd az esemény oldalán. A fesztiválok és hétvégék városra való szűrésnél is látszanak.",
-      upd:"Utolsó frissítés:",
+      upd:"Utolsó frissítés:",wk:"Hét",weekWord:"hét",
       types:{party:"Buli",regular:"Rendszeres óra",course:"Rendszeres óra",workshop:"Workshop",weekender:"Weekender",festival:"Fesztivál",retreat:"Elvonulás"},
       every:["","hétfőnként","keddenként","szerdánként","csütörtökönként","péntekenként","szombatonként","vasárnaponként"],
       themes:{auto:"Téma: auto",light:"Téma: világos",dark:"Téma: sötét"}},
@@ -278,7 +286,7 @@
       empty0:"Nothing found for today. Try “All upcoming”, or pick another day in the week bar!",empty1:"No events match your filters.",
       by:"Organizer",detailsLead:"Details on ",details:"Facebook →",detailsOther:"Details",langLabel:"Language",submit:"Submit an event",soon:"Submit an event – coming soon",
       disc:"Data comes from the organizers' public Facebook pages; always check the exact time and venue on the event page. Festivals and weekenders stay visible when you filter by city.",
-      upd:"Last updated:",
+      upd:"Last updated:",wk:"Wk",weekWord:"Week",
       types:{party:"Party",regular:"Regular class",course:"Regular class",workshop:"Workshop",weekender:"Weekender",festival:"Festival",retreat:"Retreat"},
       every:["","Every Monday","Every Tuesday","Every Wednesday","Every Thursday","Every Friday","Every Saturday","Every Sunday"],
       themes:{auto:"Theme: auto",light:"Theme: light",dark:"Theme: dark"}},
@@ -290,7 +298,7 @@
       empty0:"No hay eventos para hoy. Prueba “Todos” o elige otro día en la barra semanal.",empty1:"No hay eventos que coincidan con los filtros.",
       by:"Organiza",detailsLead:"Detalles en ",details:"Facebook →",detailsOther:"Detalles",langLabel:"Idioma",submit:"Enviar un evento",soon:"Enviar un evento – próximamente",
       disc:"Los datos proceden de las páginas públicas de Facebook de los organizadores; comprueba siempre la hora y el lugar en la página del evento. Los festivales y weekenders se muestran también al filtrar por ciudad.",
-      upd:"Última actualización:",
+      upd:"Última actualización:",wk:"Sem",weekWord:"Semana",
       types:{party:"Fiesta",regular:"Clase regular",course:"Clase regular",workshop:"Taller",weekender:"Weekender",festival:"Festival",retreat:"Retiro"},
       every:["","Todos los lunes","Todos los martes","Todos los miércoles","Todos los jueves","Todos los viernes","Todos los sábados","Todos los domingos"],
       themes:{auto:"Tema: automático",light:"Tema: claro",dark:"Tema: oscuro"}},
@@ -302,7 +310,7 @@
       empty0:"Não há eventos para hoje. Experimente “Todos” ou escolha outro dia na barra da semana.",empty1:"Nenhum evento corresponde aos filtros.",
       by:"Organização",detailsLead:"Detalhes no ",details:"Facebook →",detailsOther:"Detalhes",langLabel:"Idioma",submit:"Enviar um evento",soon:"Enviar um evento – em breve",
       disc:"Os dados vêm das páginas públicas de Facebook dos organizadores; confira sempre o horário e o local na página do evento. Festivais e weekenders aparecem também ao filtrar por cidade.",
-      upd:"Última atualização:",
+      upd:"Última atualização:",wk:"Sem",weekWord:"Semana",
       types:{party:"Festa",regular:"Aula regular",course:"Aula regular",workshop:"Workshop",weekender:"Weekender",festival:"Festival",retreat:"Retiro"},
       every:["","Toda segunda","Toda terça","Toda quarta","Toda quinta","Toda sexta","Todo sábado","Todo domingo"],
       themes:{auto:"Tema: automático",light:"Tema: claro",dark:"Tema: escuro"}}
@@ -405,6 +413,10 @@
 
   var ICO_L='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',ICO_R='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>',ICO_D='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg>';
   var FB_RE=/^https?:\/\/([^\/?#]*\.)?(facebook\.com|fb\.me)(?=[\/?#:]|$)/i;
+  // ISO week number (Monday-first weeks; week 1 contains the first Thursday of the year)
+  function isoWeek(iso){var d=toDate(iso),wd=d.getUTCDay()||7;d.setUTCDate(d.getUTCDate()+4-wd);var y0=Date.UTC(d.getUTCFullYear(),0,1);return Math.ceil(((d-y0)/86400000+1)/7);}
+  // weekend or public holiday (ZC_HOLIDAYS in events.js: off = weekday holidays, work = Saturdays that are working days)
+  function isOff(iso){var H=window.ZC_HOLIDAYS||{},wd=toDate(iso).getUTCDay();if((H.work||[]).indexOf(iso)>-1)return false;return wd===0||wd===6||(H.off||[]).indexOf(iso)>-1;}
   function gs(o){var a=[GROUP[o.type]||"class"];if(o.also&&a.indexOf(GROUP[o.also]||"class")<0)a.push(GROUP[o.also]||"class");return a;}
   var off=0,mexp=false,moff=0,animDir="",lastList=null,lastDay="",lastCity=null;
   function setList(el,html,an){var changed=lastList!==null&&html!==lastList;lastList=html;el.innerHTML=html;el.classList.remove("aR","aL","aD","st");if(changed){void el.offsetWidth;el.classList.add("st");}}
@@ -431,27 +443,30 @@
       ["c","s"].forEach(function(t){Object.keys(seen).forEach(function(k){if(k.slice(-1)===t)h+='<i class="'+t+'" style="background:'+k.slice(0,-1)+'"></i>';});});
       return {n:n,h:h+md,sp:""};}
     function wdName(dd){return cap(toDate(dd).toLocaleDateString(loc(),{weekday:"short",timeZone:"UTC"}).replace(".",""));}
-    var sh="",label,prevOff,nextOff;
+    var sh="",label,ttl="",prevOff,nextOff;
     if(mexp){
       var tp=today.split("-"),mm=(+tp[0])*12+(+tp[1]-1)+moff,fy=Math.floor(mm/12),fm=mm%12,first=fy+"-"+pad(fm+1)+"-01";
       var gS=addDays(first,-((toDate(first).getUTCDay()+6)%7)),gE=addDays(gS,41);
       var srcM=occurrences(gS<today?today:gS,true,gE).filter(function(o){return ok(o)&&o.s<=gE&&o.e>=gS;});
+      sh+='<span class="wdh wnh">'+esc(t.wk)+'</span>';
       for(var q=0;q<7;q++)sh+='<span class="wdh">'+esc(wdName(addDays(gS,q)))+'</span>';
       for(var k=0;k<42;k++){
         var dd=addDays(gS,k),dt=toDate(dd),past=dd<today,inM=dt.getUTCMonth()===fm,dd2=past?{n:0,h:"",sp:""}:dotsFor(srcM,dd);
         if(k>=35&&!inM&&k%7===0)break;
-        sh+='<button type="button" style="--r:'+Math.floor(k/7)+'" data-d="'+dd+'" aria-pressed="'+(S.day===dd)+'" class="m'+(inM?'':' out')+(past?' past':(dd2.n?'':' none'))+'"'+(past?' disabled':'')+'><span class="dn">'+dt.getUTCDate()+'</span><span class="dots">'+dd2.h+'</span>'+(dd2.sp?'<span class="spans">'+dd2.sp+'</span>':'')+'</button>';
+        if(k%7===0)sh+='<span class="wn">'+isoWeek(dd)+'</span>';
+        sh+='<button type="button" style="--r:'+Math.floor(k/7)+'" data-d="'+dd+'" aria-pressed="'+(S.day===dd)+'" class="m'+(inM?'':' out')+(past?' past':(dd2.n?'':' none'))+(isOff(dd)?' off':'')+(dd===today?' today':'')+'"'+(past?' disabled':'')+'><span class="dn">'+dt.getUTCDate()+'</span><span class="dots">'+dd2.h+'</span>'+(dd2.sp?'<span class="spans">'+dd2.sp+'</span>':'')+'</button>';
       }
       label=cap(new Date(Date.UTC(fy,fm,1)).toLocaleDateString(loc(),{year:"numeric",month:"long",timeZone:"UTC"}));
       prevOff=moff<=0;nextOff=moff>=12;
     }else{
       for(var k=0;k<7;k++){
         var dd=addDays(wkS,k),dt=toDate(dd),past=dd<today,dd2=past?{n:0,h:"",sp:""}:dotsFor(src,dd);
-        sh+='<button type="button" data-d="'+dd+'" aria-pressed="'+(S.day===dd)+'"'+(past?' disabled class="past"':(dd2.n?'':' class="none"'))+'><span class="wd">'+esc(wdName(dd))+'</span><span class="dn">'+dt.getUTCDate()+'</span><span class="dots">'+dd2.h+'</span>'+(dd2.sp?'<span class="spans">'+dd2.sp+'</span>':'')+'</button>';
+        sh+='<button type="button" data-d="'+dd+'" aria-pressed="'+(S.day===dd)+'"'+' class="'+(past?'past':(dd2.n?'':'none'))+(isOff(dd)?' off':'')+(dd===today?' today':'')+'"'+(past?' disabled':'')+'><span class="wd">'+esc(wdName(dd))+'</span><span class="dn">'+dt.getUTCDate()+'</span><span class="dots">'+dd2.h+'</span>'+(dd2.sp?'<span class="spans">'+dd2.sp+'</span>':'')+'</button>';
       }
-      label=cap(fmtShort(wkS))+" – "+fmtShort(we);prevOff=off<=0;nextOff=off>=12;
+      var wn=isoWeek(wkS),mname=cap(toDate(addDays(wkS,3)).toLocaleDateString(loc(),{month:"long",timeZone:"UTC"}));
+      label=mname+" – "+(S.lang==="hu"?wn+". "+t.weekWord:t.weekWord+" "+wn);ttl=cap(fmtShort(wkS))+" – "+fmtShort(we);prevOff=off<=0;nextOff=off>=12;
     }
-    strip.innerHTML='<div class="wkhead"><button type="button" data-nav="-1"'+(prevOff?' disabled':'')+' aria-label="‹">'+ICO_L+'</button><button type="button" class="lbl" data-toggle="1" aria-expanded="'+mexp+'">'+esc(label)+'<span class="chev">'+ICO_D+'</span></button><button type="button" data-nav="1"'+(nextOff?' disabled':'')+' aria-label="›">'+ICO_R+'</button></div><div class="days'+(mexp?' month':'')+'">'+(mexp?'':'')+sh+'</div><div class="legend"><span><i class="c"></i> '+esc(t.lgClass)+'</span><span><i class="s"></i> '+esc(t.lgParty)+'</span><span><i class="d"></i> '+esc(t.lgMulti)+'</span></div>';strip.hidden=false;
+    strip.innerHTML='<div class="wkhead"><button type="button" data-nav="-1"'+(prevOff?' disabled':'')+' aria-label="‹">'+ICO_L+'</button><button type="button" class="lbl" data-toggle="1" aria-expanded="'+mexp+'"'+(ttl?' title="'+esc(ttl)+'"':'')+'>'+esc(label)+'<span class="chev">'+ICO_D+'</span></button><button type="button" data-nav="1"'+(nextOff?' disabled':'')+' aria-label="›">'+ICO_R+'</button></div><div class="days'+(mexp?' month':'')+'">'+(mexp?'':'')+sh+'</div><div class="legend"><span><i class="c"></i> '+esc(t.lgClass)+'</span><span><i class="s"></i> '+esc(t.lgParty)+'</span><span><i class="d"></i> '+esc(t.lgMulti)+'</span></div>';strip.hidden=false;
     if(an){var dz=strip.querySelector(".days");if(dz)dz.classList.add("a"+an);}
     if(S.day!==lastDay){var pb=strip.querySelector('[aria-pressed="true"]');if(pb&&S.day)pb.classList.add("pop");lastDay=S.day;}
     var items=S.day?src.filter(function(o){return o.s<=S.day&&o.e>=S.day;}):base;
