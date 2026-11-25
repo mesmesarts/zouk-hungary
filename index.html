@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.18.2 – single file: HTML + CSS (styles v1.4.2) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.18.3 – single file: HTML + CSS (styles v1.4.3) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -689,8 +689,9 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     });
     return html;
   }
-  function sortUp(items,today){
-    items.forEach(function(o){o.key=S.day||(o.s<today?today:o.s);});
+  function sortUp(items,today,dy){
+    if(dy===undefined)dy=S.day;
+    items.forEach(function(o){o.key=dy||(o.s<today?today:o.s);});
     items.sort(function(a,b){return a.key<b.key?-1:a.key>b.key?1:(a.time||"").localeCompare(b.time||"");});
   }
   function sortPast(items){items.sort(function(a,b){return a.s<b.s?1:a.s>b.s?-1:(b.time||"").localeCompare(a.time||"");});}
@@ -763,10 +764,12 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     strip.innerHTML='<div class="wkhead"><button type="button" data-nav="-1"'+(prevOff?' disabled':'')+' aria-label="‹">'+ICO_L+'</button>'+(notNow&&nowSide?nowBtn:'')+'<button type="button" class="lbl" data-toggle="1" aria-expanded="'+mexp+'"'+(ttl?' title="'+esc(ttl)+'"':'')+'>'+esc(label)+'<span class="chev">'+ICO_D+'</span></button>'+(notNow&&!nowSide?nowBtn:'')+'<button type="button" data-nav="1"'+(nextOff?' disabled':'')+' aria-label="›">'+ICO_R+'</button></div><div class="days'+(mexp?' month':'')+'">'+sh+'</div><div class="legend"><span><i class="c"></i> '+esc(t.lgClass)+'</span><span><i class="s"></i> '+esc(t.lgParty)+'</span><span><i class="d"></i> '+esc(t.lgMulti)+'</span></div>';strip.hidden=false;
     if(an){var dz=strip.querySelector(".days");if(dz)dz.classList.add("a"+an);}
     if(S.day!==lastDay){var pb=strip.querySelector('[aria-pressed="true"]');if(pb&&S.day)pb.classList.add("pop");lastDay=S.day;}
-    var items=S.day?src.filter(function(o){return o.s<=S.day&&o.e>=S.day;}):base;
-    if(S.favOnly)items=items.filter(function(o){return o.e>=today;});   // favorites: nothing from the past
-    sortUp(items,today);
-    if(!items.length){setList(el,'<div class="empty">'+esc(S.favOnly&&!FAVS.length?t.emptyFav:(S.day?t.empty0:t.empty1))+'</div>',an);return;}
+    // favorites: nothing from the past; with a past day selected the list shows the upcoming / ongoing favorites instead of the (past) day
+    var dy=(S.favOnly&&S.day&&S.day<today)?"":S.day;
+    var items=dy?src.filter(function(o){return o.s<=dy&&o.e>=dy;}):base;
+    if(S.favOnly)items=items.filter(function(o){return o.e>=today;});
+    sortUp(items,today,dy);
+    if(!items.length){setList(el,'<div class="empty">'+esc(S.favOnly&&!FAVS.length?t.emptyFav:(dy?t.empty0:t.empty1))+'</div>',an);return;}
     setList(el,listHtml(items,t,today,false,{}),an);
   }
 
