@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.18.1 – single file: HTML + CSS (styles v1.4.1) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.18.2 – single file: HTML + CSS (styles v1.4.2) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -95,13 +95,12 @@
 .what .favbtn{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:44px}
 .what .favbtn svg{flex:none;fill:none}
 .what .favbtn[aria-pressed="true"] svg{fill:currentColor}
-.what .favbtn .n{font-size:.85em;font-weight:700}
+.what .favbtn{color:#d6243a}
 .content{position:relative}
 .toprow{padding-right:34px}
 .fav{position:absolute;top:6px;right:6px;display:inline-flex;align-items:center;justify-content:center;width:30px;height:26px;padding:0;border:0;background:none;color:var(--muted);cursor:pointer;border-radius:999px;flex:none}
 .fav svg{fill:none;transition:fill .15s ease,transform .15s ease}
-.fav:hover{color:var(--accent)}
-.fav[aria-pressed="true"]{color:var(--accent)}
+.fav:hover,.fav[aria-pressed="true"]{color:#d6243a}
 .fav[aria-pressed="true"] svg{fill:currentColor;animation:zcPop .3s ease-out}
 @keyframes zcPop{0%{transform:scale(1)}45%{transform:scale(1.04)}100%{transform:scale(1)}}
   @keyframes zcDot{from{opacity:0;scale:.2}to{opacity:1;scale:1}}
@@ -765,8 +764,9 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     if(an){var dz=strip.querySelector(".days");if(dz)dz.classList.add("a"+an);}
     if(S.day!==lastDay){var pb=strip.querySelector('[aria-pressed="true"]');if(pb&&S.day)pb.classList.add("pop");lastDay=S.day;}
     var items=S.day?src.filter(function(o){return o.s<=S.day&&o.e>=S.day;}):base;
+    if(S.favOnly)items=items.filter(function(o){return o.e>=today;});   // favorites: nothing from the past
     sortUp(items,today);
-    if(!items.length){setList(el,'<div class="empty">'+esc(S.favOnly?t.emptyFav:(S.day?t.empty0:t.empty1))+'</div>',an);return;}
+    if(!items.length){setList(el,'<div class="empty">'+esc(S.favOnly&&!FAVS.length?t.emptyFav:(S.day?t.empty0:t.empty1))+'</div>',an);return;}
     setList(el,listHtml(items,t,today,false,{}),an);
   }
 
@@ -867,7 +867,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     document.querySelectorAll("[data-lang]").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.lang===S.lang);});
     w.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.v===S.what);});
     var fb=document.getElementById("favBtn");fb.setAttribute("aria-pressed",!!S.favOnly);fb.title=t.favs;fb.setAttribute("aria-label",t.favs);
-    fb.innerHTML=ICO_HEART+(FAVS.length?'<span class="n">'+FAVS.length+'</span>':'');
+    fb.innerHTML=ICO_HEART;
     document.querySelectorAll("[data-style]").forEach(function(b){b.setAttribute("aria-pressed",!!S[b.dataset.style]);});
   }
   function update(){save();applyStatic();render();}
