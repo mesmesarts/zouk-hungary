@@ -18,6 +18,7 @@ window.ZC_UPDATED = "2026-11-25"; // fallback only: the site shows the `updated`
 window.ZC_CONFIG = {
   submitUrl: "https://docs.google.com/forms/d/e/1FAIpQLSdHwYUnaeKkjjUn_PRhC-hFeR8eO37LanShNTLnEGGkBbjqfQ/viewform", // the Google Form link ("Esemény beküldése" button)
   csvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRADk7y7goAewdHhpi4mWsxT7tq8VPbOxmBHYaJoS2nnV_UOuVoUJunk6aLWYm0kJ_gAb-10yhrac8q/pub?gid=1840318514&single=true&output=csv", // Google Sheet -> Publish to web -> "Publikus" tab -> CSV link; empty = use the list below
+  kofiUrl: "https://ko-fi.com/djmesmes", // Ko-fi link (e.g. https://ko-fi.com/djmesmes); empty = no donate line in the footer
   djsCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRADk7y7goAewdHhpi4mWsxT7tq8VPbOxmBHYaJoS2nnV_UOuVoUJunk6aLWYm0kJ_gAb-10yhrac8q/pub?gid=430200600&single=true&output=csv", // Google Sheet -> Publish to web -> "DJ-k" tab -> CSV link; empty = links only from the "Name|https://..." text in the djs column
   orgsCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRADk7y7goAewdHhpi4mWsxT7tq8VPbOxmBHYaJoS2nnV_UOuVoUJunk6aLWYm0kJ_gAb-10yhrac8q/pub?gid=1556018248&single=true&output=csv", // Google Sheet -> Publish to web -> "Szervezők" tab -> CSV link; empty = no organizer pages
 };
