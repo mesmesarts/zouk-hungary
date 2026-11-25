@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.17.24 – single file: HTML + CSS (styles v1.3.24) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.17.25 – single file: HTML + CSS (styles v1.3.25) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -527,7 +527,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
   var CITY_COLORS=["#0b5a9a","#7a3fb0","#c2410c","#0f766e","#be185d","#4d7c0f"];
   function cityInk(c){c=cityKey(c);return CITY_FIX[c]?CITY_FIX[c].ink:"#fff";}
   // dot colour: lightened in dark mode (--lift); Budapest keeps a true red there (--bp) instead of turning pink
-  function dotBg(c){return c===CITY_FIX.Budapest.bg?"var(--bp,"+c+")":"color-mix(in srgb,"+c+" calc(100% - var(--lift,0%)),#fff)";}
+  function dotBg(c){if(c===CITY_FIX["Külföld"].bg)return c;return c===CITY_FIX.Budapest.bg?"var(--bp,"+c+")":"color-mix(in srgb,"+c+" calc(100% - var(--lift,0%)),#fff)";}
   function cityColor(c){
     c=cityKey(c);
     if(CITY_FIX[c])return CITY_FIX[c].bg;
