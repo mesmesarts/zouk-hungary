@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.18.3 – single file: HTML + CSS (styles v1.4.3) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.19.0 – single file: HTML + CSS (styles v1.4.3) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -68,7 +68,7 @@
   .controls{position:relative;background:var(--bg);padding:27px 0 10px;border-bottom:1px solid var(--line);z-index:5}
   .controls::before{content:"";position:absolute;top:0;left:50%;width:100vw;transform:translateX(-50%);height:9px;box-sizing:content-box;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(#ce2939 0 3px,#fff 3px 6px,#477050 6px 9px)}
   @media (min-width:700px){.controls{position:sticky;top:0}}
-  .what{display:grid;grid-template-columns:repeat(2,1fr) auto;gap:8px;margin-bottom:8px}
+  .what{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
   .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:baseline}
   .what button{padding:8px 6px;border-radius:14px;border:2px solid var(--line);background:var(--card);cursor:pointer;font-weight:600}
   .what button[aria-pressed="true"]{background:var(--pressed);color:var(--pressedInk);border-color:var(--pb,var(--pressed))}
@@ -92,10 +92,10 @@
   .week{margin:12px 0 0;padding-bottom:12px;border-bottom:1px solid var(--line)}
   @keyframes zcUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   /* favourites: heart on the card, "favorites only" toggle in the filter row */
-.what .favbtn{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:44px}
+.what .favbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .what .favbtn svg{flex:none;fill:none}
 .what .favbtn[aria-pressed="true"] svg{fill:currentColor}
-.what .favbtn{color:#d6243a}
+.what .favbtn svg{color:#d6243a}
 .content{position:relative}
 .toprow{padding-right:34px}
 .fav{position:absolute;top:6px;right:6px;display:inline-flex;align-items:center;justify-content:center;width:30px;height:26px;padding:0;border:0;background:none;color:var(--muted);cursor:pointer;border-radius:999px;flex:none}
@@ -380,6 +380,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
 
 <footer>
   <p class="subp"><a id="submitLink" class="submit" target="_blank" rel="noopener"></a></p>
+  <p class="subp" id="kofiP" hidden><a id="kofiLink" target="_blank" rel="noopener"></a></p>
   <p class="subp" id="instFootP" hidden><a id="instFoot" href="#"></a></p>
   <p id="disclaimer"></p>
   <p class="copy" id="copy"></p>
@@ -395,10 +396,10 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
       all:"Mind",klass:"Órák",party:"Bulik és\nminden más",
       lgClass:"rendszeres óra",lgParty:"egyéb egynapos",lgMulti:"többnapos",
       today:"Ma",week:"Ez a hét",allTime:"Összes",allCities:"Minden város",
-      todayLabel:"Ma",fav:"Kedvenc",favs:"Kedvencek",emptyFav:"Még nincs kedvenc. Jelölj meg eseményeket a szívecskével.",weekly:"Hetente",mixed:"Vegyes",mixedTip:"A programban más táncok is vannak.",cal:"Naptárba",verify:"⚠ Ellenőrizd",verifyTip:"Az adat az oldal borítóképéről származik – ellenőrizd a Facebook-oldalon.",
+      kofi:"☕ Köszönet az oldalért? Támogass egy kávéval",todayLabel:"Ma",fav:"Kedvenc",favs:"Kedvencek",emptyFav:"Még nincs kedvenc. Jelölj meg eseményeket a szívecskével.",weekly:"Hetente",mixed:"Vegyes",mixedTip:"A programban más táncok is vannak.",cal:"Naptárba",verify:"⚠ Ellenőrizd",verifyTip:"Az adat az oldal borítóképéről származik – ellenőrizd a Facebook-oldalon.",
       empty0:"Mára nem találtunk eseményt. Nézd meg az „Összes” nézetet, vagy lapozz a hét napjai között!",empty1:"Nincs a szűrőnek megfelelő esemény.",
       by:"Szervező",detailsLead:"Részletek a ",details:"Facebookon →",detailsOther:"Részletek",langLabel:"Nyelv",submit:"Esemény beküldése",soon:"Esemény beküldése – hamarosan",
-      disc:"Az adatok a szervezők nyilvános Facebook-oldalairól származnak; a pontos időpontot és helyszínt mindig ellenőrizd az esemény oldalán. A fesztiválok és hétvégék városra való szűrésnél is látszanak.",
+      disc:"Az események a szervezők nyilvános oldalairól és beküldéseiből származnak, és közzététel előtt átnézem őket; a pontos időpontot és helyszínt mindig ellenőrizd az esemény oldalán. A fesztiválok és hétvégék városra való szűrésnél is látszanak.",
       upd:"Utolsó frissítés:",wk:"Hét",weekWord:"hét",
       abroad:"Külföld",contact:"Kontakt",music:"Zene",
       install:"Kezdőképernyőre",closeIns:"Bezár",iosHelp:"iPhone-on: Megosztás → Főképernyőhöz adás.",
@@ -411,10 +412,10 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
       all:"All",klass:"Classes",party:"Parties & more",
       lgClass:"regular class",lgParty:"other one-day",lgMulti:"multi-day",
       today:"Today",week:"This week",allTime:"All upcoming",allCities:"All cities",
-      todayLabel:"Today",fav:"Favorite",favs:"Favorites",emptyFav:"No favorites yet. Tap the heart on an event to add it.",weekly:"Weekly",mixed:"Mixed",mixedTip:"Other dances are on the programme too.",cal:"Add to calendar",verify:"⚠ Check",verifyTip:"Taken from the page's cover banner – please check the Facebook page.",
+      kofi:"☕ Enjoying the site? Buy me a coffee",todayLabel:"Today",fav:"Favorite",favs:"Favorites",emptyFav:"No favorites yet. Tap the heart on an event to add it.",weekly:"Weekly",mixed:"Mixed",mixedTip:"Other dances are on the programme too.",cal:"Add to calendar",verify:"⚠ Check",verifyTip:"Taken from the page's cover banner – please check the Facebook page.",
       empty0:"Nothing found for today. Try “All upcoming”, or pick another day in the week bar!",empty1:"No events match your filters.",
       by:"Organizer",detailsLead:"Details on ",details:"Facebook →",detailsOther:"Details",langLabel:"Language",submit:"Submit an event",soon:"Submit an event – coming soon",
-      disc:"Data comes from the organizers' public Facebook pages; always check the exact time and venue on the event page. Festivals and weekenders stay visible when you filter by city.",
+      disc:"Events come from organizers' public pages and submissions, and I review them before publishing; always check the exact time and venue on the event page. Festivals and weekenders stay visible when you filter by city.",
       upd:"Last updated:",wk:"Wk",weekWord:"Week",
       abroad:"Abroad",contact:"Contact",music:"Music",
       install:"Add to Home Screen",closeIns:"Close",iosHelp:"On iPhone: Share → Add to Home Screen.",
@@ -427,10 +428,10 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
       all:"Todo",klass:"Clases",party:"Fiestas y más",
       lgClass:"clase regular",lgParty:"otro de un día",lgMulti:"varios días",
       today:"Hoy",week:"Esta semana",allTime:"Todos",allCities:"Todas las ciudades",
-      todayLabel:"Hoy",fav:"Favorito",favs:"Favoritos",emptyFav:"Aún no hay favoritos. Toca el corazón de un evento para añadirlo.",weekly:"Semanal",mixed:"Mixto",mixedTip:"El programa incluye también otros bailes.",cal:"Añadir al calendario",verify:"⚠ Comprueba",verifyTip:"Dato tomado de la portada de la página; comprueba la página de Facebook.",
+      kofi:"☕ ¿Te gusta el sitio? Invítame a un café",todayLabel:"Hoy",fav:"Favorito",favs:"Favoritos",emptyFav:"Aún no hay favoritos. Toca el corazón de un evento para añadirlo.",weekly:"Semanal",mixed:"Mixto",mixedTip:"El programa incluye también otros bailes.",cal:"Añadir al calendario",verify:"⚠ Comprueba",verifyTip:"Dato tomado de la portada de la página; comprueba la página de Facebook.",
       empty0:"No hay eventos para hoy. Prueba “Todos” o elige otro día en la barra semanal.",empty1:"No hay eventos que coincidan con los filtros.",
       by:"Organiza",detailsLead:"Detalles en ",details:"Facebook →",detailsOther:"Detalles",langLabel:"Idioma",submit:"Enviar un evento",soon:"Enviar un evento – próximamente",
-      disc:"Los datos proceden de las páginas públicas de Facebook de los organizadores; comprueba siempre la hora y el lugar en la página del evento. Los festivales y weekenders se muestran también al filtrar por ciudad.",
+      disc:"Los eventos proceden de las páginas públicas y de los envíos de los organizadores, y los reviso antes de publicarlos; comprueba siempre la hora y el lugar en la página del evento. Los festivales y weekenders se muestran también al filtrar por ciudad.",
       upd:"Última actualización:",wk:"Sem",weekWord:"Semana",
       abroad:"Extranjero",contact:"Contacto",music:"Música",
       install:"Añadir al inicio",closeIns:"Cerrar",iosHelp:"En iPhone: Compartir → Añadir a pantalla de inicio.",
@@ -443,10 +444,10 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
       all:"Tudo",klass:"Aulas",party:"Festas e mais",
       lgClass:"aula regular",lgParty:"outro de um dia",lgMulti:"vários dias",
       today:"Hoje",week:"Esta semana",allTime:"Todos",allCities:"Todas as cidades",
-      todayLabel:"Hoje",fav:"Favorito",favs:"Favoritos",emptyFav:"Ainda não há favoritos. Toque no coração de um evento para adicioná-lo.",weekly:"Semanal",mixed:"Misto",mixedTip:"A programação inclui também outras danças.",cal:"Adicionar ao calendário",verify:"⚠ Confira",verifyTip:"Dado tirado da capa da página; confira na página do Facebook.",
+      kofi:"☕ Gostou do site? Me pague um café",todayLabel:"Hoje",fav:"Favorito",favs:"Favoritos",emptyFav:"Ainda não há favoritos. Toque no coração de um evento para adicioná-lo.",weekly:"Semanal",mixed:"Misto",mixedTip:"A programação inclui também outras danças.",cal:"Adicionar ao calendário",verify:"⚠ Confira",verifyTip:"Dado tirado da capa da página; confira na página do Facebook.",
       empty0:"Não há eventos para hoje. Experimente “Todos” ou escolha outro dia na barra da semana.",empty1:"Nenhum evento corresponde aos filtros.",
       by:"Organização",detailsLead:"Detalhes no ",details:"Facebook →",detailsOther:"Detalhes",langLabel:"Idioma",submit:"Enviar um evento",soon:"Enviar um evento – em breve",
-      disc:"Os dados vêm das páginas públicas de Facebook dos organizadores; confira sempre o horário e o local na página do evento. Festivais e weekenders aparecem também ao filtrar por cidade.",
+      disc:"Os eventos vêm das páginas públicas e dos envios dos organizadores, e eu os reviso antes de publicar; confira sempre o horário e o local na página do evento. Festivais e weekenders aparecem também ao filtrar por cidade.",
       upd:"Última atualização:",wk:"Sem",weekWord:"Semana",
       abroad:"Exterior",contact:"Contato",music:"Música",
       install:"Adicionar à tela inicial",closeIns:"Fechar",iosHelp:"No iPhone: Compartilhar → Adicionar à Tela de Início.",
@@ -627,7 +628,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
   // Festivals and weekenders in Hungary stay visible whenever Budapest or Debrecen is selected.
   function ok(o){
     if(S.favOnly&&!isFav(o))return false;
-    if(S.what!=="all"&&gs(o).indexOf(S.what)<0)return false;
+    if(S.what!=="all"&&S.what!=="both"&&gs(o).indexOf(S.what)<0)return false;
     if(S.city.length){
       if(isAbroad(o.city)){if(S.city.indexOf("abroad")<0)return false;}
       else if(FEST[o.type]){if(S.city.indexOf("Budapest")<0&&S.city.indexOf("Debrecen")<0)return false;}
@@ -844,6 +845,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     applyInstall();
     var link=document.getElementById("submitLink"),u=(window.ZC_CONFIG||{}).submitUrl;
     if(u){link.href=u;link.classList.remove("off");link.textContent=t.submit;}else{link.classList.add("off");link.removeAttribute("href");link.textContent=t.soon;}
+    var ku=(window.ZC_CONFIG||{}).kofiUrl,kp=document.getElementById("kofiP");if(ku){kp.hidden=false;var kl=document.getElementById("kofiLink");kl.href=ku;kl.textContent=t.kofi;}else kp.hidden=true;
     // city chips: Budapest | Debrecen | Külföld (abroad = group trips with a contact person); several can be on, none = all
     var cs=document.getElementById("cities"),wasOn=[].map.call(cs.querySelectorAll('[aria-pressed="true"]'),function(x){return x.dataset.city;});cs.innerHTML="";
     [["Budapest","Budapest"],["Debrecen","Debrecen"],["abroad",t.abroad]].forEach(function(p){
@@ -868,15 +870,15 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     th.innerHTML=THEME_ICO[S.theme];if(lastTheme!==null&&lastTheme!==S.theme){th.classList.remove("spin");void th.offsetWidth;th.classList.add("spin");}lastTheme=S.theme;th.title=t.themes[S.theme];th.setAttribute("aria-label",t.themes[S.theme]);
     if(S.theme==="auto")document.documentElement.removeAttribute("data-theme");else document.documentElement.setAttribute("data-theme",S.theme);
     document.querySelectorAll("[data-lang]").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.lang===S.lang);});
-    w.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.v===S.what);});
+    w.forEach(function(b){b.setAttribute("aria-pressed",S.what===b.dataset.v||S.what==="both");});
     var fb=document.getElementById("favBtn");fb.setAttribute("aria-pressed",!!S.favOnly);fb.title=t.favs;fb.setAttribute("aria-label",t.favs);
-    fb.innerHTML=ICO_HEART;
+    fb.innerHTML=ICO_HEART+'<span>'+esc(t.favs)+'</span>';
     document.querySelectorAll("[data-style]").forEach(function(b){b.setAttribute("aria-pressed",!!S[b.dataset.style]);});
   }
   function update(){save();applyStatic();render();}
 
-  document.querySelectorAll("#what button[data-v]").forEach(function(b){b.addEventListener("click",function(){S.what=(b.dataset.v!=="all"&&S.what===b.dataset.v)?"all":b.dataset.v;update();});});
-  document.getElementById("favBtn").addEventListener("click",function(){S.favOnly=!S.favOnly;update();});
+  document.querySelectorAll("#what button[data-v]").forEach(function(b){b.addEventListener("click",function(){var v=b.dataset.v,o=v==="class"?"party":"class",on=S.what===v||S.what==="both";S.favOnly=false;S.what=on?(S.what==="both"?o:"all"):(S.what===o?"both":v);update();});});
+  document.getElementById("favBtn").addEventListener("click",function(){S.favOnly=!S.favOnly;if(S.favOnly)S.what="all";update();});
   // heart on a card: toggled in place (no re-render, so the list does not animate again); in "favorites only" mode the card leaves the list
   document.getElementById("list").addEventListener("click",function(ev){
     var b=ev.target.closest("button.fav");if(!b)return;
