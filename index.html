@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.19.114 – single file: HTML + CSS (styles v1.4.3) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.19.115 – single file: HTML + CSS (styles v1.4.3) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -65,7 +65,8 @@
   .instw{transition:background-color .18s ease}
   @media (hover:hover){.instw:hover{background:rgba(255,255,255,.28)}}
   .tools .instx{align-self:stretch;width:34px;padding:0 3px 0 0;display:inline-flex;align-items:center;justify-content:center;flex:none;background:none;border:0;border-radius:0}
-  .tools .instx:hover{background:rgba(255,255,255,.16)}
+  .tools .instx{color:rgba(255,255,255,.65);transition:color .18s ease}
+  .tools .instx:hover,.tools .instx:focus-visible{background:none;color:#fff}
   .tools #install{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
   .tools #install svg{flex:none;display:block}
   .tip{position:fixed;left:12px;right:12px;bottom:16px;max-width:420px;margin:0 auto;z-index:60;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 8px 22px rgba(0,0,0,.28);font-size:.92rem;text-align:center}
