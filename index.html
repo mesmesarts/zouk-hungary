@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.19.109 – single file: HTML + CSS (styles v1.4.3) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.19.113 – single file: HTML + CSS (styles v1.4.3) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -119,7 +119,7 @@
   /* favourites: heart on the card, "favorites only" toggle in the filter row */
 .what .favbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .what .favbtn svg{flex:none;fill:none}
-.what .favbtn svg{color:#d6243a}
+.what .favbtn svg{color:#a8283a}
 .what .favbtn[aria-pressed="true"] svg{fill:currentColor}
 
 .content{position:relative}
@@ -127,7 +127,7 @@
 .fav{position:absolute;top:6px;right:6px;display:inline-flex;align-items:center;justify-content:center;width:30px;height:26px;padding:0;border:0;background:none;color:var(--muted);cursor:pointer;border-radius:999px;flex:none}
 .fav svg{fill:none;transition:fill .15s ease,transform .15s ease}
 @media (hover:hover){.fav:hover{color:var(--ink)}}
-.fav[aria-pressed="true"]{color:#d6243a}
+.fav[aria-pressed="true"]{color:#a8283a}
 .fav[aria-pressed="true"] svg{fill:currentColor;animation:zcPop .3s ease-out}
 @keyframes zcPop{0%{transform:scale(1)}45%{transform:scale(1.04)}100%{transform:scale(1)}}
   @keyframes zcDot{from{opacity:0;scale:.2}to{opacity:1;scale:1}}
@@ -375,7 +375,7 @@
 @media (prefers-reduced-motion:reduce){.thm .kt .kl{transition:none}}
 
 /* install button: soft pulse + bobbing arrow (off for reduced motion, stops on hover/focus) */
-@keyframes zcPulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.55)}70%{box-shadow:0 0 0 12px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+@keyframes zcPulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.25)}70%{box-shadow:0 0 0 8px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
 @keyframes zcBob{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(3px)}45%{transform:translateY(-1px)}}
 @keyframes zcPulseG{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ki) 38%,transparent)}70%,100%{box-shadow:0 0 0 10px transparent}}
 .kofi{animation:zcPulseG 2.4s ease-out 1.2s infinite}
@@ -403,6 +403,8 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
 .wkhead .tdy:hover{filter:brightness(1.04)}
 .ev:hover{background:color-mix(in srgb,var(--card),var(--chip) 35%)}}
 .ev{transition:background-color .18s ease}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .wkhead .lbl{color:#8fdcb4}}
+:root[data-theme="dark"] .wkhead .lbl{color:#8fdcb4}
 .what button:active,.pill:active{transform:scale(.96)}
 .submit:active,.kofi:active,a.go:active{transform:scale(.97);box-shadow:none}
 .what button[aria-pressed="true"],.pill[aria-pressed="true"]{animation:zcPop .3s ease-out}
@@ -482,7 +484,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
       all:"Mind",klass:"Órák",party:"Bulik és\nminden más",partyM:"Bulik és más",
       lgClass:"rendszeres óra",lgParty:"egyéb egynapos",lgMulti:"többnapos",
       today:"Ma",week:"Ez a hét",allTime:"Összes",allCities:"Minden város",
-      kofi:"☕ Köszönet az oldalért? Támogass egy kávéval",kofiS:"☕ Támogatás",todayLabel:"Ma",fav:"Kedvenc",favs:"Kedvencek",emptyFav:"Még nincs kedvenc. Jelölj meg eseményeket a szívecskével.",weekly:"Hetente",mixed:"Vegyes",mixedTip:"A programban más táncok is vannak.",cal:"Naptárba",verify:"⚠ Ellenőrizd",verifyTip:"Az adat az oldal borítóképéről származik – ellenőrizd a Facebook-oldalon.",
+      kofi:"☕ Tetszik az oldal? Támogass egy kávéval",kofiS:"☕ Támogatás",todayLabel:"Ma",fav:"Kedvenc",favs:"Kedvencek",emptyFav:"Még nincs kedvenc. Jelölj meg eseményeket a szívecskével.",weekly:"Hetente",mixed:"Vegyes",mixedTip:"A programban más táncok is vannak.",cal:"Naptárba",verify:"⚠ Ellenőrizd",verifyTip:"Az adat az oldal borítóképéről származik – ellenőrizd a Facebook-oldalon.",
       empty0:"Mára nem találtunk eseményt. Nézd meg az „Összes” nézetet, vagy lapozz a hét napjai között!",empty1:"Nincs a szűrőnek megfelelő esemény.",
       by:"Szervező",detailsLead:"Részletek a ",details:"Facebookon →",detailsOther:"Részletek",langLabel:"Nyelv",submit:"Esemény beküldése",soon:"Esemény beküldése – hamarosan",
       disc:"Az események a szervezők nyilvános oldalairól és beküldéseiből származnak, és közzététel előtt átnézem őket; a pontos időpontot és helyszínt mindig ellenőrizd az esemény oldalán.",
