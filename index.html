@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.15.6 – single file: HTML + CSS (styles v1.1.6) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.15.11 – single file: HTML + CSS (styles v1.1.11) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -48,6 +48,8 @@
   .tools{display:flex;gap:6px}
   .tools button{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:6px 12px;font:inherit;font-size:.9rem;cursor:pointer}
   .tools button[aria-pressed="true"]{background:rgba(255,255,255,.26);color:#fff;border-color:rgba(255,255,255,.75);font-weight:700}
+  .instw{display:inline-flex;align-items:center;gap:4px}
+  .tools .instx{width:26px;height:26px;padding:0;display:inline-flex;align-items:center;justify-content:center;flex:none}
   .tools #install{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
   .tools #install svg{flex:none;display:block}
   .tip{position:fixed;left:12px;right:12px;bottom:16px;max-width:420px;margin:0 auto;z-index:60;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 8px 22px rgba(0,0,0,.28);font-size:.92rem;text-align:center}
@@ -65,7 +67,7 @@
   .controls::before{content:"";position:absolute;top:0;left:50%;width:100vw;transform:translateX(-50%);height:9px;box-sizing:content-box;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(#ce2939 0 3px,#fff 3px 6px,#477050 6px 9px)}
   @media (min-width:700px){.controls{position:sticky;top:0}}
   .what{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
-  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;border:1px solid rgba(255,255,255,.6);vertical-align:baseline}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:7px;vertical-align:baseline}
   .what button{padding:8px 6px;border-radius:14px;border:2px solid var(--line);background:var(--card);cursor:pointer;font-weight:600}
   .what button[aria-pressed="true"]{background:var(--pressed);color:var(--pressedInk);border-color:var(--pressed)}
   .what button:not([aria-pressed="true"]),.filters .pill:not([aria-pressed="true"]){background:color-mix(in srgb,var(--card) 58%,transparent)}
@@ -229,7 +231,9 @@
     /* install button: own full-width row with its text, so it says what it does */
     .top{flex-wrap:wrap}
     .tools{display:contents}
-    .tools #install{order:3;flex:1 0 100%;justify-content:center;padding:8px 12px;font-size:.9rem}
+    .instw{order:3;flex:1 0 100%;gap:6px}
+    .tools #install{flex:1;justify-content:center;padding:8px 12px;font-size:.9rem}
+    .tools .instx{width:34px;height:34px}
     .tools #install .txt{display:inline}
     .langbtn{display:inline-flex;align-items:center;gap:5px}
     .langs{display:none;position:absolute;right:0;top:calc(100% + 6px);z-index:40;flex-direction:column;gap:2px;min-width:160px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.28)}
@@ -282,11 +286,12 @@
 @keyframes zcBob{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(3px)}45%{transform:translateY(-1px)}}
 @keyframes zcIn{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
 @keyframes zcRow{from{opacity:0;max-height:0;padding-top:0;padding-bottom:0;margin-top:-10px;overflow:hidden}to{opacity:1;max-height:56px;margin-top:0}}
-.tools #install:not(.hide){animation:zcIn .6s cubic-bezier(.2,.8,.2,1) both,zcPulse 2.4s ease-out .9s infinite}
-@media (max-width:520px){.tools #install:not(.hide){animation:zcRow .7s cubic-bezier(.2,.8,.2,1) both,zcPulse 2.4s ease-out 1s infinite}}
+.instw:not(.hide){animation:zcIn .6s cubic-bezier(.2,.8,.2,1) both}
+.tools #install:not(.hide){animation:zcPulse 2.4s ease-out .9s infinite}
+@media (max-width:520px){.instw:not(.hide){animation:zcRow .7s cubic-bezier(.2,.8,.2,1) both}}
 .tools #install:not(.hide) svg{animation:zcBob 2.4s ease-in-out infinite}
 .tools #install:hover,.tools #install:focus-visible{animation:none}
-@media (prefers-reduced-motion:reduce){.tools #install,.tools #install svg{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.instw,.tools #install,.tools #install svg{animation:none!important}}
 
 /* v1.15.0: no blue tap flash + press feedback; chip pop; staggered cards; today pulse; theme icon spin */
 button,.pill,a,summary{-webkit-tap-highlight-color:transparent}
@@ -315,7 +320,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
       <div class="updated"><span id="updLabel"></span> <span id="upd"></span></div>
     </div>
     <div class="tools">
-      <button id="install" class="hide" type="button"></button>
+      <span class="instw hide" id="instw"><button id="install" class="hide" type="button"></button><button id="instX" class="instx" type="button"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg></button></span>
       <div class="lw">
         <button id="langBtn" class="langbtn" type="button" aria-haspopup="true" aria-expanded="false"></button>
         <div class="langs" id="langs">
@@ -366,7 +371,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
       disc:"Az adatok a szervezők nyilvános Facebook-oldalairól származnak; a pontos időpontot és helyszínt mindig ellenőrizd az esemény oldalán. A fesztiválok és hétvégék városra való szűrésnél is látszanak.",
       upd:"Utolsó frissítés:",wk:"Hét",weekWord:"hét",
       abroad:"Külföld",contact:"Kontakt",music:"Zene",
-      install:"Kezdőképernyőre",iosHelp:"iPhone-on: Megosztás → Főképernyőhöz adás.",
+      install:"Kezdőképernyőre",closeIns:"Bezár",iosHelp:"iPhone-on: Megosztás → Főképernyőhöz adás.",
       vUp:"Közelgő",vPast:"Múltbeli",emptyPast:"Az elmúlt 12 hónapban nincs ilyen esemény.",
       back:"← Vissza a naptárhoz",toSite:"Weboldal",toFb:"Facebook-oldal",orgUp:"Közelgő események",orgPast:"Múltbeli események (elmúlt 12 hónap)",orgNoUp:"Jelenleg nincs közelgő esemény.",loading:"Betöltés…",
       types:{party:"Buli",regular:"Rendszeres óra",course:"Rendszeres óra",workshop:"Workshop",weekender:"Weekender",festival:"Fesztivál",retreat:"Elvonulás"},
@@ -382,7 +387,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
       disc:"Data comes from the organizers' public Facebook pages; always check the exact time and venue on the event page. Festivals and weekenders stay visible when you filter by city.",
       upd:"Last updated:",wk:"Wk",weekWord:"Week",
       abroad:"Abroad",contact:"Contact",music:"Music",
-      install:"Add to Home Screen",iosHelp:"On iPhone: Share → Add to Home Screen.",
+      install:"Add to Home Screen",closeIns:"Close",iosHelp:"On iPhone: Share → Add to Home Screen.",
       vUp:"Upcoming",vPast:"Past",emptyPast:"No events in the last 12 months.",
       back:"← Back to the calendar",toSite:"Website",toFb:"Facebook page",orgUp:"Upcoming events",orgPast:"Past events (last 12 months)",orgNoUp:"No upcoming events right now.",loading:"Loading…",
       types:{party:"Party",regular:"Regular class",course:"Regular class",workshop:"Workshop",weekender:"Weekender",festival:"Festival",retreat:"Retreat"},
@@ -398,7 +403,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
       disc:"Los datos proceden de las páginas públicas de Facebook de los organizadores; comprueba siempre la hora y el lugar en la página del evento. Los festivales y weekenders se muestran también al filtrar por ciudad.",
       upd:"Última actualización:",wk:"Sem",weekWord:"Semana",
       abroad:"Extranjero",contact:"Contacto",music:"Música",
-      install:"Añadir al inicio",iosHelp:"En iPhone: Compartir → Añadir a pantalla de inicio.",
+      install:"Añadir al inicio",closeIns:"Cerrar",iosHelp:"En iPhone: Compartir → Añadir a pantalla de inicio.",
       vUp:"Próximos",vPast:"Pasados",emptyPast:"No hay eventos en los últimos 12 meses.",
       back:"← Volver al calendario",toSite:"Sitio web",toFb:"Página de Facebook",orgUp:"Próximos eventos",orgPast:"Eventos pasados (últimos 12 meses)",orgNoUp:"Ahora mismo no hay eventos próximos.",loading:"Cargando…",
       types:{party:"Fiesta",regular:"Clase regular",course:"Clase regular",workshop:"Taller",weekender:"Weekender",festival:"Festival",retreat:"Retiro"},
@@ -414,7 +419,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
       disc:"Os dados vêm das páginas públicas de Facebook dos organizadores; confira sempre o horário e o local na página do evento. Festivais e weekenders aparecem também ao filtrar por cidade.",
       upd:"Última atualização:",wk:"Sem",weekWord:"Semana",
       abroad:"Exterior",contact:"Contato",music:"Música",
-      install:"Adicionar à tela inicial",iosHelp:"No iPhone: Compartilhar → Adicionar à Tela de Início.",
+      install:"Adicionar à tela inicial",closeIns:"Fechar",iosHelp:"No iPhone: Compartilhar → Adicionar à Tela de Início.",
       vUp:"Próximos",vPast:"Passados",emptyPast:"Nenhum evento nos últimos 12 meses.",
       back:"← Voltar ao calendário",toSite:"Site",toFb:"Página do Facebook",orgUp:"Próximos eventos",orgPast:"Eventos passados (últimos 12 meses)",orgNoUp:"Nenhum evento próximo no momento.",loading:"Carregando…",
       types:{party:"Festa",regular:"Aula regular",course:"Aula regular",workshop:"Workshop",weekender:"Weekender",festival:"Festival",retreat:"Retiro"},
@@ -510,7 +515,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
   function isAbroad(c){var k=norm(c);return k==="kulfold"||k==="abroad";}
   function cityKey(c){return isAbroad(c)?"Külföld":c;}
   function cityName(c,t){return isAbroad(c)?t.abroad:c;}
-  var CITY_FIX={Budapest:{bg:"#c42f2a",ink:"#fff"},Debrecen:{bg:"#e09a00",ink:"#241800"},"Külföld":{bg:"#0b5a9a",ink:"#fff"}};
+  var CITY_FIX={Budapest:{bg:"#c3453d",ink:"#fff"},Debrecen:{bg:"#e09a00",ink:"#241800"},"Külföld":{bg:"#0b5a9a",ink:"#fff"}};
   var CITY_COLORS=["#0b5a9a","#7a3fb0","#c2410c","#0f766e","#be185d","#4d7c0f"];
   function cityInk(c){c=cityKey(c);return CITY_FIX[c]?CITY_FIX[c].ink:"#fff";}
   function cityColor(c){
@@ -604,6 +609,10 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     var where=o.venue||"";
     var every=o.weekly?t.every[o.weekly]:"";
     var cc=cityColor(o.city);
+    // when exactly one city is selected, the city badge is redundant for events of that city (organizer pages keep it)
+    // (with "abroad" also selected, the single remaining home city is still redundant, so only abroad events keep a badge)
+    var homeSel=opt.noOrg?[]:S.city.filter(function(c){return c!=="abroad";});
+    var hideCity=homeSel.length===1&&!isAbroad(o.city)&&o.city===homeSel[0];
     var mix=Array.isArray(o.mixed)?o.mixed.map(function(m){return '<span class="tag mixed">+ '+esc(m.charAt(0).toUpperCase()+m.slice(1))+'</span>';}).join(""):(o.mixed?'<span class="tag mixed" title="'+esc(t.mixedTip)+'">+ '+esc(t.mixed)+'</span>':'');
     var goLabel=FB_RE.test(o.url||"")
       ?'<span class="lead">'+esc(t.detailsLead)+'</span>'+esc(t.details.replace(/\s*→$/,""))+'<span class="arr"> →</span>'
@@ -614,7 +623,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     var cal='<a class="cal" href="'+esc(calUrl(o))+'" target="_blank" rel="noopener" title="'+esc(t.cal)+'" aria-label="'+esc(t.cal)+'">'+ICO_CAL+'<span class="txt"> '+esc(t.cal)+'</span></a>';
     return '<article class="ev" style="border-left:6px solid '+cc+'"><div class="content">'+
       '<div class="toprow">'+
-        (o.city?'<span class="city" style="background:'+cc+';color:'+cityInk(o.city)+'">'+ICO_PIN+'<span>'+esc(cityName(o.city,t))+'</span></span>':'')+
+        (o.city&&!hideCity?'<span class="city" style="background:'+cc+';color:'+cityInk(o.city)+'">'+ICO_PIN+'<span>'+esc(cityName(o.city,t))+'</span></span>':'')+
         '<span class="tag type">'+esc(t.types[o.type]||o.type)+'</span>'+(o.also?'<span class="tag type">'+esc(t.types[o.also]||o.also)+'</span>':'')+
         (o.styles||[]).filter(function(s){return s!=="zouk";}).map(function(s){return '<span class="tag">'+esc(STYLES[s]||s)+'</span>';}).join("")+
         mix+
@@ -745,10 +754,14 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
   var deferredInstall=null,tipTimer=0;
   function isStandalone(){return (window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||window.navigator.standalone===true;}
   function isIOS(){return /iphone|ipad|ipod/i.test(navigator.userAgent||"")||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);}
+  var INST_KEY="zc_inst_x";
+  function instDismissed(){try{var v=+localStorage.getItem(INST_KEY)||0;return v&&Date.now()-v<30*864e5;}catch(e){return false;}}
   function applyInstall(){
     var b=document.getElementById("install"),t=T[S.lang];
-    var show=!isStandalone()&&(!!deferredInstall||isIOS());
+    var show=!isStandalone()&&(!!deferredInstall||isIOS())&&!instDismissed();
     b.classList.toggle("hide",!show);
+    document.getElementById("instw").classList.toggle("hide",!show);
+    var x=document.getElementById("instX");x.setAttribute("aria-label",t.closeIns);x.title=t.closeIns;
     if(show){b.innerHTML=ICO_DL+'<span class="txt">'+esc(t.install)+'</span>';b.setAttribute("aria-label",t.install);b.title=t.install;}
   }
   function hideTip(){clearTimeout(tipTimer);document.getElementById("tip").classList.add("hide");}
@@ -761,6 +774,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
       try{p.prompt();}catch(e){}
     }else if(isIOS()){showTip(T[S.lang].iosHelp);}
   });
+  document.getElementById("instX").addEventListener("click",function(){try{localStorage.setItem(INST_KEY,String(Date.now()));}catch(e){}hideTip();applyInstall();});
   document.getElementById("tip").addEventListener("click",hideTip);
   if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){
     window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});
@@ -787,7 +801,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     var cs=document.getElementById("cities");cs.innerHTML="";
     [["Budapest","Budapest"],["Debrecen","Debrecen"],["abroad",t.abroad]].forEach(function(p){
       var c=p[0],b=document.createElement("button");b.className="pill";b.dataset.city=c;
-      b.innerHTML='<span class="dot" style="background:'+cityColor(c==="abroad"?"Külföld":c)+'"></span>'+esc(p[1]);b.setAttribute("aria-pressed",S.city.indexOf(c)>-1);
+      b.innerHTML='<span class="dot" style="background:color-mix(in srgb,'+cityColor(c==="abroad"?"Külföld":c)+' calc(100% - var(--lift,0%)),#fff)"></span>'+esc(p[1]);b.setAttribute("aria-pressed",S.city.indexOf(c)>-1);
       b.addEventListener("click",function(){S.city=S.city.indexOf(c)>-1?S.city.filter(function(x){return x!==c;}):S.city.concat([c]);update();});
       cs.appendChild(b);
     });
