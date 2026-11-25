@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.10.0 -->
+<!-- Zouk Calendar v1.10.3 -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -120,6 +120,7 @@
   .wkhead .lbl .chev{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--pressed);color:var(--pressedInk)}
   .wkhead .lbl[aria-expanded="true"] .chev svg{transform:rotate(180deg)}
   .wkhead .tdy{width:auto;padding:0 12px;margin:0 8px 0 0;border-color:var(--pressed);background:var(--pressed);color:var(--pressedInk);font-weight:700;font-size:.85rem}
+  .wkhead .tdy.l{margin:0 0 0 8px}
   .week .days.month{gap:4px;grid-template-columns:20px repeat(7,1fr)}
   .week .wn{display:flex;align-items:center;justify-content:center;font-size:.72rem;color:var(--muted);opacity:.85}
   .week .wdh{text-align:center;font-size:.72rem;color:var(--muted);}
@@ -222,6 +223,7 @@
     .wkhead button{height:28px;width:32px}
     .wkhead .lbl{height:28px;font-size:.88rem;margin:0 6px}
     .wkhead .tdy{width:auto;padding:0 10px;margin:0 6px 0 0;font-size:.8rem}
+    .wkhead .tdy.l{margin:0 0 0 6px}
     .week .days{gap:5px}
     .week .days button{padding:3px 0 5px}
     .week .dn{font-size:1rem}
@@ -273,16 +275,6 @@
       <button data-v="party"></button>
     </div>
     <div class="filters" role="group">
-      <span class="grp" id="view">
-        <button class="pill" data-v="up"></button>
-        <button class="pill" data-v="past"></button>
-      </span>
-      <span class="sep"></span>
-      <span class="grp" id="when">
-        <button class="pill" data-v="today"></button>
-        <button class="pill" data-v="all"></button>
-      </span>
-      <span class="sep" id="sepWhen"></span>
       <span class="grp" id="cities"></span>
       <span style="flex:none;width:24px"></span>
     </div>
@@ -363,7 +355,6 @@
   var DEF={lang:(function(){var l=(navigator.language||"en").toLowerCase().slice(0,2);return {hu:1,es:1,pt:1}[l]?l:"en";})(),theme:"auto",what:"all",when:"all",city:"",zouk:false,lambada:false};
   var KEY="zc_prefs2";
   var S=load();
-  var view="up";                                   // "up" = upcoming, "past" = last 12 months
   var ORGS=[],ORGS_BY_SLUG={},ORGS_BY_NAME={},ORGS_READY=!((window.ZC_CONFIG||{}).orgsCsvUrl),UPD="";
   var TITLE="Zouk Calendar Hungary";
 
@@ -504,7 +495,6 @@
     var where=o.venue||"";
     var every=o.weekly?t.every[o.weekly]:"";
     var cc=cityColor(o.city);
-    var isPast=o.e<today;
     var mix=Array.isArray(o.mixed)?o.mixed.map(function(m){return '<span class="tag mixed">+ '+esc(m.charAt(0).toUpperCase()+m.slice(1))+'</span>';}).join(""):(o.mixed?'<span class="tag mixed" title="'+esc(t.mixedTip)+'">+ '+esc(t.mixed)+'</span>':'');
     var goLabel=FB_RE.test(o.url||"")
       ?'<span class="lead">'+esc(t.detailsLead)+'</span>'+esc(t.details.replace(/\s*→$/,""))+'<span class="arr"> →</span>'
@@ -512,7 +502,7 @@
     var org=opt.noOrg?null:orgFor(o.organizer);
     var orgLine=(o.organizer&&o.organizer!==o.venue)
       ?'<div class="meta">'+esc(t.by)+': '+(org?'<a class="orglink" href="#'+esc(org.slug)+'">'+esc(o.organizer)+'</a>':esc(o.organizer))+'</div>':'';
-    var cal=isPast?'':'<a class="cal" href="'+esc(calUrl(o))+'" target="_blank" rel="noopener" title="'+esc(t.cal)+'" aria-label="'+esc(t.cal)+'">'+ICO_CAL+'<span class="txt"> '+esc(t.cal)+'</span></a>';
+    var cal='<a class="cal" href="'+esc(calUrl(o))+'" target="_blank" rel="noopener" title="'+esc(t.cal)+'" aria-label="'+esc(t.cal)+'">'+ICO_CAL+'<span class="txt"> '+esc(t.cal)+'</span></a>';
     return '<article class="ev" style="border-left:6px solid '+cc+'"><div class="content">'+
       '<div class="toprow">'+
         (o.city?'<span class="city" style="background:'+cc+';color:'+cityInk(o.city)+'">'+ICO_PIN+esc(o.city)+'</span>':'')+
@@ -574,12 +564,6 @@
     document.body.classList.toggle("org-mode",!!slug);
     document.title=org?org.name+" – "+TITLE:TITLE;
     if(slug){strip.hidden=true;setList(el,org?orgPage(org,t,today):'<div class="empty">'+esc(t.loading)+'</div>',an);return;}
-    if(view==="past"){
-      strip.hidden=true;
-      var pl=pastOccurrences(today).filter(ok);sortPast(pl);
-      setList(el,pl.length?listHtml(pl,t,today,true,{date:true}):'<div class="empty">'+esc(t.emptyPast)+'</div>',an);
-      return;
-    }
     var minD=minDay(today),minOff=minOffFor(today),minMoff=minMoffFor(today);
     var mon=monOf(today),wkS=addDays(mon,7*off),we=addDays(wkS,6);
     if(S.day&&(S.day<wkS||S.day>we))S.day="";
@@ -593,7 +577,7 @@
       return {n:n,h:h+md,sp:""};}
     function wdName(dd){return cap(toDate(dd).toLocaleDateString(loc(),{weekday:"short",timeZone:"UTC"}).replace(".",""));}
     function dcls(past,old,n){return past?(old?" past old":" past"):(n?"":" none");}
-    var sh="",label,ttl="",prevOff,nextOff,notNow;
+    var sh="",label,ttl="",prevOff,nextOff,notNow,nowSide;
     if(mexp){
       var tp=today.split("-"),mm=(+tp[0])*12+(+tp[1]-1)+moff,fy=Math.floor(mm/12),fm=mm%12,first=fy+"-"+pad(fm+1)+"-01";
       var gS=monOf(first),gE=addDays(gS,41);
@@ -607,16 +591,17 @@
         sh+='<button type="button" style="--r:'+Math.floor(k/7)+'" data-d="'+dd+'" aria-pressed="'+(S.day===dd)+'" class="m'+(inM?'':' out')+dcls(past,old,dd2.n)+(isOff(dd)?' off':'')+(dd===today?' today':'')+'"'+(old?' disabled':'')+'><span class="dn">'+dt.getUTCDate()+'</span><span class="dots">'+dd2.h+'</span></button>';
       }
       label=monthName(first);
-      prevOff=moff<=minMoff;nextOff=moff>=12;notNow=moff!==0;
+      prevOff=moff<=minMoff;nextOff=moff>=12;notNow=moff!==0;nowSide=moff>0;
     }else{
       for(var k2=0;k2<7;k2++){
         var de=addDays(wkS,k2),dte=toDate(de),pastE=de<today,oldE=de<minD,de2=oldE?{n:0,h:"",sp:""}:dotsFor(src,de);
         sh+='<button type="button" data-d="'+de+'" aria-pressed="'+(S.day===de)+'" class="'+dcls(pastE,oldE,de2.n).trim()+(isOff(de)?' off':'')+(de===today?' today':'')+'"'+(oldE?' disabled':'')+'><span class="wd">'+esc(wdName(de))+'</span><span class="dn">'+dte.getUTCDate()+'</span><span class="dots">'+de2.h+'</span></button>';
       }
       var wn=isoWeek(wkS),mname=cap(toDate(addDays(wkS,3)).toLocaleDateString(loc(),{month:"long",timeZone:"UTC"}));
-      label=mname+" – "+(S.lang==="hu"?wn+". "+t.weekWord:t.weekWord+" "+wn);ttl=cap(fmtShort(wkS))+" – "+fmtShort(we);prevOff=off<=minOff;nextOff=off>=12;notNow=off!==0;
+      label=mname+" – "+(S.lang==="hu"?wn+". "+t.weekWord:t.weekWord+" "+wn);ttl=cap(fmtShort(wkS))+" – "+fmtShort(we);prevOff=off<=minOff;nextOff=off>=12;notNow=off!==0;nowSide=off>0;
     }
-    strip.innerHTML='<div class="wkhead"><button type="button" data-nav="-1"'+(prevOff?' disabled':'')+' aria-label="‹">'+ICO_L+'</button><button type="button" class="lbl" data-toggle="1" aria-expanded="'+mexp+'"'+(ttl?' title="'+esc(ttl)+'"':'')+'>'+esc(label)+'<span class="chev">'+ICO_D+'</span></button>'+(notNow?'<button type="button" class="tdy" data-now="1">'+esc(t.today)+'</button>':'')+'<button type="button" data-nav="1"'+(nextOff?' disabled':'')+' aria-label="›">'+ICO_R+'</button></div><div class="days'+(mexp?' month':'')+'">'+sh+'</div><div class="legend"><span><i class="c"></i> '+esc(t.lgClass)+'</span><span><i class="s"></i> '+esc(t.lgParty)+'</span><span><i class="d"></i> '+esc(t.lgMulti)+'</span></div>';strip.hidden=false;
+    var nowBtn='<button type="button" class="tdy'+(nowSide?' l':'')+'" data-now="1">'+esc(t.today)+'</button>';
+    strip.innerHTML='<div class="wkhead"><button type="button" data-nav="-1"'+(prevOff?' disabled':'')+' aria-label="‹">'+ICO_L+'</button>'+(notNow&&nowSide?nowBtn:'')+'<button type="button" class="lbl" data-toggle="1" aria-expanded="'+mexp+'"'+(ttl?' title="'+esc(ttl)+'"':'')+'>'+esc(label)+'<span class="chev">'+ICO_D+'</span></button>'+(notNow&&!nowSide?nowBtn:'')+'<button type="button" data-nav="1"'+(nextOff?' disabled':'')+' aria-label="›">'+ICO_R+'</button></div><div class="days'+(mexp?' month':'')+'">'+sh+'</div><div class="legend"><span><i class="c"></i> '+esc(t.lgClass)+'</span><span><i class="s"></i> '+esc(t.lgParty)+'</span><span><i class="d"></i> '+esc(t.lgMulti)+'</span></div>';strip.hidden=false;
     if(an){var dz=strip.querySelector(".days");if(dz)dz.classList.add("a"+an);}
     if(S.day!==lastDay){var pb=strip.querySelector('[aria-pressed="true"]');if(pb&&S.day)pb.classList.add("pop");lastDay=S.day;}
     var items=S.day?src.filter(function(o){return o.s<=S.day&&o.e>=S.day;}):base;
@@ -651,13 +636,6 @@
     document.getElementById("tagline").textContent=t.tag;
     var w=document.querySelectorAll("#what button");
     w[0].textContent=t.all;w[1].textContent=t.klass;w[2].textContent=t.party;
-    var vb=document.querySelectorAll("#view button");
-    vb[0].textContent=t.vUp;vb[1].textContent=t.vPast;
-    vb.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.v===view);});
-    var n=document.querySelectorAll("#when button");
-    n[0].textContent=t.today;n[1].textContent=t.allTime;
-    document.getElementById("when").classList.toggle("hide",view==="past");
-    document.getElementById("sepWhen").classList.toggle("hide",view==="past");
     document.getElementById("disclaimer").textContent=t.disc;
     document.getElementById("updLabel").textContent=t.upd;
     document.getElementById("upd").textContent=updText();
@@ -691,13 +669,11 @@
     if(S.theme==="auto")document.documentElement.removeAttribute("data-theme");else document.documentElement.setAttribute("data-theme",S.theme);
     document.querySelectorAll("[data-lang]").forEach(function(b){b.setAttribute("aria-pressed",b.dataset.lang===S.lang);});
     w.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.v===S.what);});
-    n.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.v==="today"?(S.day===todayISO()):!S.day);});
     document.querySelectorAll("[data-style]").forEach(function(b){b.setAttribute("aria-pressed",!!S[b.dataset.style]);});
   }
   function update(){save();applyStatic();render();}
 
   document.querySelectorAll("#what button").forEach(function(b){b.addEventListener("click",function(){S.what=(b.dataset.v!=="all"&&S.what===b.dataset.v)?"all":b.dataset.v;update();});});
-  document.querySelectorAll("#view button").forEach(function(b){b.addEventListener("click",function(){if(view===b.dataset.v)return;view=b.dataset.v;S.day="";mexp=false;update();});});
   document.getElementById("weekstrip").addEventListener("click",function(ev){
     var td0=todayISO();
     var tg=ev.target.closest("button[data-toggle]");
@@ -728,7 +704,7 @@
     el.addEventListener("touchstart",function(e){if(e.touches.length!==1)return;on=true;x0=e.touches[0].clientX;y0=e.touches[0].clientY;},{passive:true});
     el.addEventListener("touchend",function(e){
       if(!on)return;on=false;var t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;
-      if(view==="past"||hashSlug())return;
+      if(hashSlug())return;
       if(Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*1.6)return;
       var dir=dx<0?1:-1,td=todayISO();
       if(S.day&&!mexp){
@@ -740,8 +716,7 @@
       }
     },{passive:true});
   })();
-  document.querySelectorAll("#when button").forEach(function(b){b.addEventListener("click",function(){if(b.dataset.v==="today"){off=0;moff=0;S.day=(S.day===todayISO())?"":todayISO();}else S.day="";update();});});
-  document.querySelectorAll("[data-style]").forEach(function(b){b.addEventListener("click",function(){S[b.dataset.style]=!S[b.dataset.style];update();});});
+    document.querySelectorAll("[data-style]").forEach(function(b){b.addEventListener("click",function(){S[b.dataset.style]=!S[b.dataset.style];update();});});
   // organizer logo missing -> monogram
   document.getElementById("list").addEventListener("error",function(e){
     var im=e.target;
