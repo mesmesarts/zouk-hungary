@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.11.3 -->
+<!-- Zouk Calendar v1.12.0 -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -7,6 +7,13 @@
 <meta name="color-scheme" content="light dark">
 <title>Zouk Calendar Hungary</title>
 <meta name="description" content="Brazilian zouk & lambada events, parties and classes in Hungary.">
+<meta name="theme-color" content="#0b5a35">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Zouk Calendar">
 <style>
   :root{
     color-scheme:light;
@@ -40,6 +47,9 @@
   .tools{display:flex;gap:6px}
   .tools button{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:6px 12px;font:inherit;font-size:.9rem;cursor:pointer}
   .tools button[aria-pressed="true"]{background:var(--gold);color:#1c2a22;border-color:var(--gold)}
+  .tools #install{display:inline-flex;align-items:center;gap:6px}
+  .tools #install svg{flex:none;display:block}
+  .tip{position:fixed;left:12px;right:12px;bottom:16px;max-width:420px;margin:0 auto;z-index:60;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 8px 22px rgba(0,0,0,.28);font-size:.92rem;text-align:center}
   .lw{position:relative;display:flex;gap:6px}
   .langs{display:flex;gap:6px}
   .langbtn{display:none}
@@ -211,6 +221,7 @@
     .top .ttl{flex:1;min-width:0}
     .tools{margin-top:0;flex:none;gap:6px}
     .tools button{padding:5px 10px;font-size:.85rem}
+    .tools #install .txt{display:none}
     .langbtn{display:inline-flex;align-items:center;gap:5px}
     .langs{display:none;position:absolute;right:0;top:calc(100% + 6px);z-index:40;flex-direction:column;gap:2px;min-width:160px;padding:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 22px rgba(0,0,0,.28)}
     .langs.open{display:flex}
@@ -263,6 +274,7 @@
       <div class="updated"><span id="updLabel"></span> <span id="upd"></span></div>
     </div>
     <div class="tools">
+      <button id="install" class="hide" type="button"></button>
       <div class="lw">
         <button id="langBtn" class="langbtn" type="button" aria-haspopup="true" aria-expanded="false"></button>
         <div class="langs" id="langs">
@@ -295,6 +307,7 @@
   <p class="subp"><a id="submitLink" class="submit" target="_blank" rel="noopener"></a></p>
   <p id="disclaimer"></p>
 </footer>
+<div class="tip hide" id="tip" role="status"></div>
 
 <script src="events.js"></script>
 <script>
@@ -310,6 +323,7 @@
       disc:"Az adatok a szervezők nyilvános Facebook-oldalairól származnak; a pontos időpontot és helyszínt mindig ellenőrizd az esemény oldalán. A fesztiválok és hétvégék városra való szűrésnél is látszanak.",
       upd:"Utolsó frissítés:",wk:"Hét",weekWord:"hét",
       abroad:"Külföld",contact:"Kontakt",
+      install:"Telepítés",iosHelp:"iPhone-on: Megosztás → Főképernyőhöz adás.",
       vUp:"Közelgő",vPast:"Múltbeli",emptyPast:"Az elmúlt 12 hónapban nincs ilyen esemény.",
       back:"← Vissza a naptárhoz",toSite:"Weboldal",toFb:"Facebook-oldal",orgUp:"Közelgő események",orgPast:"Múltbeli események (elmúlt 12 hónap)",orgNoUp:"Jelenleg nincs közelgő esemény.",loading:"Betöltés…",
       types:{party:"Buli",regular:"Rendszeres óra",course:"Rendszeres óra",workshop:"Workshop",weekender:"Weekender",festival:"Fesztivál",retreat:"Elvonulás"},
@@ -325,6 +339,7 @@
       disc:"Data comes from the organizers' public Facebook pages; always check the exact time and venue on the event page. Festivals and weekenders stay visible when you filter by city.",
       upd:"Last updated:",wk:"Wk",weekWord:"Week",
       abroad:"Abroad",contact:"Contact",
+      install:"Install",iosHelp:"On iPhone: Share → Add to Home Screen.",
       vUp:"Upcoming",vPast:"Past",emptyPast:"No events in the last 12 months.",
       back:"← Back to the calendar",toSite:"Website",toFb:"Facebook page",orgUp:"Upcoming events",orgPast:"Past events (last 12 months)",orgNoUp:"No upcoming events right now.",loading:"Loading…",
       types:{party:"Party",regular:"Regular class",course:"Regular class",workshop:"Workshop",weekender:"Weekender",festival:"Festival",retreat:"Retreat"},
@@ -340,6 +355,7 @@
       disc:"Los datos proceden de las páginas públicas de Facebook de los organizadores; comprueba siempre la hora y el lugar en la página del evento. Los festivales y weekenders se muestran también al filtrar por ciudad.",
       upd:"Última actualización:",wk:"Sem",weekWord:"Semana",
       abroad:"Extranjero",contact:"Contacto",
+      install:"Instalar",iosHelp:"En iPhone: Compartir → Añadir a pantalla de inicio.",
       vUp:"Próximos",vPast:"Pasados",emptyPast:"No hay eventos en los últimos 12 meses.",
       back:"← Volver al calendario",toSite:"Sitio web",toFb:"Página de Facebook",orgUp:"Próximos eventos",orgPast:"Eventos pasados (últimos 12 meses)",orgNoUp:"Ahora mismo no hay eventos próximos.",loading:"Cargando…",
       types:{party:"Fiesta",regular:"Clase regular",course:"Clase regular",workshop:"Taller",weekender:"Weekender",festival:"Festival",retreat:"Retiro"},
@@ -355,6 +371,7 @@
       disc:"Os dados vêm das páginas públicas de Facebook dos organizadores; confira sempre o horário e o local na página do evento. Festivais e weekenders aparecem também ao filtrar por cidade.",
       upd:"Última atualização:",wk:"Sem",weekWord:"Semana",
       abroad:"Exterior",contact:"Contato",
+      install:"Instalar",iosHelp:"No iPhone: Compartilhar → Adicionar à Tela de Início.",
       vUp:"Próximos",vPast:"Passados",emptyPast:"Nenhum evento nos últimos 12 meses.",
       back:"← Voltar ao calendário",toSite:"Site",toFb:"Página do Facebook",orgUp:"Próximos eventos",orgPast:"Eventos passados (últimos 12 meses)",orgNoUp:"Nenhum evento próximo no momento.",loading:"Carregando…",
       types:{party:"Festa",regular:"Aula regular",course:"Aula regular",workshop:"Workshop",weekender:"Weekender",festival:"Festival",retreat:"Retiro"},
@@ -444,6 +461,7 @@
   var ICO_PIN='<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6" fill="#fff" stroke="none"/></svg>';
   var ICO_CAL='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18M12 13v5M9.5 15.5h5"/></svg>';
   var ICO_EXT='<svg class="ext" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>';
+  var ICO_DL='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>';
   function pad(n){return (n<10?"0":"")+n;}
   function d8(iso){return iso.replace(/-/g,"");}
   function hm(min){return pad(Math.floor(min/60))+pad(min%60)+"00";}
@@ -659,6 +677,31 @@
     return m?m[1]+"."+m[2]+"."+m[3]+".":f;
   }
 
+  // ---- PWA: install button in the header (Chrome/Edge/Android: native prompt; iPhone/iPad: short help) ----
+  var deferredInstall=null,tipTimer=0;
+  function isStandalone(){return (window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)||window.navigator.standalone===true;}
+  function isIOS(){return /iphone|ipad|ipod/i.test(navigator.userAgent||"")||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);}
+  function applyInstall(){
+    var b=document.getElementById("install"),t=T[S.lang];
+    var show=!isStandalone()&&(!!deferredInstall||isIOS());
+    b.classList.toggle("hide",!show);
+    if(show){b.innerHTML=ICO_DL+'<span class="txt">'+esc(t.install)+'</span>';b.setAttribute("aria-label",t.install);b.title=t.install;}
+  }
+  function hideTip(){clearTimeout(tipTimer);document.getElementById("tip").classList.add("hide");}
+  function showTip(msg){var tp=document.getElementById("tip");tp.textContent=msg;tp.classList.remove("hide");clearTimeout(tipTimer);tipTimer=setTimeout(hideTip,8000);}
+  window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();deferredInstall=e;applyInstall();});
+  window.addEventListener("appinstalled",function(){deferredInstall=null;hideTip();applyInstall();});
+  document.getElementById("install").addEventListener("click",function(){
+    if(deferredInstall){
+      var p=deferredInstall;deferredInstall=null;applyInstall();
+      try{p.prompt();}catch(e){}
+    }else if(isIOS()){showTip(T[S.lang].iosHelp);}
+  });
+  document.getElementById("tip").addEventListener("click",hideTip);
+  if("serviceWorker" in navigator&&/^https?:$/.test(location.protocol)){
+    window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});
+  }
+
   function applyStatic(){
     var t=T[S.lang];
     document.documentElement.lang=S.lang;
@@ -670,6 +713,7 @@
     document.getElementById("upd").textContent=updText();
     var lb=document.getElementById("langBtn");
     lb.innerHTML=esc(S.lang.toUpperCase())+" "+ICO_D;lb.setAttribute("aria-label",t.langLabel);lb.title=t.langLabel;
+    applyInstall();
     var link=document.getElementById("submitLink"),u=(window.ZC_CONFIG||{}).submitUrl;
     if(u){link.href=u;link.classList.remove("off");link.textContent=t.submit;}else{link.classList.add("off");link.removeAttribute("href");link.textContent=t.soon;}
     // city chips: Budapest | Debrecen | Külföld (abroad = group trips with a contact person); several can be on, none = all
