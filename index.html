@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.17.33 – single file: HTML + CSS (styles v1.3.33) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.17.35 – single file: HTML + CSS (styles v1.3.35) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -197,12 +197,10 @@
   @media (min-width:700px){.ev a.go{width:150px;font-size:1rem}a.go .lead{display:inline}}
   /* desktop: "to calendar" sits above the details button, in the same right-hand column */
   .side{display:contents}
-  @media (min-width:521px){
-    .side{display:flex;flex-direction:column;flex:none;width:92px;border-left:1px solid var(--line)}
-    .ev .side .cal{margin:0;align-self:stretch;justify-content:center;text-align:center;white-space:normal;border:0;border-bottom:1px solid var(--pb,var(--line));border-radius:0;background:var(--pressed);color:var(--pressedInk);font-size:.9rem;font-weight:700;padding:10px 8px;line-height:1.2}
-    .ev .side .cal:hover{background:var(--pressed);filter:brightness(1.06)}
-    .ev .side a.go{width:auto;flex:1;border-left:0}
-  }
+  .side{display:flex;flex-direction:column;flex:none;width:92px;border-left:1px solid var(--line)}
+  .ev .side .cal{margin:0;align-self:stretch;justify-content:center;text-align:center;white-space:normal;border:0;border-bottom:1px solid var(--pb,var(--line));border-radius:0;background:var(--pressed);color:var(--pressedInk);font-size:.9rem;font-weight:700;padding:10px 8px;line-height:1.2}
+  .ev .side .cal:hover{background:var(--pressed);filter:brightness(1.06)}
+  .ev .side a.go{width:auto;flex:1;border-left:0}
   @media (min-width:700px){.side{width:150px}}
   .cal{margin-left:auto;font-size:.8rem;font-weight:600;color:var(--chipInk);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:2px 10px;white-space:nowrap}
   .cal:hover{background:var(--chip)}
@@ -279,11 +277,11 @@
     .legend{margin-top:9px}
     h2.day{margin:16px 0 6px}
     /* cards: calendar button pinned top-right; details button = narrow column, label read bottom-to-top, external-link icon below it */
-    .ev{min-height:108px}
+    .ev{min-height:132px}
     .content{position:relative;padding:9px 10px}
-    .toprow{padding-right:34px;margin-bottom:5px}
-    .ev{position:relative}
-    .cal{position:absolute;top:8px;right:44px;margin:0;padding:3px 7px}
+    .toprow{margin-bottom:5px}
+    .side{width:36px}
+    .ev .side .cal{padding:10px 0}
     .ev a.go{position:relative;width:36px;padding:0;gap:9px;flex-direction:column;justify-content:center;font-size:.8rem;letter-spacing:.03em}
     .ev a.go>span{writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;white-space:nowrap}
     .ev a.go .arr{display:none}
