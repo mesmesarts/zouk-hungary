@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.19.120 – single file: HTML + CSS (styles v1.4.3) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.19.121 – single file: HTML + CSS (styles v1.4.3) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -935,7 +935,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     applyInstall();
     var link=document.getElementById("submitLink"),u=(window.ZC_CONFIG||{}).submitUrl;
     if(u){link.href=u;link.classList.remove("off");link.textContent=t.submit;}else{link.classList.add("off");link.removeAttribute("href");link.textContent=t.soon;}
-    var ku=(window.ZC_CONFIG||{}).kofiUrl,kp=document.getElementById("kofiP"),kt=document.getElementById("kofiTop");if(kt){kt.hidden=!ku;if(ku){kt.href=ku;kt.title=t.kofi;var kl=kt.querySelector(".kl");if(kl){var kx=({hu:["Támogatás"," egy kávéval"],en:["Support"," with a Coffee"],es:["Apoya"," con un café"],pt:["Apoie"," com um café"]})[S.lang]||["Support"," with a Coffee"];kl.innerHTML='<span>'+kx[0]+'</span><span class="k2">'+kx[1]+'</span>';}kt.setAttribute("aria-label",t.kofi);}}if(ku){kp.hidden=false;var kl=document.getElementById("kofiLink");kl.href=ku;kl.innerHTML='<span class="kl">'+esc(t.kofi)+'</span><span class="ks">'+esc(t.kofiS)+'</span>';}else kp.hidden=true;
+    var ku=(window.ZC_CONFIG||{}).kofiUrl,kp=document.getElementById("kofiP"),kt=document.getElementById("kofiTop");if(kt){kt.hidden=!ku;if(ku){kt.href=ku;kt.title=t.kofi;var kl=kt.querySelector(".kl");if(kl){var kx=({hu:["Támogatás"," kávéval"],en:["Support"," with a Coffee"],es:["Apoya"," con un café"],pt:["Apoie"," com um café"]})[S.lang]||["Support"," with a Coffee"];kl.innerHTML='<span>'+kx[0]+'</span><span class="k2">'+kx[1]+'</span>';}kt.setAttribute("aria-label",t.kofi);}}if(ku){kp.hidden=false;var kl=document.getElementById("kofiLink");kl.href=ku;kl.innerHTML='<span class="kl">'+esc(t.kofi)+'</span><span class="ks">'+esc(t.kofiS)+'</span>';}else kp.hidden=true;
     // city chips: Budapest | Debrecen | Külföld (abroad = group trips with a contact person); several can be on, none = all
     var cs=document.getElementById("cities"),wasOn=[].map.call(cs.querySelectorAll('[aria-pressed="true"]'),function(x){return x.dataset.city;});cs.innerHTML="";
     [["Budapest","Budapest"],["Debrecen","Debrecen"],["abroad",t.abroad]].forEach(function(p){
