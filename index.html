@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.15.4 – single file: HTML + CSS (styles v1.1.4) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.15.6 – single file: HTML + CSS (styles v1.1.6) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -301,9 +301,9 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
 #theme.spin svg{animation:zcSpin .4s cubic-bezier(.2,.8,.2,1)}
 @media (prefers-reduced-motion:reduce){.what button,.pill,#list.st article,.week .days button.today,#theme.spin svg{animation:none!important;transition:none}}
 
-/* dark theme: light outline so dark city colours (blue, purple, green) stay visible on the dark cards */
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .week .dots i{border-color:rgba(255,255,255,.65)}}
-:root[data-theme="dark"] .week .dots i{border-color:rgba(255,255,255,.65)}
+/* dark theme: city colours on the day dots are lightened (no outline needed) */
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--lift:34%}}
+:root[data-theme="dark"]{--lift:34%}
 </style>
 </head>
 <body>
@@ -510,7 +510,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
   function isAbroad(c){var k=norm(c);return k==="kulfold"||k==="abroad";}
   function cityKey(c){return isAbroad(c)?"Külföld":c;}
   function cityName(c,t){return isAbroad(c)?t.abroad:c;}
-  var CITY_FIX={Budapest:{bg:"#c42f2a",ink:"#fff"},Debrecen:{bg:"#f2c200",ink:"#2a2000"},"Külföld":{bg:"#0b5a9a",ink:"#fff"}};
+  var CITY_FIX={Budapest:{bg:"#c42f2a",ink:"#fff"},Debrecen:{bg:"#e09a00",ink:"#241800"},"Külföld":{bg:"#0b5a9a",ink:"#fff"}};
   var CITY_COLORS=["#0b5a9a","#7a3fb0","#c2410c","#0f766e","#be185d","#4d7c0f"];
   function cityInk(c){c=cityKey(c);return CITY_FIX[c]?CITY_FIX[c].ink:"#fff";}
   function cityColor(c){
@@ -681,7 +681,7 @@ button:focus:not(:focus-visible),.pill:focus:not(:focus-visible){outline:none}
     var src=occurrences(today,true,we,wkS).filter(function(o){return ok(o)&&o.s<=we&&o.e>=wkS;});
     var base=occurrences(today,false).filter(ok);
     function dotsFor(list,dd){var seen={},h="",n=0,ids={},md="";
-      list.forEach(function(o){if(o.s<=dd&&o.e>=dd){var c=cityColor(o.city)||"var(--accent)";
+      list.forEach(function(o){if(o.s<=dd&&o.e>=dd){var c=cityColor(o.city)||"var(--accent)";c="color-mix(in srgb,"+c+" calc(100% - var(--lift,0%)),#fff)";
         if(o.e>o.s){var id=(o.id||L(o.title))+"|"+o.s;if(!ids[id]){ids[id]=1;n++;md+='<i class="d'+(o.s===dd?' st':'')+(o.e===dd?' en':'')+'" style="background:'+c+'"></i>';}}
         else{[o.type,o.also].filter(Boolean).forEach(function(ty){var t=(ty==="regular"||ty==="course")?"c":"s",k=c+t;if(!seen[k]){seen[k]=1;n++;}});}}});
       ["c","s"].forEach(function(t){Object.keys(seen).forEach(function(k){if(k.slice(-1)===t)h+='<i class="'+t+'" style="background:'+k.slice(0,-1)+'"></i>';});});
