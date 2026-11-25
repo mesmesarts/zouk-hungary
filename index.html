@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.9.9 -->
+<!-- Zouk Calendar v1.9.12 -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>Zouk Calendar</title>
+<title>Zouk Calendar Hungary</title>
 <meta name="description" content="Brazilian zouk & lambada events, parties and classes in Hungary.">
 <style>
   :root{
@@ -35,7 +35,7 @@
   header .wrap{position:relative;z-index:1}
   .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
   h1{margin:0 0 2px;font-size:1.5rem;letter-spacing:-.01em}
-  header p{margin:0;opacity:.88}
+  header p{margin:0;opacity:.88;font-size:.86rem;line-height:1.35}
   .tools{display:flex;gap:6px}
   .tools button{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:6px 12px;font:inherit;font-size:.9rem;cursor:pointer}
   .tools button[aria-pressed="true"]{background:var(--gold);color:#1c2a22;border-color:var(--gold)}
@@ -89,7 +89,7 @@
   .aR{animation:zcR .24s ease-out}.aL{animation:zcL .24s ease-out}.aD{animation:zcD .22s ease-out}
   @media (prefers-reduced-motion:reduce){.aR,.aL,.aD{animation:none}}
   #weekstrip{touch-action:none}
-  .wkhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;color:var(--chipInk);font-weight:600;font-size:.9rem}
+  .wkhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;color:var(--chipInk);font-weight:600;font-size:.9rem}
   .wkhead button{display:inline-flex;align-items:center;justify-content:center;width:36px;height:32px;padding:0;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
   .wkhead button svg{display:block}
   .wkhead button:disabled{opacity:.35;cursor:default}
@@ -109,6 +109,7 @@
   .week .days button.today{border-color:var(--chipInk);border-width:1.5px}
   .week .days button.today:not([aria-pressed="true"]) .dn{color:var(--chipInk)}
   .week .days button[aria-pressed="true"]{background:var(--pressed);color:var(--pressedInk);border-color:var(--pressed)}
+  .week .days button.today[aria-pressed="true"]{border-color:var(--chipInk);box-shadow:inset 0 0 0 1.5px var(--off)}
   .week .days button[aria-pressed="true"] .wd{color:inherit;opacity:.85}
   .week .days button[aria-pressed="true"] .dots i{border-color:#fff}
   .wkhead .lbl{flex:1;width:auto;height:32px;margin:0 8px;gap:8px;border:1px solid var(--pressed);background:var(--card);color:var(--pressed);font:inherit;font-weight:700;font-size:.92rem;}
@@ -182,7 +183,7 @@
     .tools .langs button{background:transparent;color:var(--ink);border:0;border-radius:10px;text-align:left;padding:9px 12px;font-size:.95rem}
     .tools .langs button::after{content:" \00B7  " attr(data-full);color:var(--muted);font-weight:400}
     .tools .langs button[aria-pressed="true"]{background:var(--chip);color:var(--chipInk);font-weight:700}
-    h1{font-size:1.35rem}
+    h1{font-size:clamp(1.05rem,5vw,1.35rem);white-space:nowrap}
     /* filters */
     .controls{padding:17px 0 9px}
     .what{gap:6px;margin-bottom:6px}
@@ -193,7 +194,7 @@
     .dot{width:9px;height:9px;margin-right:5px}
     /* week strip */
     .week{margin:8px 0 0}
-    .wkhead{margin-bottom:4px}
+    .wkhead{margin-bottom:9px}
     .wkhead button{height:28px;width:32px}
     .wkhead .lbl{height:28px;font-size:.88rem}
     .week .days{gap:5px}
@@ -216,7 +217,7 @@
 <header><div class="deco" aria-hidden="true"></div><div class="wrap">
   <div class="top">
     <div class="ttl">
-      <h1>Zouk Calendar</h1>
+      <h1>Zouk Calendar Hungary</h1>
       <p id="tagline"></p>
       <div class="updated"><span id="updLabel"></span> <span id="upd"></span></div>
     </div>
@@ -244,12 +245,12 @@
       <button data-v="party"></button>
     </div>
     <div class="filters" role="group">
-      <span class="grp" id="cities"></span>
-      <span class="sep"></span>
       <span class="grp" id="when">
         <button class="pill" data-v="today"></button>
         <button class="pill" data-v="all"></button>
       </span>
+      <span class="sep"></span>
+      <span class="grp" id="cities"></span>
       <span style="flex:none;width:24px"></span>
     </div>
   </div>
@@ -266,7 +267,7 @@
 <script>
 (function(){
   var T={
-    hu:{tag:"Hol zoukozhatsz? Brazil zouk és lambada Magyarországon.",
+    hu:{tag:"Hol zoukolhatsz? Zouk és lambada Magyarországon.",
       all:"Mind",klass:"Órák",party:"Bulik & fesztiválok",
       lgClass:"rendszeres óra",lgParty:"egyéb egynapos",lgMulti:"többnapos",
       today:"Ma",week:"Ez a hét",allTime:"Összes",allCities:"Minden város",
@@ -278,7 +279,7 @@
       types:{party:"Buli",regular:"Rendszeres óra",course:"Rendszeres óra",workshop:"Workshop",weekender:"Weekender",festival:"Fesztivál",retreat:"Elvonulás"},
       every:["","hétfőnként","keddenként","szerdánként","csütörtökönként","péntekenként","szombatonként","vasárnaponként"],
       themes:{auto:"Téma: auto",light:"Téma: világos",dark:"Téma: sötét"}},
-    en:{tag:"Where can you zouk? Brazilian zouk & lambada in Hungary.",
+    en:{tag:"Where can you zouk? Zouk & lambada in Hungary.",
       all:"All",klass:"Classes",party:"Parties & Festivals",
       lgClass:"regular class",lgParty:"other one-day",lgMulti:"multi-day",
       today:"Today",week:"This week",allTime:"All upcoming",allCities:"All cities",
@@ -290,7 +291,7 @@
       types:{party:"Party",regular:"Regular class",course:"Regular class",workshop:"Workshop",weekender:"Weekender",festival:"Festival",retreat:"Retreat"},
       every:["","Every Monday","Every Tuesday","Every Wednesday","Every Thursday","Every Friday","Every Saturday","Every Sunday"],
       themes:{auto:"Theme: auto",light:"Theme: light",dark:"Theme: dark"}},
-    es:{tag:"¿Dónde puedes bailar zouk? Zouk brasileño y lambada en Hungría.",
+    es:{tag:"¿Dónde puedes bailar zouk? Zouk y lambada en Hungría.",
       all:"Todo",klass:"Clases",party:"Fiestas y festivales",
       lgClass:"clase regular",lgParty:"otro de un día",lgMulti:"varios días",
       today:"Hoy",week:"Esta semana",allTime:"Todos",allCities:"Todas las ciudades",
@@ -302,7 +303,7 @@
       types:{party:"Fiesta",regular:"Clase regular",course:"Clase regular",workshop:"Taller",weekender:"Weekender",festival:"Festival",retreat:"Retiro"},
       every:["","Todos los lunes","Todos los martes","Todos los miércoles","Todos los jueves","Todos los viernes","Todos los sábados","Todos los domingos"],
       themes:{auto:"Tema: automático",light:"Tema: claro",dark:"Tema: oscuro"}},
-    pt:{tag:"Onde dá para dançar zouk? Zouk brasileiro e lambada na Hungria.",
+    pt:{tag:"Onde dá para dançar zouk? Zouk e lambada na Hungria.",
       all:"Tudo",klass:"Aulas",party:"Festas e festivais",
       lgClass:"aula regular",lgParty:"outro de um dia",lgMulti:"vários dias",
       today:"Hoje",week:"Esta semana",allTime:"Todos",allCities:"Todas as cidades",
