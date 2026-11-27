@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Zouk Calendar v1.19.121 – single file: HTML + CSS (styles v1.4.3) + JS (app v1.0.7). Data lives in events.js. -->
+<!-- Zouk Calendar v1.19.125 – single file: HTML + CSS (styles v1.4.3) + JS (app v1.0.7). Data lives in events.js. -->
 <html lang="hu">
 <head>
 <meta charset="utf-8">
@@ -156,10 +156,10 @@
   .week .days button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0 7px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:inherit;cursor:pointer}
   .week .wd{font-size:.72rem;color:var(--muted)}
   .week .dn{font-weight:700;font-size:1.05rem}
-  .week .dots{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;min-height:10px}
+  .week .dots{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;min-height:12px}
   .week .dots i{width:10px;height:10px;border-radius:50%;border:1px solid rgba(0,0,0,.25)}
-  .week .dots{align-items:center;align-content:center}
-  .week .dots i.c{width:6px;height:6px;border-radius:1px;transform:rotate(45deg)}   /* regular classes: small diamond */
+  .week .dots{align-items:center;align-content:center;margin-left:1px}   /* optical centring: system-ui digits sit ~0.5px right of their box */
+  .week .dots i.c{width:7.5px;height:7.5px;border:0;margin:0 2px;border-radius:1.5px;transform:rotate(45deg)}   /* regular classes: small diamond */
   .week .days button.none{opacity:.6}
   /* past days: flat but clickable (last 12 months); older than that: disabled; weekend/holiday: tinted; today: ring */
   .week .days button.past{opacity:1;cursor:pointer;background:transparent;border-color:transparent;color:var(--muted)}
